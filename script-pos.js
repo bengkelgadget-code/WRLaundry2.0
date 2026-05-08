@@ -1306,9 +1306,11 @@ function actionSendWA(idOverride) {
                 var estStr = (!allSameDate && itemEst) ? '\n  Selesai: _' + itemEst + '_' : '';
                 
                 if (currentPmb === 'Potong Kuota' && item.satuan === 'Kg') {
-                    txt += '- ' + item.nama + ' (' + item.qty + ' ' + item.satuan + ')' + estStr + '\n\n';
+                    txt += '- ' + item.nama + '*\n';
+                    ' (' + item.qty + ' ' + item.satuan + ')' + estStr + '\n\n';
                 } else {
-                    txt += '- ' + item.nama + ' (' + item.qty + ' ' + item.satuan + ' x ' + Number(item.subtotal/item.qty).toLocaleString('id-ID') + ') = Rp ' + Number(item.subtotal).toLocaleString('id-ID') + estStr + '\n\n';
+                    txt += '- ' + item.nama + '*\n';
+                    ' (' + item.qty + ' ' + item.satuan + ' x ' + Number(item.subtotal/item.qty).toLocaleString('id-ID') + ') = Rp ' + Number(item.subtotal).toLocaleString('id-ID') + estStr + '\n\n';
                 }
             });
         } else {
