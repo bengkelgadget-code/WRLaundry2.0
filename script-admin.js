@@ -164,7 +164,6 @@ function generateDynamicViews() {
                     '</div>';
     }
 
-    // ZETTBOT FIX: Modifikasi Filter di History Modal untuk lebih ringkas dan tambahkan tombol export sejajar & melayang
     var historyModalHtml = '<div id="modal-history-pelanggan" style="z-index: 9998;" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4">' +
                             '<div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-lg flex flex-col relative modal-enter overflow-hidden max-h-[90vh]">' +
                                 '<div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-white z-20 shrink-0">' +
@@ -220,7 +219,6 @@ function renderTable(sheetName, keepPage) {
     var sort = sortConfig[sheetName];
     if (sort && sort.key) { 
         var safeKey = sort.key.replace(/\s+/g, ''); 
-        // ZETTBOT FIX: Tambahkan operator '+' yang hilang sebelum safeKey agar script tidak error sintaks
         var iconEl = document.getElementById('icon-sort-' + sheetName + '-' + safeKey); 
         if (iconEl) { 
             iconEl.className = sort.dir === 'asc' ? 'ph-bold ph-caret-up text-slate-800 sort-icon-' + sheetName : 'ph-bold ph-caret-down text-slate-800 sort-icon-' + sheetName; 
@@ -319,7 +317,8 @@ function renderTable(sheetName, keepPage) {
             htmlTr += '<td><div class="text-slate-600 font-bold text-[12px] truncate max-w-[200px]" title="' + layananStr + '">' + layananStr + '</div></td>';
             htmlTr += '<td class="font-mono font-black text-slate-800 text-[14px]">Rp ' + Number(row['Total Harga'] || 0).toLocaleString('id-ID') + '</td>';
             htmlTr += '<td>' + statusBadge + '</td>';
-            htmlTr += '<td class="text-right whitespace-nowrap"><button onclick="viewProduksiDetail(\'' + row['ID'] + '\')" class="text-indigo-600 hover:text-white bg-indigo-50 hover:bg-indigo-500 p-2 rounded-xl transition-all mr-1.5 inline-flex items-center justify-center shadow-sm active:scale-95" title="Lihat Detail Lengkap"><i class="ph-bold ph-eye text-[16px]"></i></button><button onclick="openTxDetail(\'' + row['ID'] + '\')" class="text-amber-500 hover:text-white bg-amber-50 hover:bg-amber-500 p-2 rounded-xl transition-all mr-1.5 inline-flex items-center justify-center shadow-sm active:scale-95" title="Edit / Update Status"><i class="ph-bold ph-pencil-simple text-[16px]"></i></button><button onclick="deleteRecord(\'Produksi\', \'' + row['ID'] + '\')" class="text-red-500 hover:text-white bg-rose-50 hover:bg-rose-500 p-2 rounded-xl transition-all inline-flex items-center justify-center shadow-sm active:scale-95" title="Hapus"><i class="ph-bold ph-trash text-[16px]"></i></button></td>';
+            // ZETTBOT FIX: Tombol Pensil Kuning memanggil editFullTransactionStaff (Bypass Modal Review)
+            htmlTr += '<td class="text-right whitespace-nowrap"><button onclick="viewProduksiDetail(\'' + row['ID'] + '\')" class="text-indigo-600 hover:text-white bg-indigo-50 hover:bg-indigo-500 p-2 rounded-xl transition-all mr-1.5 inline-flex items-center justify-center shadow-sm active:scale-95" title="Lihat Detail Lengkap"><i class="ph-bold ph-eye text-[16px]"></i></button><button onclick="editFullTransactionStaff(\'' + row['ID'] + '\')" class="text-amber-500 hover:text-white bg-amber-50 hover:bg-amber-500 p-2 rounded-xl transition-all mr-1.5 inline-flex items-center justify-center shadow-sm active:scale-95" title="Edit Rincian Transaksi"><i class="ph-bold ph-pencil-simple text-[16px]"></i></button><button onclick="deleteRecord(\'Produksi\', \'' + row['ID'] + '\')" class="text-red-500 hover:text-white bg-rose-50 hover:bg-rose-500 p-2 rounded-xl transition-all inline-flex items-center justify-center shadow-sm active:scale-95" title="Hapus"><i class="ph-bold ph-trash text-[16px]"></i></button></td>';
         } else {
             htmlTr += '<td><span class="bg-slate-100 text-slate-500 px-2 py-1 rounded-lg text-[10px] font-bold border border-slate-200 inline-block">' + row['ID'] + '</span></td>';
             
@@ -440,7 +439,6 @@ function updateDashboard() {
     }
 }
 
-// CRUD & FORMS
 function handleFormSubmit(event, sheetName, modalId) {
     event.preventDefault(); 
     var form = event.target; 
