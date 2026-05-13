@@ -846,6 +846,10 @@ function execSaveStaff(recordObj, fileBase64, btn, recordObjForSheets) {
     };
 
     if (fileBase64) {
+        // ZETTBOT FIX: Bypass ImgBB karena issue SSL di browser client (ERR_SSL_VERSION_OR_CIPHER_MISMATCH)
+        // Frontend akan menggunakan Base64 sementara agar gambar langsung muncul (Instan).
+        // Background sync akan mengirim Base64 ke Google Drive via Apps Script.
+        console.log("ZettBOT: Memproses foto langsung ke Google Drive Backend...");
         sendToBackend(payloadToBackend, { filename: recordObj.ID + '.jpg', mimeType: 'image/jpeg', base64: fileBase64 });
     } else {
         sendToBackend(payloadToBackend, null);
@@ -1471,6 +1475,20 @@ async function actionPrintReceipt(idOverride) {
         }, 500); 
     });
 }
+
+var startY = 0;
+document.addEventListener('touchstart', e => { if(window.scrollY < 10) startY = e.touches[0].pageY; });
+document.addEventListener('touchend', e => {
+    var modalStaff = document.getElementById('modal-staff-tx');
+    var isModalOpen = modalStaff && !modalStaff.classList.contains('hidden');
+
+    if(window.scrollY < 10 && e.changedTouches[0].pageY - startY > 150) {
+        if (isModalOpen) return; 
+        
+        showToast("Menyegarkan data...");
+        fetchInitialData();
+    }
+});
 
 document.addEventListener('input', e => {
     if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) {
