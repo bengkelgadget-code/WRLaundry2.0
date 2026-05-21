@@ -244,7 +244,7 @@ function initCustomerAutocomplete() {
                                 companionTs.addOption({id: match.id, hp: match.hp, nama: match.nama}); 
                                 var valToSet = isNama ? match.hp : match.nama; 
                                 companionTs.setValue(valToSet, true); 
-                                companionTs.disable();
+                                // ZETTBOT FIX: Jangan mematikan (disable) inputan saat mode edit, agar field tetap aktif
                             }
                             
                             var realCust = (appData.pelanggan || []).find(function(p) { return p['ID'] === match.id; }); 
@@ -436,20 +436,45 @@ window.editFullTransactionStaff = function(id) {
         }
         
         var cust = resolvePelanggan(tx['ID Pelanggan'], tx);
+        
+        // ZETTBOT FIX: Update Value Silently agar tidak memicu pencarian otomatis salah sasaran
         if(tsInstances['staff-input-nama']) {
             tsInstances['staff-input-nama'].enable();
             tsInstances['staff-input-nama'].clear(true); 
             tsInstances['staff-input-nama'].addOption({id: tx['ID Pelanggan'], nama: cust.nama, hp: cust.hp});
-            tsInstances['staff-input-nama'].setValue(cust.nama);
-            tsInstances['staff-input-nama'].disable();
+            tsInstances['staff-input-nama'].setValue(cust.nama, true); // true = silent
+            // ZETTBOT FIX: Jangan mematikan kolom agar bebas diedit
         }
         if(tsInstances['staff-input-hp']) {
             tsInstances['staff-input-hp'].enable();
             tsInstances['staff-input-hp'].clear(true); 
             tsInstances['staff-input-hp'].addOption({id: tx['ID Pelanggan'], nama: cust.nama, hp: cust.hp});
-            tsInstances['staff-input-hpsetValue'] = cust.hp;
-            tsInstances['staff-input-hp'].setValue(cust.hp);
-            tsInstances['staff-input-hp'].disable();
+            tsInstances['staff-input-hp'].setValue(cust.hp, true); // true = silent
+            // ZETTBOT FIX: Jangan mematikan kolom agar bebas diedit
+        }
+        
+        // ZETTBOT FIX: Menarik data member secara manual karena fungsi onchange (silent) tidak akan memicunya otomatis
+        var realCust = (appData.pelanggan || []).find(function(p) { return p['ID'] === tx['ID Pelanggan']; });
+        var infoEl = document.getElementById('staff-member-info');
+        
+        if (realCust && realCust['Status'] === 'Member') {
+            togglePotongKuotaOption(true, false);
+            var sisaKuota = parseFloat(realCust['Sisa Kuota (Kg)'] || 0); var paketName = '-';
+            if (realCust['Paket Member']) {
+                var paketObj = (appData.member || []).find(function(m) { return m['ID'] === realCust['Paket Member']; });
+                if (paketObj) { paketName = paketObj['Nama Paket']; }
+            }
+            if (infoEl) {
+                infoEl.innerHTML = '<i class="ph-fill ph-diamond text-lg"></i> <span>Paket <b>' + paketName + '</b> | Sisa Kuota <b>' + sisaKuota + ' Kg</b></span>'; 
+                infoEl.classList.remove('hidden'); 
+                infoEl.classList.add('flex');
+            }
+        } else {
+            togglePotongKuotaOption(false, false);
+            if (infoEl) {
+                infoEl.classList.add('hidden'); 
+                infoEl.classList.remove('flex');
+            }
         }
         
         document.getElementById('staff-services-container').innerHTML = '';
@@ -473,7 +498,8 @@ window.editFullTransactionStaff = function(id) {
                 else if(matchedSatuan) targetVal = 'S-' + matchedSatuan['ID'];
                 
                 if(targetVal && tsInstances['staff-srv-select-' + rowId]) {
-                    tsInstances['staff-srv-select-' + rowId].setValue(targetVal);
+                    tsInstances['staff-srv-select-' + rowId].setValue(targetVal, true); // Silent load
+                    handleStaffServiceSelect(rowId, targetVal); // Kalkulasi row manual
                     var qtyEl = document.getElementById('staff-srv-qty-' + rowId);
                     if(qtyEl) { qtyEl.value = item.qty; calcStaffServiceRow(rowId); }
                 }
@@ -496,7 +522,6 @@ window.editFullTransactionStaff = function(id) {
             }
         }
 
-        // ZETTBOT FIX: Tampilkan Preview Foto Lama jika ada
         var labelEl = document.getElementById('staff-foto-label');
         if (labelEl) {
             if (tx['Foto'] && tx['Foto'] !== 'PENDING_UPLOAD') {
@@ -805,7 +830,6 @@ function submitStaffTransaction() {
             waktuMasuk = window.originalWaktuMasuk || new Intl.DateTimeFormat('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(new Date());
             finalStatus = window.originalStatusTx || 'Proses';
             
-            // ZETTBOT FIX: Simpan sementara foto lama jika ada
             if (originalTx && originalTx['Foto']) {
                 window.tempOldFoto = originalTx['Foto'];
             }
@@ -866,7 +890,6 @@ function submitStaffTransaction() {
         var recordObjForSheets = JSON.parse(JSON.stringify(recordObj));
         recordObjForSheets['No Telpon'] = finalHp;
 
-        // ZETTBOT FIX: Masukkan foto lama ke dalam recordObj jika sedang edit dan belum ada foto baru
         if (window.tempOldFoto) {
             recordObj['Foto'] = window.tempOldFoto;
             recordObjForSheets['Foto'] = window.tempOldFoto;
@@ -889,7 +912,6 @@ function submitStaffTransaction() {
                         var compressedBase64 = canvas.toDataURL('image/jpeg', 0.7); 
                         var pureBase64 = compressedBase64.split(',')[1];
                         
-                        // Menimpa foto lama dengan foto baru (jika ada)
                         recordObj['Foto'] = compressedBase64;
                         recordObjForSheets['Foto'] = compressedBase64;
                         
