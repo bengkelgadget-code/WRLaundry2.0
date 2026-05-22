@@ -1245,12 +1245,7 @@ function wrapTextCenterRaw(text, width) {
         }
     }
     if(currLine) lines.push(currLine.trim());
-    var res = '';
-    lines.forEach(function(l) {
-        var space = Math.max(0, Math.floor((width - l.length) / 2));
-        res += " ".repeat(space) + l + "\n";
-    });
-    return res;
+    return lines.join('\n') + '\n';
 }
 
 function generateReceiptHTML(px) {
@@ -1289,7 +1284,7 @@ function generateReceiptHTML(px) {
             if (pmbStatusVal === 'Potong Kuota' && item.satuan === 'Kg' && remainingKg > 0) { isCoveredByQuota = true; kgDeducted = Math.min(item.qty, remainingKg); remainingKg -= kgDeducted; }
             
             var itemEst = item.estimasiSelesai ? String(item.estimasiSelesai).split(' - ')[0].split(' ')[0] : '';
-            var estHtml = (!allSameDate && itemEst) ? ('<div style="font-size:10px; color:black; font-style: italic; margin-top:1px;">Selesai: ' + itemEst + '</div>') : '';
+            var estHtml = (!allSameDate && itemEst) ? ('<div style="font-size:10px; color:black; font-style: italic; margin-top:2px;">Selesai: ' + itemEst + '</div>') : '';
             var mb = (index < items.length - 1) ? '8px' : '4px';
             
             if (isCoveredByQuota) { 
@@ -1301,7 +1296,7 @@ function generateReceiptHTML(px) {
         });
         layananHTML = arrHtml.join(''); 
         if (allSameDate && firstDate) { 
-            layananHTML += '<div style="font-size:11px; font-weight:bold; color:black; font-style: italic; margin-top:6px;">Selesai: ' + firstDate + '</div>'; 
+            layananHTML += '<div style="font-size:11px; font-weight:bold; color:black; font-style: italic; margin-top:6px; text-align: left;">Selesai: ' + firstDate + '</div>'; 
         }
     } else { 
         layananHTML = (px['Layanan'] || '').replace(/\+/g, '<br>'); 
@@ -1340,7 +1335,7 @@ function generateReceiptHTML(px) {
     var finalHtml = '<style>@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap");</style>';
     finalHtml += '<div style="font-family: monospace; color: black; font-size: 11px; width: 100%;">';
     finalHtml += '<div style="text-align: center; margin: 18px 0 8px 0;">';
-    finalHtml += '<h2 style="margin:0 0 4px 0; font-size:16px; font-weight:900; letter-spacing:1px; color:black; font-family:\'Bricolage Grotesque\', sans-serif;">' + (appSettings.nama.toUpperCase()) + '</h2>';
+    finalHtml += '<h2 style="margin:0 0 4px 0; font-size:' + nameFontSize + '; font-weight:900; letter-spacing:1px; color:black; font-family:\'Bricolage Grotesque\', sans-serif;">' + (appSettings.nama.toUpperCase()) + '</h2>';
     finalHtml += '<p style="margin:0; font-size:10px; color:black; line-height:1.3; white-space: normal; word-wrap: break-word; text-align: center;">' + (appSettings.alamat) + '</p>';
     finalHtml += '</div>';
     finalHtml += '<div style="border-top: 1px dashed black; border-bottom: 1px dashed black; height: 2px; margin: 6px 0;"></div>';
@@ -1365,15 +1360,15 @@ function generateReceiptHTML(px) {
         finalHtml += '<div style="border-bottom: 1px dashed black; margin: 12px 0;"></div>';
     }
 
-    finalHtml += '<div style="text-align: left; margin-top: 10px; font-size: 8px; color: black; line-height: 1.4;">';
-    finalHtml += '<p style="margin:0; text-align: center; font-weight: bold; padding-bottom: 6px; font-size:10px;">Terima Kasih</p>';
+    finalHtml += '<div style="text-align: left; margin-top: 6px; font-size: 7px; color: black; line-height: 1.3;">';
+    finalHtml += '<p style="margin:0; text-align: center; font-weight: bold; padding-bottom: 4px; font-size:9px;">Terima Kasih</p>';
     finalHtml += '<ol style="margin:0; padding-left:12px; list-style-position: outside;">';
-    finalHtml += '<li style="padding-bottom:2px; padding-left:2px;">Pakaian luntur bukan tanggung jawab laundry.</li>';
-    finalHtml += '<li style="padding-bottom:2px; padding-left:2px;">Minimum perhitungan laundry kiloan (1 Kg).</li>';
-    finalHtml += '<li style="padding-bottom:2px; padding-left:2px;">Tidak menerima laundry dalaman.</li>';
-    finalHtml += '<li style="padding-bottom:2px; padding-left:2px;">Cucian tidak diambil 1 bulan bukan tanggung jawab kami.</li>';
+    finalHtml += '<li style="padding-bottom:2px; padding-left:0px;">Pakaian luntur bukan tanggung jawab laundry.</li>';
+    finalHtml += '<li style="padding-bottom:2px; padding-left:0px;">Minimum perhitungan laundry kiloan (1 Kg).</li>';
+    finalHtml += '<li style="padding-bottom:2px; padding-left:0px;">Tidak menerima laundry dalaman.</li>';
+    finalHtml += '<li style="padding-bottom:2px; padding-left:0px;">Cucian tidak diambil 1 bulan bukan tanggung jawab kami.</li>';
     finalHtml += '</ol>';
-    finalHtml += '<div style="height: 60px;"></div>';
+    finalHtml += '<div style="height: 30px;"></div>';
     finalHtml += '</div>';
     
     finalHtml += '</div>';
@@ -1386,12 +1381,23 @@ function generateRawTextReceipt(px) {
     var ESC = "\x1B"; var GS = "\x1D";
     var init = ESC + "@"; var center = ESC + "a\x01"; var left = ESC + "a\x00";
     var sizeNormal = GS + "!\x00"; var sizeDoubleHeight = GS + "!\x01"; var sizeDouble = GS + "!\x11";
+    var fontSmall = ESC + "M\x01"; var fontNormal = ESC + "M\x00";
+    var italicOn = ESC + "4\x01"; var italicOff = ESC + "4\x00";
 
     var splitKV = function(k, v) { var space = Math.max(1, 32 - k.length - String(v).length); return k + " ".repeat(space) + v + "\n"; };
 
     str += init;
     str += center;
-    str += sizeDoubleHeight + appSettings.nama.toUpperCase() + "\n";
+    
+    var custResolved = typeof resolvePelanggan === 'function' ? resolvePelanggan(px['ID Pelanggan'], px) : {nama: px['Nama Pelanggan']};
+    var nameCust = custResolved.nama || px['Nama Pelanggan'] || '-';
+
+    if (nameCust.length > 15) { 
+        str += sizeDoubleHeight + appSettings.nama.toUpperCase() + "\n"; 
+    } else { 
+        str += sizeDouble + appSettings.nama.toUpperCase() + "\n"; 
+    }
+    
     str += sizeNormal;
     if (appSettings.alamat) {
         str += wrapTextCenterRaw(appSettings.alamat, 32);
@@ -1406,9 +1412,6 @@ function generateRawTextReceipt(px) {
     str += "No. Nota : " + (px['No Nota'] || '-') + "\n";
     str += "\n";
     str += center;
-    
-    var custResolved = typeof resolvePelanggan === 'function' ? resolvePelanggan(px['ID Pelanggan'], px) : {nama: px['Nama Pelanggan']};
-    var nameCust = custResolved.nama || px['Nama Pelanggan'] || '-';
     
     if (nameCust.length > 15) { str += sizeDoubleHeight + nameCust + "\n"; } else { str += sizeDouble + nameCust + "\n"; }
     str += sizeNormal;
@@ -1440,13 +1443,13 @@ function generateRawTextReceipt(px) {
             
             var itemEst = item.estimasiSelesai ? String(item.estimasiSelesai).split(' - ')[0].split(' ')[0] : '';
             if (!allSameDate && itemEst) {
-                str += "Selesai: " + itemEst + "\n";
+                str += italicOn + "  Selesai: " + itemEst + italicOff + "\n";
             }
             if (index < items.length - 1) { str += "\n"; }
         });
 
         if (allSameDate && firstDate) {
-            str += "\nSelesai: " + firstDate + "\n";
+            str += italicOn + "\nSelesai: " + firstDate + italicOff + "\n";
         }
     } else { 
         str += (px['Layanan'] || '').replace(/\+/g, '\n\n') + "\n"; 
@@ -1488,11 +1491,13 @@ function generateRawTextReceipt(px) {
     str += center;
     str += "Terima Kasih\n";
     str += left;
+    str += fontSmall;
     str += "1. Pakaian luntur bukan \n   tanggung jawab laundry.\n";
     str += "2. Minimum laundry kiloan (1Kg).\n";
     str += "3. Tdk menerima lndry dalaman.\n";
     str += "4. Cucian tdk diambil 1 bln \n   bukan tanggung jawab kami.\n";
-    str += "\n\n\n\n\n";
+    str += fontNormal;
+    str += "\n\n\n";
     return str;
 }
 
