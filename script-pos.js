@@ -244,7 +244,6 @@ function initCustomerAutocomplete() {
                                 companionTs.addOption({id: match.id, hp: match.hp, nama: match.nama}); 
                                 var valToSet = isNama ? match.hp : match.nama; 
                                 companionTs.setValue(valToSet, true); 
-                                // ZETTBOT FIX: Jangan mematikan (disable) inputan saat mode edit, agar field tetap aktif
                             }
                             
                             var realCust = (appData.pelanggan || []).find(function(p) { return p['ID'] === match.id; }); 
@@ -437,23 +436,19 @@ window.editFullTransactionStaff = function(id) {
         
         var cust = resolvePelanggan(tx['ID Pelanggan'], tx);
         
-        // ZETTBOT FIX: Update Value Silently agar tidak memicu pencarian otomatis salah sasaran
         if(tsInstances['staff-input-nama']) {
             tsInstances['staff-input-nama'].enable();
             tsInstances['staff-input-nama'].clear(true); 
             tsInstances['staff-input-nama'].addOption({id: tx['ID Pelanggan'], nama: cust.nama, hp: cust.hp});
-            tsInstances['staff-input-nama'].setValue(cust.nama, true); // true = silent
-            // ZETTBOT FIX: Jangan mematikan kolom agar bebas diedit
+            tsInstances['staff-input-nama'].setValue(cust.nama, true); 
         }
         if(tsInstances['staff-input-hp']) {
             tsInstances['staff-input-hp'].enable();
             tsInstances['staff-input-hp'].clear(true); 
             tsInstances['staff-input-hp'].addOption({id: tx['ID Pelanggan'], nama: cust.nama, hp: cust.hp});
-            tsInstances['staff-input-hp'].setValue(cust.hp, true); // true = silent
-            // ZETTBOT FIX: Jangan mematikan kolom agar bebas diedit
+            tsInstances['staff-input-hp'].setValue(cust.hp, true); 
         }
         
-        // ZETTBOT FIX: Menarik data member secara manual karena fungsi onchange (silent) tidak akan memicunya otomatis
         var realCust = (appData.pelanggan || []).find(function(p) { return p['ID'] === tx['ID Pelanggan']; });
         var infoEl = document.getElementById('staff-member-info');
         
@@ -498,8 +493,8 @@ window.editFullTransactionStaff = function(id) {
                 else if(matchedSatuan) targetVal = 'S-' + matchedSatuan['ID'];
                 
                 if(targetVal && tsInstances['staff-srv-select-' + rowId]) {
-                    tsInstances['staff-srv-select-' + rowId].setValue(targetVal, true); // Silent load
-                    handleStaffServiceSelect(rowId, targetVal); // Kalkulasi row manual
+                    tsInstances['staff-srv-select-' + rowId].setValue(targetVal, true); 
+                    handleStaffServiceSelect(rowId, targetVal); 
                     var qtyEl = document.getElementById('staff-srv-qty-' + rowId);
                     if(qtyEl) { qtyEl.value = item.qty; calcStaffServiceRow(rowId); }
                 }
@@ -1262,14 +1257,13 @@ function generateReceiptHTML(px) {
     var dpAmount = Number(px['DP'] || 0); var sisaAmount = Number(px['Sisa Bayar'] !== undefined ? px['Sisa Bayar'] : totalHarga);
     if (pmbStatusVal === 'Lunas' || pmbStatusVal === 'Potong Kuota') { sisaAmount = 0; }
     
-    var paymentHTML = '<div style="border-bottom: 1px dashed black; margin: 8px 0;"></div><table width="100%" style="font-size: 11px; border-collapse: collapse; color: black;">';
+    var paymentHTML = '<table width="100%" style="font-size: 11px; border-collapse: collapse; color: black; margin-top: 8px;">';
     var usedQuota = (pmbStatusVal === 'Potong Kuota' || kgTerpakaiTx > 0);
     if (usedQuota) {
         paymentHTML += '<tr><td style="text-align:left; padding:2px 0;">Sisa Kuota:</td><td style="text-align:right; font-weight:bold; padding:2px 0;">' + currentSisaKuota + ' Kg</td></tr>';
         paymentHTML += '<tr><td style="text-align:left; padding:2px 0;">Status Bayar:</td><td style="text-align:right; font-weight:bold; padding:2px 0;">Potong Kuota</td></tr>';
     }
     if (!isPureMember) {
-        if (usedQuota) { paymentHTML += '<tr><td colspan="2"><div style="border-bottom: 1px dashed black; margin: 4px 0;"></div></td></tr>'; }
         if (diskonTx > 0) { paymentHTML += '<tr><td style="text-align:left; padding:2px 0;">DISKON:</td><td style="text-align:right; padding:2px 0;">- Rp ' + diskonTx.toLocaleString('id-ID') + '</td></tr>'; }
         paymentHTML += '<tr><td style="text-align:left; font-weight:900; font-size:13px; padding-top:6px; color:black;">TOTAL:</td><td style="text-align:right; font-weight:900; font-size:13px; padding-top:6px; color:black;">Rp ' + totalHarga.toLocaleString('id-ID') + '</td></tr>';
         
@@ -1277,7 +1271,6 @@ function generateReceiptHTML(px) {
         paymentHTML += '<tr><td style="text-align:left; padding:2px 0; padding-top:4px;">Status Bayar:</td><td style="text-align:right; font-weight:bold; padding:2px 0; padding-top:4px;">' + statusTagihan + '</td></tr>';
         if(statusTagihan === 'DP') {
             paymentHTML += '<tr><td style="text-align:left; padding:2px 0;">DP:</td><td style="text-align:right; padding:2px 0;">Rp ' + dpAmount.toLocaleString('id-ID') + '</td></tr>';
-            paymentHTML += '<tr><td style="text-align:left; font-weight:900; font-size:13px; padding-top:4px; color:black;">SISA:</td><td style="text-align:right; font-weight:900; font-size:13px; padding-top:4px; color:black;">Rp ' + sisaAmount.toLocaleString('id-ID') + '</td></tr>';
         }
     }
     paymentHTML += '</table>';
@@ -1287,11 +1280,15 @@ function generateReceiptHTML(px) {
     var tglMasuk = (px['Waktu Masuk'] ? String(px['Waktu Masuk']).split(' ')[0] : '-'); 
     var custResolved = typeof resolvePelanggan === 'function' ? resolvePelanggan(px['ID Pelanggan'], px) : {nama: px['Nama Pelanggan']};
     var nameCust = custResolved.nama || px['Nama Pelanggan'] || '-';
-    var nameFontSize = nameCust.length > 15 ? '16px' : '22px'; 
+    
+    var nameFontSizeNum = nameCust.length > 15 ? 16 : 22;
+    var nameFontSize = nameFontSizeNum + 'px'; 
+    var sisaFontSize = (nameFontSizeNum - 2) + 'px';
 
-    var finalHtml = '<div style="font-family: monospace; color: black; font-size: 11px; width: 100%;">';
+    var finalHtml = '<style>@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap");</style>';
+    finalHtml += '<div style="font-family: monospace; color: black; font-size: 11px; width: 100%;">';
     finalHtml += '<div style="text-align: center; margin: 18px 0 8px 0;">';
-    finalHtml += '<h2 style="margin:0 0 4px 0; font-size:16px; font-weight:900; letter-spacing:1px; color:black;">' + (appSettings.nama.toUpperCase()) + '</h2>';
+    finalHtml += '<h2 style="margin:0 0 4px 0; font-size:16px; font-weight:900; letter-spacing:1px; color:black; font-family:\'Bricolage Grotesque\', sans-serif;">' + (appSettings.nama.toUpperCase()) + '</h2>';
     finalHtml += '<p style="margin:0; font-size:10px; color:black; line-height:1.3;">' + (appSettings.alamat) + '</p>';
     finalHtml += '</div>';
     finalHtml += '<div style="border-top: 1px dashed black; border-bottom: 1px dashed black; height: 2px; margin: 6px 0;"></div>';
@@ -1307,16 +1304,24 @@ function generateReceiptHTML(px) {
     finalHtml += estimasiGlobalHTML;
     finalHtml += '<div style="font-size:11px; line-height:1.6; color:black;">' + layananHTML + '</div>';
     finalHtml += paymentHTML;
-    finalHtml += '<div style="border-bottom: 1px dashed black; margin: 12px 0;"></div>';
-    finalHtml += '<div style="text-align: left; margin-top: 10px; font-size: 10px; color: black; line-height: 1.5;">';
-    finalHtml += '<p style="margin:0; text-align: center; font-weight: bold; padding-bottom: 6px; font-size:12px;">Terima Kasih</p>';
-    finalHtml += '<ol style="margin:0; padding-left:14px;">';
+    
+    // ZETTBOT FIX: Sisa Bayar Component khusus
+    finalHtml += '<div style="border-top: 1px dashed black; border-bottom: 1px dashed black; padding: 8px 0; margin: 12px 0; text-align: center;">';
+    finalHtml += '<div style="font-size: 11px; font-weight: bold; color: black; margin-bottom: 4px;">SISA BAYAR</div>';
+    finalHtml += '<div style="font-size: ' + sisaFontSize + '; font-weight: 900; color: black; font-family:\'Bricolage Grotesque\', sans-serif;">Rp ' + sisaAmount.toLocaleString('id-ID') + '</div>';
+    finalHtml += '</div>';
+
+    finalHtml += '<div style="text-align: left; margin-top: 10px; font-size: 9px; color: black; line-height: 1.4;">';
+    finalHtml += '<p style="margin:0; text-align: center; font-weight: bold; padding-bottom: 6px; font-size:11px;">Terima Kasih</p>';
+    finalHtml += '<ol style="margin:0; padding-left:16px; list-style-position: outside;">';
     finalHtml += '<li style="padding-bottom:2px;">Pakaian luntur bukan tanggung jawab laundry.</li>';
     finalHtml += '<li style="padding-bottom:2px;">Minimum perhitungan laundry kiloan (1 Kg).</li>';
     finalHtml += '<li style="padding-bottom:2px;">Tidak menerima laundry dalaman.</li>';
     finalHtml += '<li style="padding-bottom:2px;">Cucian tidak diambil 1 bulan bukan tanggung jawab kami.</li>';
     finalHtml += '</ol>';
     finalHtml += '<div style="height: 60px;"></div>';
+    finalHtml += '</div>';
+    
     finalHtml += '</div>';
 
     return finalHtml;
@@ -1389,17 +1394,29 @@ function generateRawTextReceipt(px) {
     var pmbStatusVal = px['Pembayaran'] || 'Belum Lunas';
     if (totalHarga === 0 && pmbStatusVal !== 'Lunas') pmbStatusVal = 'Potong Kuota';
     str += splitKV("STATUS", pmbStatusVal);
+    
+    var dpAmount = Number(px['DP'] || 0);
+    var sisaAmount = Number(px['Sisa Bayar'] !== undefined ? px['Sisa Bayar'] : totalHarga);
+    if (pmbStatusVal === 'Lunas' || pmbStatusVal === 'Potong Kuota') { sisaAmount = 0; }
 
     if(pmbStatusVal === 'DP') {
-        str += splitKV("DP", "Rp " + Number(px['DP'] || 0).toLocaleString('id-ID'));
-        str += splitKV("SISA", "Rp " + Number(px['Sisa Bayar'] || 0).toLocaleString('id-ID'));
+        str += splitKV("DP", "Rp " + dpAmount.toLocaleString('id-ID'));
     }
 
     str += "--------------------------------\n";
     str += center;
+    str += "SISA BAYAR\n";
+    if (nameCust.length > 15) {
+        str += sizeDoubleHeight + "Rp " + sisaAmount.toLocaleString('id-ID') + "\n";
+    } else {
+        str += sizeDouble + "Rp " + sisaAmount.toLocaleString('id-ID') + "\n";
+    }
+    str += sizeNormal;
+    str += "--------------------------------\n";
+    str += center;
     str += "Terima Kasih\n";
     str += left;
-    str += "1. Pakaian luntur bukan tanggung jawab laundry.\n";
+    str += "1. Pakaian luntur bukan \n   tanggung jawab laundry.\n";
     str += "2. Minimum laundry kiloan (1Kg).\n";
     str += "3. Tdk menerima lndry dalaman.\n";
     str += "4. Cucian tdk diambil 1 bln \n   bukan tanggung jawab kami.\n";
