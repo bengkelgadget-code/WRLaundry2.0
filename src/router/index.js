@@ -1,5 +1,11 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
 import LoginView from '../views/LoginView.vue';
+import AdminView from '../views/AdminView.vue';
+import DashboardView from '../views/DashboardView.vue';
+import ProduksiView from '../views/ProduksiView.vue';
+import PengaturanView from '../views/PengaturanView.vue';
+import StaffView from '../views/StaffView.vue';
+import MasterDataView from '../views/MasterDataView.vue';
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -11,32 +17,32 @@ const router = createRouter({
     },
     {
       path: '/admin',
-      component: () => import('../views/AdminView.vue'),
+      component: AdminView,
       children: [
         {
           path: '',
           name: 'admin-dashboard',
-          component: () => import('../views/DashboardView.vue')
+          component: DashboardView
         },
         {
           path: 'produksi',
           name: 'admin-produksi',
-          component: () => import('../views/ProduksiView.vue')
+          component: ProduksiView
         },
         {
           path: 'pengaturan',
           name: 'admin-pengaturan',
-          component: () => import('../views/PengaturanView.vue')
+          component: PengaturanView
         },
         {
           path: 'staff',
           name: 'admin-staff',
-          component: () => import('../views/StaffView.vue')
+          component: StaffView
         },
         {
           path: ':sheet',
           name: 'admin-master',
-          component: () => import('../views/MasterDataView.vue')
+          component: MasterDataView
         }
       ]
     },
