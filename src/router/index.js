@@ -1,8 +1,8 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHashHistory } from 'vue-router';
 import LoginView from '../views/LoginView.vue';
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
@@ -29,14 +29,14 @@ const router = createRouter({
           component: () => import('../views/PengaturanView.vue')
         },
         {
-          path: ':sheet',
-          name: 'admin-master',
-          component: () => import('../views/MasterDataView.vue')
-        },
-        {
           path: 'staff',
           name: 'admin-staff',
           component: () => import('../views/StaffView.vue')
+        },
+        {
+          path: ':sheet',
+          name: 'admin-master',
+          component: () => import('../views/MasterDataView.vue')
         }
       ]
     },

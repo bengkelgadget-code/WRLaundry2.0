@@ -96,11 +96,9 @@ const isActivePath = (path) => {
             <div v-for="group in menuGroups" :key="group.title">
                 <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 px-2">{{ group.title }}</h3>
                 <div class="space-y-1">
-                    <router-link v-for="item in group.items" :key="item.name" :to="item.path" custom v-slot="{ navigate }">
-                        <div @click="navigate(); emit('close')" :class="['flex items-center px-4 py-3.5 rounded-2xl cursor-pointer transition-all duration-300 group font-bold', isActivePath(item.path) ? 'bg-teal-500 text-white shadow-lg shadow-teal-500/30' : 'text-slate-600 hover:bg-teal-500 hover:text-white hover:shadow-lg hover:shadow-teal-500/30']">
-                            <i :class="['ph-bold text-xl mr-3', item.icon, isActivePath(item.path) ? 'text-white' : 'text-slate-400 group-hover:text-white transition-colors']"></i>
-                            <span class="text-[13px] tracking-wide">{{ item.name }}</span>
-                        </div>
+                    <router-link v-for="item in group.items" :key="item.name" :to="item.path" @click="emit('close')" :class="['flex items-center px-4 py-3.5 rounded-2xl cursor-pointer transition-all duration-300 group font-bold', isActivePath(item.path) ? 'bg-teal-500 text-white shadow-lg shadow-teal-500/30' : 'text-slate-600 hover:bg-teal-500 hover:text-white hover:shadow-lg hover:shadow-teal-500/30']">
+                        <i :class="['ph-bold text-xl mr-3', item.icon, isActivePath(item.path) ? 'text-white' : 'text-slate-400 group-hover:text-white transition-colors']"></i>
+                        <span class="text-[13px] tracking-wide">{{ item.name }}</span>
                     </router-link>
                 </div>
             </div>
