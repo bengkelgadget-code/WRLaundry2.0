@@ -201,7 +201,10 @@ const handleAutocompleteKeydown = (e, field) => {
         if (showNamaDropdown.value && filteredCustomersByName.value.length > 0) {
             e.preventDefault();
             selectCustomer(filteredCustomersByName.value[0]);
-            // Move focus to HP input
+            const hpInputEl = document.querySelector('input[placeholder="Ketik no HP..."]');
+            if (hpInputEl) hpInputEl.focus();
+        } else {
+            e.preventDefault();
             const hpInputEl = document.querySelector('input[placeholder="Ketik no HP..."]');
             if (hpInputEl) hpInputEl.focus();
         }
@@ -209,9 +212,47 @@ const handleAutocompleteKeydown = (e, field) => {
         if (showHpDropdown.value && filteredCustomersByHp.value.length > 0) {
             e.preventDefault();
             selectCustomer(filteredCustomersByHp.value[0]);
-            // Move focus to first service dropdown or just blur
-            e.target.blur();
+            const firstSrv = document.querySelector('.service-input');
+            if (firstSrv) firstSrv.focus();
+        } else {
+            e.preventDefault();
+            const firstSrv = document.querySelector('.service-input');
+            if (firstSrv) firstSrv.focus();
         }
+    }
+};
+
+const scrollToActive = (e) => {
+    setTimeout(() => {
+        if (e && e.target) {
+            e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }, 150);
+};
+
+const focusQty = (index) => {
+    setTimeout(() => {
+        const qtyInputs = document.querySelectorAll('.qty-input');
+        if (qtyInputs[index]) qtyInputs[index].focus();
+    }, 50);
+};
+
+const handleServiceKeydown = (e, item, index) => {
+    if (item.showDropdown && item.searchQuery) {
+        const kItems = filteredKiloan(item.searchQuery);
+        const sItems = filteredSatuan(item.searchQuery);
+        if (kItems.length > 0) {
+            e.preventDefault();
+            selectService(item, 'K-' + kItems[0].ID, kItems[0]);
+            focusQty(index);
+        } else if (sItems.length > 0) {
+            e.preventDefault();
+            selectService(item, 'S-' + sItems[0].ID, sItems[0]);
+            focusQty(index);
+        }
+    } else {
+        e.preventDefault();
+        focusQty(index);
     }
 };
 
@@ -563,7 +604,7 @@ watch(() => props.isOpen, (newVal) => {
                                     <!-- Input Nama -->
                                     <div class="relative">
                                         <label class="block text-[11px] font-bold text-slate-600 mb-1.5 uppercase">Nama Pelanggan <span class="text-red-500">*</span></label>
-                                        <input type="text" v-model="formData['Nama Pelanggan']" required @focus="showNamaDropdown = true" @input="handleCustomerInput('nama')" @blur="closeNamaDropdown" @keydown.tab="handleAutocompleteKeydown($event, 'nama')" @keydown.enter="handleAutocompleteKeydown($event, 'nama')" placeholder="Ketik nama pelanggan..." class="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 focus:border-teal-400 focus:ring-2 focus:ring-teal-50 outline-none transition-all text-sm font-bold text-slate-800">
+                                        <input type="text" v-model="formData['Nama Pelanggan']" required @focus="showNamaDropdown = true; scrollToActive($event)" @input="handleCustomerInput('nama')" @blur="closeNamaDropdown" @keydown.tab="handleAutocompleteKeydown($event, 'nama')" @keydown.enter.prevent="handleAutocompleteKeydown($event, 'nama')" placeholder="Ketik nama pelanggan..." class="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 focus:border-teal-400 focus:ring-2 focus:ring-teal-50 outline-none transition-all text-sm font-bold text-slate-800">
                                         
                                         <!-- Dropdown Nama -->
                                         <div v-if="showNamaDropdown" class="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-48 overflow-y-auto overflow-x-hidden">
@@ -585,7 +626,7 @@ watch(() => props.isOpen, (newVal) => {
                                     <!-- Input No WA -->
                                     <div class="relative">
                                         <label class="block text-[11px] font-bold text-slate-600 mb-1.5 uppercase">No WhatsApp <span class="text-red-500">*</span></label>
-                                        <input type="text" v-model="formData['No Telpon']" required @focus="showHpDropdown = true" @input="handleCustomerInput('hp')" @blur="closeHpDropdown" @keydown.tab="handleAutocompleteKeydown($event, 'hp')" @keydown.enter="handleAutocompleteKeydown($event, 'hp')" placeholder="Ketik no HP..." class="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 focus:border-teal-400 focus:ring-2 focus:ring-teal-50 outline-none transition-all text-sm font-bold text-slate-800 font-mono">
+                                        <input type="text" v-model="formData['No Telpon']" required @focus="showHpDropdown = true; scrollToActive($event)" @input="handleCustomerInput('hp')" @blur="closeHpDropdown" @keydown.tab="handleAutocompleteKeydown($event, 'hp')" @keydown.enter.prevent="handleAutocompleteKeydown($event, 'hp')" placeholder="Ketik no HP..." class="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 focus:border-teal-400 focus:ring-2 focus:ring-teal-50 outline-none transition-all text-sm font-bold text-slate-800 font-mono">
                                         
                                         <!-- Dropdown HP -->
                                         <div v-if="showHpDropdown" class="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-48 overflow-y-auto overflow-x-hidden">
@@ -615,11 +656,13 @@ watch(() => props.isOpen, (newVal) => {
                                         
                                         <div class="mb-3 relative w-full">
                                             <input type="text" v-model="item.searchQuery" 
-                                                   @focus="item.showDropdown = true" 
+                                                   @focus="item.showDropdown = true; scrollToActive($event)" 
                                                    @blur="closeServiceDropdown(item)"
+                                                   @keydown.tab="handleServiceKeydown($event, item, index)"
+                                                   @keydown.enter.prevent="handleServiceKeydown($event, item, index)"
                                                    placeholder="🔍 Cari dan pilih layanan..."
                                                    required
-                                                   class="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 outline-none text-sm font-bold text-slate-700 focus:border-teal-400 focus:ring-2 focus:ring-teal-50 transition-all">
+                                                   class="service-input w-full px-4 py-3 rounded-xl bg-white border border-slate-200 outline-none text-sm font-bold text-slate-700 focus:border-teal-400 focus:ring-2 focus:ring-teal-50 transition-all">
                                             
                                             <div v-if="item.showDropdown" class="absolute z-20 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-48 overflow-y-auto overflow-x-hidden">
                                                 <div class="py-1 px-3 text-[10px] font-black tracking-widest text-slate-400 uppercase bg-slate-50 border-b border-slate-100">Layanan Kiloan</div>
@@ -641,7 +684,7 @@ watch(() => props.isOpen, (newVal) => {
                                         <div class="flex gap-3 items-end">
                                             <div class="w-1/3">
                                                 <label class="block text-[10px] font-black text-slate-400 mb-1.5 uppercase">{{ item.type === 'Kiloan' ? 'Bobot (Kg)' : 'Qty (Pcs)' }}</label>
-                                                <input type="number" step="any" min="0.1" v-model.number="item.qty" @input="calculateItemSubtotal(item)" class="w-full px-3 py-2.5 rounded-xl bg-white border border-slate-200 focus:border-teal-400 outline-none text-sm font-black text-slate-700 text-center">
+                                                <input type="number" step="any" min="0.1" v-model.number="item.qty" @focus="scrollToActive($event)" @input="calculateItemSubtotal(item)" class="qty-input w-full px-3 py-2.5 rounded-xl bg-white border border-slate-200 focus:border-teal-400 outline-none text-sm font-black text-slate-700 text-center">
                                             </div>
                                             <div class="w-2/3">
                                                 <label class="block text-[10px] font-black text-slate-400 mb-1.5 uppercase text-right">Subtotal</label>
@@ -685,7 +728,7 @@ watch(() => props.isOpen, (newVal) => {
                                     <div class="flex-1 flex flex-col gap-3">
                                         <div>
                                             <label class="block text-[11px] font-bold text-slate-600 mb-1.5 uppercase">Diskon (Rp)</label>
-                                            <input type="number" v-model.number="formData.Diskon" placeholder="Rp 0" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 outline-none text-sm font-bold focus:ring-2 focus:ring-teal-300 font-mono text-slate-700">
+                                            <input type="number" v-model.number="formData.Diskon" @focus="scrollToActive($event)" placeholder="Rp 0" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 outline-none text-sm font-bold focus:ring-2 focus:ring-teal-300 font-mono text-slate-700">
                                         </div>
                                         <div>
                                             <label class="block text-[11px] font-bold text-slate-600 mb-1.5 uppercase">Status Pembayaran</label>
@@ -698,7 +741,7 @@ watch(() => props.isOpen, (newVal) => {
                                         </div>
                                         <div v-if="formData.Pembayaran === 'DP'" class="fade-in">
                                             <label class="block text-[11px] font-bold text-slate-600 mb-1.5 uppercase">Nominal DP</label>
-                                            <input type="number" v-model.number="formData.DP" placeholder="Rp 0" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 outline-none text-sm font-bold focus:ring-2 focus:ring-teal-300 font-mono text-slate-700">
+                                            <input type="number" v-model.number="formData.DP" @focus="scrollToActive($event)" placeholder="Rp 0" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 outline-none text-sm font-bold focus:ring-2 focus:ring-teal-300 font-mono text-slate-700">
                                         </div>
                                     </div>
                                 </div>
