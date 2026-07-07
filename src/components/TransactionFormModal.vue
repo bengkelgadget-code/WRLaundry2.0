@@ -176,8 +176,43 @@ const selectCustomer = (c) => {
 const handleCustomerInput = (field) => {
     // If user types, we reset selectedCustomer if it doesn't match perfectly
     selectedCustomer.value = null;
-    if (field === 'nama') showNamaDropdown.value = true;
-    if (field === 'hp') showHpDropdown.value = true;
+    if (field === 'nama') {
+        showNamaDropdown.value = true;
+        const exactMatch = customers.value.find(c => (c['Nama Pelanggan'] || '').toLowerCase() === (formData.value['Nama Pelanggan'] || '').toLowerCase());
+        if (exactMatch) {
+            formData.value['No Telpon'] = exactMatch['No Telpon'] || '';
+            selectedCustomer.value = exactMatch;
+            formData.value['ID Pelanggan'] = exactMatch.ID;
+        }
+    }
+    if (field === 'hp') {
+        showHpDropdown.value = true;
+        const exactMatch = customers.value.find(c => (c['No Telpon'] || '') === (formData.value['No Telpon'] || ''));
+        if (exactMatch) {
+            formData.value['Nama Pelanggan'] = exactMatch['Nama Pelanggan'] || '';
+            selectedCustomer.value = exactMatch;
+            formData.value['ID Pelanggan'] = exactMatch.ID;
+        }
+    }
+};
+
+const handleAutocompleteKeydown = (e, field) => {
+    if (field === 'nama') {
+        if (showNamaDropdown.value && filteredCustomersByName.value.length > 0) {
+            e.preventDefault();
+            selectCustomer(filteredCustomersByName.value[0]);
+            // Move focus to HP input
+            const hpInputEl = document.querySelector('input[placeholder="Ketik no HP..."]');
+            if (hpInputEl) hpInputEl.focus();
+        }
+    } else if (field === 'hp') {
+        if (showHpDropdown.value && filteredCustomersByHp.value.length > 0) {
+            e.preventDefault();
+            selectCustomer(filteredCustomersByHp.value[0]);
+            // Move focus to first service dropdown or just blur
+            e.target.blur();
+        }
+    }
 };
 
 // Computed properties for dropdowns
@@ -528,7 +563,7 @@ watch(() => props.isOpen, (newVal) => {
                                     <!-- Input Nama -->
                                     <div class="relative">
                                         <label class="block text-[11px] font-bold text-slate-600 mb-1.5 uppercase">Nama Pelanggan <span class="text-red-500">*</span></label>
-                                        <input type="text" v-model="formData['Nama Pelanggan']" required @focus="showNamaDropdown = true" @input="handleCustomerInput('nama')" @blur="closeNamaDropdown" placeholder="Ketik nama pelanggan..." class="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 focus:border-teal-400 focus:ring-2 focus:ring-teal-50 outline-none transition-all text-sm font-bold text-slate-800">
+                                        <input type="text" v-model="formData['Nama Pelanggan']" required @focus="showNamaDropdown = true" @input="handleCustomerInput('nama')" @blur="closeNamaDropdown" @keydown.tab="handleAutocompleteKeydown($event, 'nama')" @keydown.enter="handleAutocompleteKeydown($event, 'nama')" placeholder="Ketik nama pelanggan..." class="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 focus:border-teal-400 focus:ring-2 focus:ring-teal-50 outline-none transition-all text-sm font-bold text-slate-800">
                                         
                                         <!-- Dropdown Nama -->
                                         <div v-if="showNamaDropdown" class="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-48 overflow-y-auto overflow-x-hidden">
@@ -550,7 +585,7 @@ watch(() => props.isOpen, (newVal) => {
                                     <!-- Input No WA -->
                                     <div class="relative">
                                         <label class="block text-[11px] font-bold text-slate-600 mb-1.5 uppercase">No WhatsApp <span class="text-red-500">*</span></label>
-                                        <input type="text" v-model="formData['No Telpon']" required @focus="showHpDropdown = true" @input="handleCustomerInput('hp')" @blur="closeHpDropdown" placeholder="Ketik no HP..." class="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 focus:border-teal-400 focus:ring-2 focus:ring-teal-50 outline-none transition-all text-sm font-bold text-slate-800 font-mono">
+                                        <input type="text" v-model="formData['No Telpon']" required @focus="showHpDropdown = true" @input="handleCustomerInput('hp')" @blur="closeHpDropdown" @keydown.tab="handleAutocompleteKeydown($event, 'hp')" @keydown.enter="handleAutocompleteKeydown($event, 'hp')" placeholder="Ketik no HP..." class="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 focus:border-teal-400 focus:ring-2 focus:ring-teal-50 outline-none transition-all text-sm font-bold text-slate-800 font-mono">
                                         
                                         <!-- Dropdown HP -->
                                         <div v-if="showHpDropdown" class="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-48 overflow-y-auto overflow-x-hidden">
