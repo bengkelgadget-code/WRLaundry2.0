@@ -9,6 +9,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@capacitor/android": "^8.4.1",
+    "@capacitor/core": "^8.4.1",
+    "@e-is/capacitor-bluetooth-serial": "^6.0.3",
     "@phosphor-icons/vue": "^2.2.1",
     "firebase": "^12.15.0",
     "pinia": "^3.0.4",
@@ -16,6 +19,7 @@
     "vue-router": "^5.1.0"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.4.1",
     "@vitejs/plugin-vue": "^6.0.7",
     "autoprefixer": "^10.5.2",
     "postcss": "^8.5.16",
