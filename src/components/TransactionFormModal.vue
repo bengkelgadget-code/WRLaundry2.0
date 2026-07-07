@@ -107,6 +107,14 @@ const addServiceRow = () => {
     itemIdCounter++;
     txItems.value.push({ id: itemIdCounter, type: '', serviceId: '', price: 0, qty: 1, subtotal: 0, showDropdown: false, searchQuery: '' });
     calculateTotals();
+    
+    // Focus new service input after render
+    nextTick(() => {
+        const srvInputs = document.querySelectorAll('.service-input');
+        if (srvInputs.length > 0) {
+            srvInputs[srvInputs.length - 1].focus();
+        }
+    });
 };
 
 const removeServiceRow = (index) => {
@@ -228,6 +236,13 @@ const scrollToActive = (e) => {
             e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
     }, 150);
+};
+
+const handleQtyFocus = (e) => {
+    scrollToActive(e);
+    if (e && e.target) {
+        e.target.select();
+    }
 };
 
 const focusQty = (index) => {
@@ -684,7 +699,7 @@ watch(() => props.isOpen, (newVal) => {
                                         <div class="flex gap-3 items-end">
                                             <div class="w-1/3">
                                                 <label class="block text-[10px] font-black text-slate-400 mb-1.5 uppercase">{{ item.type === 'Kiloan' ? 'Bobot (Kg)' : 'Qty (Pcs)' }}</label>
-                                                <input type="number" step="any" min="0.1" v-model.number="item.qty" @focus="scrollToActive($event)" @input="calculateItemSubtotal(item)" class="qty-input w-full px-3 py-2.5 rounded-xl bg-white border border-slate-200 focus:border-teal-400 outline-none text-sm font-black text-slate-700 text-center">
+                                                <input type="number" step="any" min="0.1" v-model.number="item.qty" @focus="handleQtyFocus($event)" @input="calculateItemSubtotal(item)" class="qty-input w-full px-3 py-2.5 rounded-xl bg-white border border-slate-200 focus:border-teal-400 outline-none text-sm font-black text-slate-700 text-center">
                                             </div>
                                             <div class="w-2/3">
                                                 <label class="block text-[10px] font-black text-slate-400 mb-1.5 uppercase text-right">Subtotal</label>
