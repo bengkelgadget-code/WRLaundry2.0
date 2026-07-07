@@ -233,7 +233,7 @@ const handleAutocompleteKeydown = (e, field) => {
 const scrollToActive = (e) => {
     setTimeout(() => {
         if (e && e.target) {
-            e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            e.target.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     }, 150);
 };
