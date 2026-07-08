@@ -112,7 +112,7 @@ export const generateReceiptHTML = (px, store) => {
             if (pmbStatusVal === 'Potong Kuota' && item.satuan === 'Kg' && remainingKg > 0) { isCoveredByQuota = true; kgDeducted = Math.min(item.qty, remainingKg); remainingKg -= kgDeducted; }
 
             var itemEst = item.estimasiSelesai ? String(item.estimasiSelesai) : '';
-            var estHtml = (!allSameDate && itemEst) ? ('<div style="font-size:10px; color:black; font-style: italic; margin-top:2px; margin-left:4px;">&gt; Selesai: ' + itemEst + '</div>') : '';
+            var estHtml = (!allSameDate && itemEst) ? ('<div style="font-size:9px; color:black; font-style: italic; margin-top:2px; margin-left:4px;">&gt; Selesai: ' + itemEst + '</div>') : '';
             var mb = (index < items.length - 1) ? '8px' : '4px';
 
             if (isCoveredByQuota) {
@@ -124,7 +124,7 @@ export const generateReceiptHTML = (px, store) => {
         });
         layananHTML = arrHtml.join('');
         if (allSameDate && firstFull) {
-            layananHTML += '<div style="font-size:11px; font-weight:bold; color:black; font-style: italic; margin-top:6px; text-align: left;">Selesai: ' + firstFull + '</div>';
+            layananHTML += '<div style="font-size:10px; font-weight:bold; color:black; font-style: italic; margin-top:6px; text-align: left;">Selesai: ' + firstFull + '</div>';
         }
     } else {
         layananHTML = (px['Layanan'] || '').replace(/\+/g, '<br>');
