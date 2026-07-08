@@ -28,11 +28,13 @@ onMounted(async () => {
       return;
     }
 
-    // Otherwise standard back navigation
-    if (canGoBack) {
-      router.back();
-    } else {
+    // Otherwise standard back navigation based on Vue Router
+    const currentPath = router.currentRoute.value.path;
+    // Exit app if on root (login) or main dashboard views
+    if (currentPath === '/' || currentPath === '/admin' || currentPath === '/admin/staff') {
       CapacitorApp.exitApp();
+    } else {
+      router.back();
     }
   });
 });
