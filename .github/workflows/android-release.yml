@@ -17,7 +17,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: 'npm'
 
       - name: Install dependencies
@@ -45,7 +45,7 @@ jobs:
         working-directory: ./android
         run: |
           chmod +x gradlew
-          ./gradlew assembleRelease -Pandroid.injected.signing.store.file=release.keystore -Pandroid.injected.signing.store.password=waroenklaundry -Pandroid.injected.signing.key.alias=waroenklaundry -Pandroid.injected.signing.key.password=waroenklaundry
+          ./gradlew assembleRelease -Pandroid.injected.signing.store.file=app/release.keystore -Pandroid.injected.signing.store.password=waroenklaundry -Pandroid.injected.signing.key.alias=waroenklaundry -Pandroid.injected.signing.key.password=waroenklaundry
 
       - name: Rename APK
         run: |
