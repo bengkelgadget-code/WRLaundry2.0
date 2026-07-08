@@ -244,7 +244,7 @@ const handleTouchEnd = async () => {
                 </div>
             </div>
 
-            <div class="w-full max-w-3xl px-4 pt-5 pb-24 shrink-0 flex-1">
+            <div class="w-full max-w-3xl px-4 pt-4 pb-20 shrink-0 flex-1">
                 <div class="grid grid-cols-1 gap-3 w-full mb-4">
                     <div class="slide-up-fade bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl p-5 shadow-lg shadow-slate-900/10 text-white relative overflow-hidden">
                         <div class="absolute right-0 top-0 opacity-10"><i class="ph-fill ph-washing-machine text-8xl -mt-4 -mr-4"></i></div>
@@ -331,9 +331,9 @@ const handleTouchEnd = async () => {
         </div>
 
         <!-- Footer POS -->
-        <div class="fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t border-slate-200/50 pt-3 px-4 shadow-[0_-5px_15px_rgba(0,0,0,0.05)] z-30 flex justify-center transition-all" style="padding-bottom: max(1rem, env(safe-area-inset-bottom));">
+        <div class="fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t border-slate-200/50 py-2 px-4 shadow-[0_-5px_15px_rgba(0,0,0,0.05)] z-30 flex justify-center transition-all">
             <div class="w-full max-w-3xl">
-                <button @click="openAddTransaction" class="w-full bg-gradient-to-r from-teal-400 to-teal-500 hover:from-teal-500 hover:to-teal-600 text-white font-black tracking-wide py-3 rounded-2xl shadow-sm shadow-teal-500/30 flex items-center justify-center text-[15px] transition-transform transform active:scale-95"><i class="ph-bold ph-plus-circle text-xl mr-2"></i> TAMBAH TRANSAKSI</button>
+                <button @click="openAddTransaction" class="w-full bg-gradient-to-r from-teal-400 to-teal-500 hover:from-teal-500 hover:to-teal-600 text-white font-black tracking-wide py-2 rounded-xl shadow-sm shadow-teal-500/30 flex items-center justify-center text-[14px] transition-transform transform active:scale-95"><i class="ph-bold ph-plus-circle text-lg mr-2"></i> TAMBAH TRANSAKSI</button>
             </div>
         </div>
 
