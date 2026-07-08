@@ -104,8 +104,20 @@ const currentFields = computed(() => {
     });
 });
 
+const parseRupiah = (val) => {
+    if (typeof val === 'number') return Math.round(val);
+    if (!val) return 0;
+    if (typeof val === 'string') {
+        if (val.includes('.') && !val.includes('Rp') && val.split('.')[1].length !== 3) {
+            return Math.round(parseFloat(val)) || 0;
+        }
+        return parseInt(val.replace(/[^0-9]/g, '')) || 0;
+    }
+    return Math.round(parseFloat(val)) || 0;
+};
+
 const formatRupiah = (number) => {
-    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
+    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(parseRupiah(number));
 };
 
 const searchQuery = ref('');
@@ -164,8 +176,8 @@ const filteredAndSortedData = computed(() => {
         let valB = b[sortKey.value] || '';
         
         if (sortKey.value === 'ID') {
-            valA = parseInt(String(valA).replace(/[^0-9]/g,'')) || 0;
-            valB = parseInt(String(valB).replace(/[^0-9]/g,'')) || 0;
+            valA = parseRupiah(valA);
+            valB = parseRupiah(valB);
             return sortOrder.value === 'asc' ? valA - valB : valB - valA;
         } else {
             return sortOrder.value === 'asc' 
@@ -204,7 +216,7 @@ const handleSort = (key) => {
 
 const formatValue = (key, value) => {
     if (key.toLowerCase().includes('harga')) {
-        return formatRupiah(parseInt(value) || 0);
+        return formatRupiah(value);
     }
     return value;
 };

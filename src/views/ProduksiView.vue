@@ -24,8 +24,7 @@ const filteredAndSortedData = computed(() => {
     
     // Filter out data errors (e.g. absurdly high prices > 100M)
     data = data.filter(d => {
-        const hargaStr = String(d['Total Harga']).replace(/[^0-9]/g, '');
-        const harga = parseInt(hargaStr) || 0;
+        const harga = parseRupiah(d['Total Harga']);
         return harga < 100000000;
     });
     
@@ -44,8 +43,8 @@ const filteredAndSortedData = computed(() => {
         let valB = b[sortKey.value] || '';
         
         if (sortKey.value === 'Total Harga' || sortKey.value === 'ID') {
-            valA = parseInt(String(valA).replace(/[^0-9]/g,'')) || 0;
-            valB = parseInt(String(valB).replace(/[^0-9]/g,'')) || 0;
+            valA = parseRupiah(valA);
+            valB = parseRupiah(valB);
             return sortOrder.value === 'asc' ? valA - valB : valB - valA;
         } else {
             return sortOrder.value === 'asc' 
@@ -82,8 +81,20 @@ const handleSort = (key) => {
     }
 };
 
+const parseRupiah = (val) => {
+    if (typeof val === 'number') return Math.round(val);
+    if (!val) return 0;
+    if (typeof val === 'string') {
+        if (val.includes('.') && !val.includes('Rp') && val.split('.')[1].length !== 3) {
+            return Math.round(parseFloat(val)) || 0;
+        }
+        return parseInt(val.replace(/[^0-9]/g, '')) || 0;
+    }
+    return Math.round(parseFloat(val)) || 0;
+};
+
 const formatRupiah = (angka) => {
-    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(parseInt(String(angka).replace(/[^0-9]/g,'')) || 0);
+    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(parseRupiah(angka));
 };
 
 const formatTanggal = (waktu) => {
@@ -203,7 +214,7 @@ const saveModalData = async (formData) => {
                                     <p class="font-semibold text-slate-600 text-[13px] whitespace-normal leading-snug min-w-[140px]">{{ tx['Layanan'] }}</p>
                                 </td>
                                 <td class="px-3 py-2.5 font-bold text-slate-800 text-[13px] whitespace-nowrap">
-                                    {{ formatRupiah(parseInt(String(tx['Total Harga']).replace(/[^0-9]/g,''))) }}
+                                    {{ formatRupiah(tx['Total Harga']) }}
                                 </td>
                                 <td class="!text-center px-3 py-2.5">
                                     <span v-if="tx.Status === 'Proses'" class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-white text-amber-500 border border-amber-300 whitespace-nowrap">

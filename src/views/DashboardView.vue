@@ -27,7 +27,7 @@ const dashboardStats = computed(() => {
         
         const waktuMasuk = String(item['Waktu Masuk'] || '');
         if (waktuMasuk.includes(today1) || waktuMasuk.includes(today2) || waktuMasuk.includes(new Date().toLocaleDateString('id-ID'))) {
-             let total = parseInt(String(item['Total Harga']).replace(/[^0-9]/g, '')) || 0;
+             let total = parseRupiah(item['Total Harga']);
              pendapatan += total;
         }
     });
@@ -39,8 +39,20 @@ const recentTransactions = computed(() => {
     return (store.appData.produksi || []).slice(0, 5);
 });
 
+const parseRupiah = (val) => {
+    if (typeof val === 'number') return Math.round(val);
+    if (!val) return 0;
+    if (typeof val === 'string') {
+        if (val.includes('.') && !val.includes('Rp') && val.split('.')[1].length !== 3) {
+            return Math.round(parseFloat(val)) || 0;
+        }
+        return parseInt(val.replace(/[^0-9]/g, '')) || 0;
+    }
+    return Math.round(parseFloat(val)) || 0;
+};
+
 const formatRupiah = (angka) => {
-    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka || 0);
+    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(parseRupiah(angka));
 };
 
 const getCustomerName = (tx) => {
@@ -91,7 +103,7 @@ const getCustomerName = (tx) => {
                         <tr v-for="tx in recentTransactions" :key="tx.ID">
                             <td>{{ tx.ID }}</td>
                             <td>{{ getCustomerName(tx) }}</td>
-                            <td>{{ tx['Layanan'] }} <br> <span class="text-xs text-slate-400">{{ formatRupiah(parseInt(String(tx['Total Harga']).replace(/[^0-9]/g,''))) }}</span></td>
+                            <td>{{ tx['Layanan'] }} <br> <span class="text-xs text-slate-400">{{ formatRupiah(tx['Total Harga']) }}</span></td>
                             <td class="text-right">
                                 <span :class="['px-2 py-1 rounded-full text-xs font-bold', tx.Status === 'Proses' ? 'bg-orange-100 text-orange-600' : tx.Status === 'Selesai' ? 'bg-teal-100 text-teal-600' : 'bg-slate-100 text-slate-600']">{{ tx.Status }}</span>
                             </td>

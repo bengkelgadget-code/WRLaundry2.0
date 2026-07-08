@@ -123,8 +123,20 @@ const totalTransaksiHariIni = computed(() => {
     }).length;
 });
 
+const parseRupiah = (val) => {
+    if (typeof val === 'number') return Math.round(val);
+    if (!val) return 0;
+    if (typeof val === 'string') {
+        if (val.includes('.') && !val.includes('Rp') && val.split('.')[1].length !== 3) {
+            return Math.round(parseFloat(val)) || 0;
+        }
+        return parseInt(val.replace(/[^0-9]/g, '')) || 0;
+    }
+    return Math.round(parseFloat(val)) || 0;
+};
+
 const formatRupiah = (angka) => {
-    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka || 0);
+    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(parseRupiah(angka));
 };
 
 const getCustomerName = (tx) => {
@@ -227,7 +239,7 @@ const goAdmin = () => {
                         </div>
                         <div class="flex justify-between items-start mb-1.5">
                             <p class="text-[11px] font-semibold text-slate-500 leading-snug w-2/3 pr-2 truncate">{{ (tx['Layanan'] || '').replace(/\+/g, ', ') }}</p>
-                            <p class="text-[12px] font-black text-slate-700 whitespace-nowrap w-1/3 text-right">{{ formatRupiah(parseInt(String(tx['Total Harga']).replace(/[^0-9]/g,''))) }}</p>
+                            <p class="text-[12px] font-black text-slate-700 whitespace-nowrap w-1/3 text-right">{{ formatRupiah(tx['Total Harga']) }}</p>
                         </div>
                         <div class="flex justify-between items-center">
                             <p class="text-[10px] font-medium text-slate-400">
