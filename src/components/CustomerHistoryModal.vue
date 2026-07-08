@@ -265,11 +265,11 @@ const resolveLayananName = (nama) => {
                     </div>
 
                     <div class="flex gap-2 shrink-0">
-                        <button type="button" @click="exportHistory('pdf')" :disabled="isExporting" class="flex items-center justify-center bg-white text-rose-500 border border-rose-100 shadow-sm hover:bg-rose-50 rounded-xl px-4 py-2 text-[11px] font-black transition-all active:scale-95 disabled:opacity-50">
+                        <button type="button" @click="exportHistory('pdf')" :disabled="isExporting" class="flex items-center justify-center bg-white text-rose-500 border border-rose-100 shadow-sm hover:bg-rose-50 rounded-xl px-4 py-2 text-[0.6875rem] font-black transition-all active:scale-95 disabled:opacity-50">
                             <i v-if="isExporting" class="ph-bold ph-spinner animate-spin text-sm mr-1.5"></i>
                             <i v-else class="ph-bold ph-file-pdf text-sm mr-1.5"></i> PDF
                         </button>
-                        <button type="button" @click="exportHistory('wa')" :disabled="isExporting" class="flex items-center justify-center bg-gradient-to-r from-emerald-400 to-emerald-500 text-white shadow-sm hover:from-emerald-500 hover:to-emerald-600 rounded-xl px-4 py-2 text-[11px] font-black transition-all active:scale-95 disabled:opacity-50">
+                        <button type="button" @click="exportHistory('wa')" :disabled="isExporting" class="flex items-center justify-center bg-gradient-to-r from-emerald-400 to-emerald-500 text-white shadow-sm hover:from-emerald-500 hover:to-emerald-600 rounded-xl px-4 py-2 text-[0.6875rem] font-black transition-all active:scale-95 disabled:opacity-50">
                             <i v-if="isExporting" class="ph-bold ph-spinner animate-spin text-sm mr-1.5"></i>
                             <i v-else class="ph-bold ph-whatsapp-logo text-sm mr-1.5"></i> WA
                         </button>
@@ -285,19 +285,19 @@ const resolveLayananName = (nama) => {
                     
                     <div v-for="tx in filteredTransactions" :key="tx.ID" @click="viewTx(tx)" class="bg-white p-4 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-100 hover:border-teal-300 transition-all shadow-sm active:scale-95 group">
                         <div class="flex justify-between items-center mb-2">
-                            <span class="text-[10px] font-bold text-slate-500 font-mono tracking-widest">{{ tx['No Nota'] || tx.ID }}</span>
-                            <span class="text-[10px] font-bold text-slate-400 group-hover:text-teal-600 transition-colors flex items-center">
+                            <span class="text-[0.625rem] font-bold text-slate-500 font-mono tracking-widest">{{ tx['No Nota'] || tx.ID }}</span>
+                            <span class="text-[0.625rem] font-bold text-slate-400 group-hover:text-teal-600 transition-colors flex items-center">
                                 <i class="ph-bold ph-calendar-blank mr-1"></i> {{ (tx['Waktu Masuk'] || '-').split(' ')[0] }}
                             </span>
                         </div>
                         <div class="flex justify-between items-start mb-3">
-                            <p class="text-[12px] font-bold text-slate-700 leading-snug w-2/3 pr-2">{{ resolveLayananName(tx['Layanan']) }}</p>
-                            <p class="text-[14px] font-black text-slate-800 w-1/3 text-right shrink-0">Rp {{ formatRupiah(tx['Total Harga']) }}</p>
+                            <p class="text-[0.75rem] font-bold text-slate-700 leading-snug w-2/3 pr-2">{{ resolveLayananName(tx['Layanan']) }}</p>
+                            <p class="text-[0.875rem] font-black text-slate-800 w-1/3 text-right shrink-0">Rp {{ formatRupiah(tx['Total Harga']) }}</p>
                         </div>
                         <div class="flex justify-between items-center">
                             <div class="flex gap-2 items-center">
                                 <!-- Pembayaran Badge -->
-                                <span class="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wide" 
+                                <span class="px-2 py-0.5 rounded-md text-[0.5625rem] font-black uppercase tracking-wide" 
                                       :class="{
                                           'bg-emerald-50 text-emerald-600 border border-emerald-200': tx['Pembayaran'] === 'Lunas',
                                           'bg-amber-50 text-amber-600 border border-amber-200': tx['Pembayaran'] === 'DP',
@@ -307,7 +307,7 @@ const resolveLayananName = (nama) => {
                                     {{ tx['Pembayaran'] || 'Belum Lunas' }}
                                 </span>
                                 <!-- Status Badge -->
-                                <span class="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wide"
+                                <span class="px-2 py-0.5 rounded-md text-[0.5625rem] font-black uppercase tracking-wide"
                                       :class="{
                                           'bg-amber-100 text-amber-700 border border-amber-200': tx.Status === 'Proses',
                                           'bg-emerald-100 text-emerald-700 border border-emerald-200': tx.Status === 'Selesai',
@@ -324,15 +324,15 @@ const resolveLayananName = (nama) => {
                 <!-- Footer Stats -->
                 <div class="p-4 sm:p-5 bg-white border-t border-slate-100 shrink-0 grid grid-cols-3 gap-2 sm:gap-3">
                     <div class="bg-slate-50 rounded-xl p-2 sm:p-3 border border-slate-100 text-center">
-                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1 truncate">Berat Kiloan</p>
+                        <p class="text-[0.5625rem] font-black text-slate-400 uppercase tracking-widest mb-1 truncate">Berat Kiloan</p>
                         <p class="text-sm sm:text-base font-black text-slate-800">{{ totals.kg }} Kg</p>
                     </div>
                     <div class="bg-slate-50 rounded-xl p-2 sm:p-3 border border-slate-100 text-center">
-                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1 truncate">Satuan</p>
+                        <p class="text-[0.5625rem] font-black text-slate-400 uppercase tracking-widest mb-1 truncate">Satuan</p>
                         <p class="text-sm sm:text-base font-black text-slate-800">{{ totals.pcs }} Pcs</p>
                     </div>
                     <div class="bg-teal-50 rounded-xl p-2 sm:p-3 border border-teal-100 text-center">
-                        <p class="text-[9px] font-black text-teal-500 uppercase tracking-widest mb-1 truncate">Total Biaya</p>
+                        <p class="text-[0.5625rem] font-black text-teal-500 uppercase tracking-widest mb-1 truncate">Total Biaya</p>
                         <p class="text-sm sm:text-base font-black text-teal-700 truncate">Rp {{ formatRupiah(totals.rp) }}</p>
                     </div>
                 </div>

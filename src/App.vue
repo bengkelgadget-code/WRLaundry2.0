@@ -99,7 +99,7 @@ onMounted(async () => {
       <div id="loading-icon-box" class="w-16 h-16 bg-slate-800 rounded-2xl flex items-center justify-center mb-6 shadow-xl shadow-slate-900/20 animate-bounce overflow-hidden">
         <i class="ph-bold ph-washing-machine text-3xl text-white"></i>
       </div>
-      <p class="text-slate-500 font-bold tracking-widest uppercase text-[10px] text-center px-6">Menyiapkan Workspace...</p>
+      <p class="text-slate-500 font-bold tracking-widest uppercase text-[0.625rem] text-center px-6">Menyiapkan Workspace...</p>
     </div>
 
     <!-- GLOBAL TOAST (placeholder, you can implement a useToast store later) -->

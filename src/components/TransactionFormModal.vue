@@ -659,26 +659,26 @@ watch(() => props.isOpen, (newVal) => {
                         <form @submit.prevent="saveTransaction" class="space-y-4">
                             <!-- Section Pelanggan -->
                             <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-100">
-                                <h4 class="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center">
+                                <h4 class="text-[0.6875rem] font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center">
                                     <i class="ph-bold ph-user mr-2"></i> Info Pelanggan
                                 </h4>
                                 
                                 <div class="mb-4">
-                                    <label class="block text-[11px] font-bold text-slate-600 mb-1.5 uppercase">No Nota</label>
+                                    <label class="block text-[0.6875rem] font-bold text-slate-600 mb-1.5 uppercase">No Nota</label>
                                     <input type="text" v-model="formData['No Nota']" disabled class="w-full px-4 py-3 rounded-xl bg-slate-100 border border-slate-200 text-slate-400 font-mono font-bold text-sm cursor-not-allowed text-center tracking-widest">
                                 </div>
                                 
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <!-- Input Nama -->
                                     <div class="relative">
-                                        <label class="block text-[11px] font-bold text-slate-600 mb-1.5 uppercase">Nama Pelanggan <span class="text-red-500">*</span></label>
+                                        <label class="block text-[0.6875rem] font-bold text-slate-600 mb-1.5 uppercase">Nama Pelanggan <span class="text-red-500">*</span></label>
                                         <input type="text" v-model="formData['Nama Pelanggan']" required @focus="showNamaDropdown = true; scrollToActive($event)" @input="handleCustomerInput('nama')" @blur="closeNamaDropdown" @keydown.tab="handleAutocompleteKeydown($event, 'nama')" @keydown.enter.prevent="handleAutocompleteKeydown($event, 'nama')" placeholder="Ketik nama pelanggan..." class="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 focus:border-teal-400 focus:ring-2 focus:ring-teal-50 outline-none transition-all text-sm font-bold text-slate-800">
                                         
                                         <!-- Dropdown Nama -->
                                         <div v-if="showNamaDropdown" class="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-48 overflow-y-auto overflow-x-hidden">
                                             <div v-for="c in filteredCustomersByName" :key="c.ID" @mousedown.prevent="selectCustomer(c)" class="py-2 px-3 border-b border-slate-50 cursor-pointer hover:bg-slate-50">
-                                                <span class="font-bold block text-slate-800 text-[13px] mb-0.5">{{ c['Nama Pelanggan'] }}</span>
-                                                <span class="text-[11px] font-mono text-slate-400"><i class="ph-fill ph-phone text-teal-500 mr-1"></i> {{ c['No Telpon'] }}</span>
+                                                <span class="font-bold block text-slate-800 text-[0.8125rem] mb-0.5">{{ c['Nama Pelanggan'] }}</span>
+                                                <span class="text-[0.6875rem] font-mono text-slate-400"><i class="ph-fill ph-phone text-teal-500 mr-1"></i> {{ c['No Telpon'] }}</span>
                                             </div>
                                             <div v-if="filteredCustomersByName.length === 0 && formData['Nama Pelanggan']" class="py-2 px-3 text-sm border-b border-slate-50">
                                                 Tambah baru: <strong class="text-teal-600">{{ formData['Nama Pelanggan'] }}</strong>
@@ -693,14 +693,14 @@ watch(() => props.isOpen, (newVal) => {
                                     
                                     <!-- Input No WA -->
                                     <div class="relative">
-                                        <label class="block text-[11px] font-bold text-slate-600 mb-1.5 uppercase">No WhatsApp <span class="text-red-500">*</span></label>
+                                        <label class="block text-[0.6875rem] font-bold text-slate-600 mb-1.5 uppercase">No WhatsApp <span class="text-red-500">*</span></label>
                                         <input type="text" v-model="formData['No Telpon']" required @focus="showHpDropdown = true; scrollToActive($event)" @input="handleCustomerInput('hp')" @blur="closeHpDropdown" @keydown.tab="handleAutocompleteKeydown($event, 'hp')" @keydown.enter.prevent="handleAutocompleteKeydown($event, 'hp')" placeholder="Ketik no HP..." class="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 focus:border-teal-400 focus:ring-2 focus:ring-teal-50 outline-none transition-all text-sm font-bold text-slate-800 font-mono">
                                         
                                         <!-- Dropdown HP -->
                                         <div v-if="showHpDropdown" class="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-48 overflow-y-auto overflow-x-hidden">
                                             <div v-for="c in filteredCustomersByHp" :key="c.ID" @mousedown.prevent="selectCustomer(c)" class="py-2 px-3 border-b border-slate-50 cursor-pointer hover:bg-slate-50">
-                                                <span class="font-bold block text-slate-800 text-[13px] mb-0.5 font-mono">{{ c['No Telpon'] }}</span>
-                                                <span class="text-[11px] font-mono text-slate-400"><i class="ph-fill ph-user text-teal-500 mr-1"></i> {{ c['Nama Pelanggan'] }}</span>
+                                                <span class="font-bold block text-slate-800 text-[0.8125rem] mb-0.5 font-mono">{{ c['No Telpon'] }}</span>
+                                                <span class="text-[0.6875rem] font-mono text-slate-400"><i class="ph-fill ph-user text-teal-500 mr-1"></i> {{ c['Nama Pelanggan'] }}</span>
                                             </div>
                                             <div v-if="filteredCustomersByHp.length === 0 && formData['No Telpon']" class="py-2 px-3 text-sm border-b border-slate-50">
                                                 Tambah baru: <strong class="text-teal-600 font-mono">{{ formData['No Telpon'] }}</strong>
@@ -712,7 +712,7 @@ watch(() => props.isOpen, (newVal) => {
 
                             <!-- Section Detail Layanan -->
                             <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-100">
-                                <h4 class="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center">
+                                <h4 class="text-[0.6875rem] font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center">
                                     <i class="ph-bold ph-t-shirt mr-2"></i> Detail Layanan
                                 </h4>
                                 
@@ -734,17 +734,17 @@ watch(() => props.isOpen, (newVal) => {
                                                    class="service-input w-full px-4 py-3 rounded-xl bg-white border border-slate-200 outline-none text-sm font-bold text-slate-700 focus:border-teal-400 focus:ring-2 focus:ring-teal-50 transition-all">
                                             
                                             <div v-if="item.showDropdown" class="absolute z-20 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-48 overflow-y-auto overflow-x-hidden">
-                                                <div class="py-1 px-3 text-[10px] font-black tracking-widest text-slate-400 uppercase bg-slate-50 border-b border-slate-100">Layanan Kiloan</div>
+                                                <div class="py-1 px-3 text-[0.625rem] font-black tracking-widest text-slate-400 uppercase bg-slate-50 border-b border-slate-100">Layanan Kiloan</div>
                                                 <div v-for="k in filteredKiloan(item.searchQuery)" :key="'K-'+k.ID" @mousedown.prevent="selectService(item, 'K-'+k.ID, k)" class="py-2 px-3 hover:bg-teal-50 cursor-pointer border-b border-slate-50 transition-colors">
-                                                    <span class="font-bold block text-slate-700 text-[16px] mb-0.5">{{ k['Nama Layanan'] }}</span>
-                                                    <span class="text-[11px] font-bold text-teal-600">Rp {{ formatRupiah(k['Harga/Kg']) }} / Kg</span>
+                                                    <span class="font-bold block text-slate-700 text-[1rem] mb-0.5">{{ k['Nama Layanan'] }}</span>
+                                                    <span class="text-[0.6875rem] font-bold text-teal-600">Rp {{ formatRupiah(k['Harga/Kg']) }} / Kg</span>
                                                 </div>
                                                 <div v-if="filteredKiloan(item.searchQuery).length === 0 && item.searchQuery" class="py-2 px-3 text-xs text-slate-400 italic">Tidak ditemukan...</div>
                                                 
-                                                <div class="py-1 px-3 text-[10px] font-black tracking-widest text-slate-400 uppercase bg-slate-50 border-b border-slate-100 border-t border-t-slate-200 mt-1">Layanan Satuan</div>
+                                                <div class="py-1 px-3 text-[0.625rem] font-black tracking-widest text-slate-400 uppercase bg-slate-50 border-b border-slate-100 border-t border-t-slate-200 mt-1">Layanan Satuan</div>
                                                 <div v-for="s in filteredSatuan(item.searchQuery)" :key="'S-'+s.ID" @mousedown.prevent="selectService(item, 'S-'+s.ID, s)" class="py-2 px-3 hover:bg-teal-50 cursor-pointer border-b border-slate-50 transition-colors">
-                                                    <span class="font-bold block text-slate-700 text-[16px] mb-0.5">{{ s['Nama Layanan'] }}</span>
-                                                    <span class="text-[11px] font-bold text-teal-600">Rp {{ formatRupiah(s['Harga/Pcs']) }} / Pcs</span>
+                                                    <span class="font-bold block text-slate-700 text-[1rem] mb-0.5">{{ s['Nama Layanan'] }}</span>
+                                                    <span class="text-[0.6875rem] font-bold text-teal-600">Rp {{ formatRupiah(s['Harga/Pcs']) }} / Pcs</span>
                                                 </div>
                                                 <div v-if="filteredSatuan(item.searchQuery).length === 0 && item.searchQuery" class="py-2 px-3 text-xs text-slate-400 italic">Tidak ditemukan...</div>
                                             </div>
@@ -752,11 +752,11 @@ watch(() => props.isOpen, (newVal) => {
                                         
                                         <div class="flex gap-3 items-end">
                                             <div class="w-1/3">
-                                                <label class="block text-[10px] font-black text-slate-400 mb-1.5 uppercase">{{ item.type === 'Kiloan' ? 'Bobot (Kg)' : 'Qty (Pcs)' }}</label>
+                                                <label class="block text-[0.625rem] font-black text-slate-400 mb-1.5 uppercase">{{ item.type === 'Kiloan' ? 'Bobot (Kg)' : 'Qty (Pcs)' }}</label>
                                                 <input type="number" step="any" min="0.1" v-model.number="item.qty" @focus="handleQtyFocus($event)" @input="calculateItemSubtotal(item)" class="qty-input w-full px-3 py-2.5 rounded-xl bg-white border border-slate-200 focus:border-teal-400 outline-none text-sm font-black text-slate-700 text-center">
                                             </div>
                                             <div class="w-2/3">
-                                                <label class="block text-[10px] font-black text-slate-400 mb-1.5 uppercase text-right">Subtotal</label>
+                                                <label class="block text-[0.625rem] font-black text-slate-400 mb-1.5 uppercase text-right">Subtotal</label>
                                                 <div class="w-full px-3 py-2.5 rounded-xl bg-slate-100 border border-slate-200 text-sm font-black text-slate-800 text-right tracking-tight">
                                                     Rp {{ formatRupiah(item.subtotal) }}
                                                 </div>
@@ -772,14 +772,14 @@ watch(() => props.isOpen, (newVal) => {
 
                             <!-- Section Pembayaran & Dokumentasi -->
                             <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-100">
-                                <h4 class="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center">
+                                <h4 class="text-[0.6875rem] font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center">
                                     <i class="ph-bold ph-money mr-2"></i> Pembayaran & Dokumentasi
                                 </h4>
                                 
                                 <div class="flex flex-row items-stretch gap-3 sm:gap-4">
                                     <!-- Foto Placeholder -->
                                     <div class="w-[35%] sm:w-1/4 flex-shrink-0 pt-[22px] sm:pt-0">
-                                        <label class="block text-[11px] font-bold text-slate-600 mb-1.5 uppercase opacity-0 hidden sm:block">Foto</label>
+                                        <label class="block text-[0.6875rem] font-bold text-slate-600 mb-1.5 uppercase opacity-0 hidden sm:block">Foto</label>
                                         <div @click="takePicture" class="relative overflow-hidden w-full h-full min-h-[120px] border-2 border-dashed border-slate-300 rounded-2xl flex items-center justify-center bg-slate-50 group hover:border-slate-400 transition-colors cursor-pointer" title="Ambil Foto Nota / Cucian">
                                             <input type="file" id="hiddenFileInput" accept="image/*" @change="handleFileChange" class="hidden">
                                             
@@ -796,11 +796,11 @@ watch(() => props.isOpen, (newVal) => {
                                     
                                     <div class="flex-1 flex flex-col gap-3">
                                         <div>
-                                            <label class="block text-[11px] font-bold text-slate-600 mb-1.5 uppercase">Diskon (Rp)</label>
+                                            <label class="block text-[0.6875rem] font-bold text-slate-600 mb-1.5 uppercase">Diskon (Rp)</label>
                                             <input type="number" v-model.number="formData.Diskon" @focus="scrollToActive($event)" placeholder="Rp 0" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 outline-none text-sm font-bold focus:ring-2 focus:ring-teal-300 font-mono text-slate-700">
                                         </div>
                                         <div>
-                                            <label class="block text-[11px] font-bold text-slate-600 mb-1.5 uppercase">Status Pembayaran</label>
+                                            <label class="block text-[0.6875rem] font-bold text-slate-600 mb-1.5 uppercase">Status Pembayaran</label>
                                             <select v-model="formData.Pembayaran" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 outline-none text-sm font-bold focus:ring-2 focus:ring-teal-300 text-slate-700">
                                                 <option value="Belum Lunas">Belum Lunas</option>
                                                 <option value="Lunas">Lunas</option>
@@ -809,7 +809,7 @@ watch(() => props.isOpen, (newVal) => {
                                             </select>
                                         </div>
                                         <div v-if="formData.Pembayaran === 'DP'" class="fade-in">
-                                            <label class="block text-[11px] font-bold text-slate-600 mb-1.5 uppercase">Nominal DP</label>
+                                            <label class="block text-[0.6875rem] font-bold text-slate-600 mb-1.5 uppercase">Nominal DP</label>
                                             <input type="number" v-model.number="formData.DP" @focus="scrollToActive($event)" placeholder="Rp 0" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 outline-none text-sm font-bold focus:ring-2 focus:ring-teal-300 font-mono text-slate-700">
                                         </div>
                                     </div>
@@ -823,15 +823,15 @@ watch(() => props.isOpen, (newVal) => {
                 <div class="absolute bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t border-slate-200/50 py-3 px-4 sm:px-6 shadow-[0_-10px_30px_rgba(0,0,0,0.05)] z-30 flex justify-center">
                     <div class="w-full max-w-3xl flex items-center justify-between gap-3">
                         <div class="flex flex-col pl-1">
-                            <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider leading-none mb-0.5">{{ formData.Pembayaran === 'DP' ? 'SISA BAYAR' : 'TOTAL BIAYA' }}</span>
+                            <span class="text-[0.5625rem] font-black text-slate-400 uppercase tracking-wider leading-none mb-0.5">{{ formData.Pembayaran === 'DP' ? 'SISA BAYAR' : 'TOTAL BIAYA' }}</span>
                             <span class="text-lg font-black text-slate-800 tracking-tight leading-none" :class="(formData.Pembayaran === 'Potong Kuota' && formData['Total Harga'] === 0) ? 'text-indigo-600' : ''">
-                                <span v-if="formData.Pembayaran === 'Potong Kuota' && totalPotonganMember > 0" class="text-[12px] text-indigo-400 line-through mr-1.5 font-bold tracking-normal block -mb-1">
+                                <span v-if="formData.Pembayaran === 'Potong Kuota' && totalPotonganMember > 0" class="text-[0.75rem] text-indigo-400 line-through mr-1.5 font-bold tracking-normal block -mb-1">
                                     Rp {{ formatRupiah(subtotalAll - formData.Diskon) }}
                                 </span>
                                 Rp {{ formatRupiah(formData.Pembayaran === 'DP' ? formData['Sisa Bayar'] : formData['Total Harga']) }}
                             </span>
                         </div>
-                        <button type="button" @click="saveTransaction" :disabled="isLoading" class="w-[120px] bg-gradient-to-r from-teal-400 to-teal-500 hover:from-teal-500 hover:to-teal-600 text-white font-bold py-2.5 rounded-xl shadow-sm shadow-teal-500/30 active:scale-95 transition-all flex items-center justify-center text-[12px] disabled:opacity-50">
+                        <button type="button" @click="saveTransaction" :disabled="isLoading" class="w-[120px] bg-gradient-to-r from-teal-400 to-teal-500 hover:from-teal-500 hover:to-teal-600 text-white font-bold py-2.5 rounded-xl shadow-sm shadow-teal-500/30 active:scale-95 transition-all flex items-center justify-center text-[0.75rem] disabled:opacity-50">
                             <i v-if="isLoading" class="ph-bold ph-spinner animate-spin mr-1.5 text-base"></i>
                             <i v-else class="ph-bold ph-paper-plane-tilt mr-1.5 text-base"></i> SIMPAN
                         </button>

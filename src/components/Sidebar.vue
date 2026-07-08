@@ -94,11 +94,11 @@ const isActivePath = (path) => {
         
         <div class="flex-1 overflow-y-auto py-6 px-4 space-y-6">
             <div v-for="group in menuGroups" :key="group.title">
-                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 px-2">{{ group.title }}</h3>
+                <h3 class="text-[0.625rem] font-black text-slate-400 uppercase tracking-widest mb-3 px-2">{{ group.title }}</h3>
                 <div class="space-y-1">
                     <router-link v-for="item in group.items" :key="item.name" :to="item.path" @click="emit('close')" :class="['flex items-center px-4 py-3.5 rounded-2xl cursor-pointer transition-all duration-300 group font-bold', isActivePath(item.path) ? 'bg-teal-500 text-white shadow-lg shadow-teal-500/30' : 'text-slate-600 hover:bg-teal-500 hover:text-white hover:shadow-lg hover:shadow-teal-500/30']">
                         <i :class="['ph-bold text-xl mr-3', item.icon, isActivePath(item.path) ? 'text-white' : 'text-slate-400 group-hover:text-white transition-colors']"></i>
-                        <span class="text-[13px] tracking-wide">{{ item.name }}</span>
+                        <span class="text-[0.8125rem] tracking-wide">{{ item.name }}</span>
                     </router-link>
                 </div>
             </div>
@@ -109,7 +109,7 @@ const isActivePath = (path) => {
                 <div class="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-white font-black mr-3 uppercase">{{ userProfileAvatar }}</div>
                 <div class="flex-1 overflow-hidden">
                     <p class="text-sm font-bold text-slate-800 capitalize truncate">{{ userProfileName }}</p>
-                    <p class="text-[10px] font-black text-slate-500 tracking-wider">ROLE: {{ userProfileRole.toUpperCase() }}</p>
+                    <p class="text-[0.625rem] font-black text-slate-500 tracking-wider">ROLE: {{ userProfileRole.toUpperCase() }}</p>
                 </div>
                 <button @click="logout" title="Logout" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-rose-50 text-slate-400 hover:text-rose-500 transition-colors">
                     <i class="ph-bold ph-sign-out text-lg"></i>

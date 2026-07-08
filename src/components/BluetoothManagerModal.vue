@@ -101,7 +101,7 @@ watch(() => props.isOpen, (newVal) => {
         <!-- Current connected -->
         <div v-if="store.connectedPrinter" class="mb-6 bg-teal-50 border border-teal-100 rounded-2xl p-4 flex items-center justify-between">
             <div>
-                <p class="text-[10px] font-bold text-teal-600 uppercase tracking-wider mb-1">Terkoneksi Saat Ini</p>
+                <p class="text-[0.625rem] font-bold text-teal-600 uppercase tracking-wider mb-1">Terkoneksi Saat Ini</p>
                 <p class="font-bold text-slate-800">{{ store.connectedPrinter.name }}</p>
                 <p class="text-xs text-slate-500">{{ store.connectedPrinter.address }}</p>
             </div>

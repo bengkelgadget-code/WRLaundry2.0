@@ -295,10 +295,10 @@ const saveModalData = async (formData) => {
                 <div class="flex items-center justify-end w-full gap-3" v-if="currentConfig.fields.length > 0">
                     <div class="relative flex items-center h-[36px] w-full max-w-[240px] bg-white border border-slate-200 rounded-lg focus-within:border-teal-400 focus-within:ring-1 focus-within:ring-teal-400 transition-all overflow-hidden shrink">
                         <i class="ph-bold ph-magnifying-glass text-slate-400 ml-3 shrink-0"></i>
-                        <input type="text" v-model="searchQuery" placeholder="Cari data..." class="h-full w-full bg-transparent pl-2 pr-3 text-[13px] font-semibold text-slate-600 placeholder-slate-400 focus:outline-none min-w-0 border-none outline-none">
+                        <input type="text" v-model="searchQuery" placeholder="Cari data..." class="h-full w-full bg-transparent pl-2 pr-3 text-[0.8125rem] font-semibold text-slate-600 placeholder-slate-400 focus:outline-none min-w-0 border-none outline-none">
                     </div>
-                    <button @click="openAddModal" class="shrink-0 h-[36px] bg-[#1bc5a3] hover:bg-[#15a387] text-white text-[13px] font-bold px-4 rounded-lg transition-all flex items-center justify-center whitespace-nowrap active:scale-95 shadow-sm border border-transparent">
-                        <i class="ph-bold ph-plus mr-1.5 text-[15px]"></i> Tambah
+                    <button @click="openAddModal" class="shrink-0 h-[36px] bg-[#1bc5a3] hover:bg-[#15a387] text-white text-[0.8125rem] font-bold px-4 rounded-lg transition-all flex items-center justify-center whitespace-nowrap active:scale-95 shadow-sm border border-transparent">
+                        <i class="ph-bold ph-plus mr-1.5 text-[0.9375rem]"></i> Tambah
                     </button>
                 </div>
             </div>
@@ -317,52 +317,52 @@ const saveModalData = async (formData) => {
                     <tbody>
                         <tr v-for="row in paginatedData" :key="row.ID" class="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
                             <td class="px-4 py-3">
-                                <span class="bg-slate-100 text-slate-500 font-bold px-2 py-0.5 rounded-full text-[12px] uppercase tracking-wider">{{ row.ID }}</span>
+                                <span class="bg-slate-100 text-slate-500 font-bold px-2 py-0.5 rounded-full text-[0.75rem] uppercase tracking-wider">{{ row.ID }}</span>
                             </td>
                             
                             <td class="px-4 py-3" v-for="field in currentConfig.fields" :key="field.key">
                                 <template v-if="field.key === 'Status'">
-                                    <span class="px-2.5 py-1 bg-slate-100 text-slate-600 rounded-full text-[11px] font-bold uppercase">{{ row[field.key] || '-' }}</span>
+                                    <span class="px-2.5 py-1 bg-slate-100 text-slate-600 rounded-full text-[0.6875rem] font-bold uppercase">{{ row[field.key] || '-' }}</span>
                                 </template>
                                 <template v-else-if="field.key === 'Sisa Kuota (Kg)'">
-                                    <span class="px-2.5 py-1 bg-indigo-50 text-indigo-600 rounded text-[11px] font-bold whitespace-nowrap">{{ row[field.key] || '-' }} {{ row[field.key] && row[field.key] !== '-' ? 'Kg' : '' }}</span>
+                                    <span class="px-2.5 py-1 bg-indigo-50 text-indigo-600 rounded text-[0.6875rem] font-bold whitespace-nowrap">{{ row[field.key] || '-' }} {{ row[field.key] && row[field.key] !== '-' ? 'Kg' : '' }}</span>
                                 </template>
                                 <template v-else-if="field.key === 'Nama Pelanggan'">
-                                    <div class="text-[13px] font-bold text-slate-800 uppercase">{{ row[field.key] || '-' }}</div>
+                                    <div class="text-[0.8125rem] font-bold text-slate-800 uppercase">{{ row[field.key] || '-' }}</div>
                                 </template>
                                 <template v-else-if="field.key === 'No Telpon'">
-                                    <div class="text-[13px] font-bold text-slate-500">{{ row[field.key] || '-' }}</div>
+                                    <div class="text-[0.8125rem] font-bold text-slate-500">{{ row[field.key] || '-' }}</div>
                                 </template>
                                 <template v-else-if="field.key.includes('Harga')">
-                                    <span class="text-teal-600 font-bold tracking-wide text-[13px]">{{ formatRupiah(row[field.key]) }}</span>
+                                    <span class="text-teal-600 font-bold tracking-wide text-[0.8125rem]">{{ formatRupiah(row[field.key]) }}</span>
                                 </template>
                                 <template v-else-if="field.key === 'Jenis Waktu'">
-                                    <span class="bg-slate-50 text-slate-500 border border-slate-200 font-bold px-2 py-0.5 rounded-full text-[12px] inline-flex items-center">
-                                        <i class="ph-bold ph-clock mr-1 text-[13px]"></i> {{ String(row[field.key] || '-').toUpperCase() }}
+                                    <span class="bg-slate-50 text-slate-500 border border-slate-200 font-bold px-2 py-0.5 rounded-full text-[0.75rem] inline-flex items-center">
+                                        <i class="ph-bold ph-clock mr-1 text-[0.8125rem]"></i> {{ String(row[field.key] || '-').toUpperCase() }}
                                     </span>
                                 </template>
                                 
                                 <template v-else-if="field.key === 'Nama Layanan' || field.key === 'Nama Paket' || field.key === 'Nama Pewangi'">
-                                    <span class="text-slate-800 font-bold uppercase text-[13px]">{{ row[field.key] || '-' }}</span>
+                                    <span class="text-slate-800 font-bold uppercase text-[0.8125rem]">{{ row[field.key] || '-' }}</span>
                                 </template>
                                 
                                 <template v-else>
-                                    <p class="font-semibold text-slate-600 text-[13px] truncate">{{ row[field.key] || '-' }}</p>
+                                    <p class="font-semibold text-slate-600 text-[0.8125rem] truncate">{{ row[field.key] || '-' }}</p>
                                 </template>
                             </td>
                             
                             <td class="text-right whitespace-nowrap" v-if="currentConfig.fields.length > 0">
                                 <button v-if="currentSheet === 'Pelanggan'" @click="openHistoryModal(row.ID)" class="text-indigo-600 hover:text-white bg-indigo-50 hover:bg-indigo-500 p-2 rounded-xl transition-all mr-1.5 inline-flex items-center justify-center shadow-sm active:scale-95" title="History">
-                                    <i class="ph-bold ph-eye text-[16px]"></i>
+                                    <i class="ph-bold ph-eye text-[1rem]"></i>
                                 </button>
                                 <button v-else @click="openViewModal(row)" class="text-indigo-600 hover:text-white bg-indigo-50 hover:bg-indigo-500 p-2 rounded-xl transition-all mr-1.5 inline-flex items-center justify-center shadow-sm active:scale-95" title="Detail">
-                                    <i class="ph-bold ph-eye text-[16px]"></i>
+                                    <i class="ph-bold ph-eye text-[1rem]"></i>
                                 </button>
                                 <button @click="openEditModal(row)" class="text-amber-500 hover:text-white bg-amber-50 hover:bg-amber-500 p-2 rounded-xl transition-all mr-1.5 inline-flex items-center justify-center shadow-sm active:scale-95" title="Edit">
-                                    <i class="ph-bold ph-pencil-simple text-[16px]"></i>
+                                    <i class="ph-bold ph-pencil-simple text-[1rem]"></i>
                                 </button>
                                 <button @click="deleteRow(row.ID)" class="text-red-500 hover:text-white bg-rose-50 hover:bg-rose-500 p-2 rounded-xl transition-all inline-flex items-center justify-center shadow-sm active:scale-95" title="Hapus">
-                                    <i class="ph-bold ph-trash text-[16px]"></i>
+                                    <i class="ph-bold ph-trash text-[1rem]"></i>
                                 </button>
                             </td>
                         </tr>
@@ -380,10 +380,10 @@ const saveModalData = async (formData) => {
                 </div>
             </div>
             
-            <div class="w-full shrink-0 border-t border-slate-100 bg-white rounded-b-[1.5rem] p-3 sm:p-4 flex justify-between items-center text-[13px] text-slate-500 pr-[19px]" v-if="currentConfig.fields.length > 0">
+            <div class="w-full shrink-0 border-t border-slate-100 bg-white rounded-b-[1.5rem] p-3 sm:p-4 flex justify-between items-center text-[0.8125rem] text-slate-500 pr-[19px]" v-if="currentConfig.fields.length > 0">
                 <div class="flex items-center gap-3">
                     <span class="font-bold text-slate-400">HAL <span class="text-teal-600">{{ currentPage }}</span> / {{ totalPages }}</span>
-                    <select v-model="itemsPerPage" @change="currentPage = 1" class="border border-slate-200 bg-white rounded-lg px-2 py-1 outline-none font-bold text-slate-700 hover:border-teal-400 focus:border-teal-400 focus:ring-1 focus:ring-teal-400 shadow-sm cursor-pointer appearance-none pr-7 relative bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZpbGw9Im5vbmUiIHZpZXdCb3g9IjAgMCAyNCAyNCIgc3Ryb2tlPSIjMTRiOGE2Ij48cGF0aCBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHN0cm9rZS13aWR0aD0iMiIgZD0iTTE5IDlsLTcgNy03LTciLz48L3N2Zz4=')] bg-[length:14px_14px] bg-[right_6px_center] bg-no-repeat text-[13px]">
+                    <select v-model="itemsPerPage" @change="currentPage = 1" class="border border-slate-200 bg-white rounded-lg px-2 py-1 outline-none font-bold text-slate-700 hover:border-teal-400 focus:border-teal-400 focus:ring-1 focus:ring-teal-400 shadow-sm cursor-pointer appearance-none pr-7 relative bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZpbGw9Im5vbmUiIHZpZXdCb3g9IjAgMCAyNCAyNCIgc3Ryb2tlPSIjMTRiOGE2Ij48cGF0aCBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHN0cm9rZS13aWR0aD0iMiIgZD0iTTE5IDlsLTcgNy03LTciLz48L3N2Zz4=')] bg-[length:14px_14px] bg-[right_6px_center] bg-no-repeat text-[0.8125rem]">
                         <option :value="15">15 Baris</option>
                         <option :value="25">25 Baris</option>
                         <option :value="50">50 Baris</option>

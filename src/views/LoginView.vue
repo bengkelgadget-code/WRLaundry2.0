@@ -45,25 +45,25 @@ const handleLogin = () => {
                     <i class="ph-bold ph-washing-machine text-3xl text-white"></i>
                 </div>
                 <h2 class="text-2xl font-black text-slate-800 tracking-tight mb-1 text-center">Waroenk Laundry</h2>
-                <p class="text-[11px] text-slate-400 font-bold tracking-widest uppercase">System Authorization</p>
+                <p class="text-[0.6875rem] text-slate-400 font-bold tracking-widest uppercase">System Authorization</p>
             </div>
             <div class="p-10 pt-4 bg-white/50">
                 <form @submit.prevent="handleLogin">
                     <div class="mb-5 group">
-                        <label class="block text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-widest transition-colors group-focus-within:text-slate-700">Username</label>
+                        <label class="block text-[0.625rem] font-bold text-slate-400 mb-2 uppercase tracking-widest transition-colors group-focus-within:text-slate-700">Username</label>
                         <div class="relative flex items-center">
                             <i class="ph-bold ph-user absolute left-4 text-slate-400 text-lg transition-colors group-focus-within:text-slate-700"></i>
                             <input type="text" v-model="username" required class="w-full pl-12 pr-4 py-3.5 rounded-xl bg-slate-50 border border-slate-200 focus:border-teal-400 focus:bg-white focus:ring-4 focus:ring-teal-50 outline-none transition-all font-semibold text-slate-700 text-sm" placeholder="Masukkan username">
                         </div>
                     </div>
                     <div class="mb-8 group">
-                        <label class="block text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-widest transition-colors group-focus-within:text-slate-700">Password</label>
+                        <label class="block text-[0.625rem] font-bold text-slate-400 mb-2 uppercase tracking-widest transition-colors group-focus-within:text-slate-700">Password</label>
                         <div class="relative flex items-center">
                             <i class="ph-bold ph-lock-key absolute left-4 text-slate-400 text-lg transition-colors group-focus-within:text-slate-700"></i>
                             <input type="password" v-model="password" required class="w-full pl-12 pr-4 py-3.5 rounded-xl bg-slate-50 border border-slate-200 focus:border-teal-400 focus:bg-white focus:ring-4 focus:ring-teal-50 outline-none transition-all font-semibold text-slate-700 text-sm" placeholder="••••••••">
                         </div>
                     </div>
-                    <button type="submit" class="w-full bg-gradient-to-r from-teal-400 to-teal-500 hover:from-teal-500 hover:to-teal-600 text-white font-bold tracking-wide py-4 px-4 rounded-xl shadow-lg shadow-teal-500/30 transition-all flex items-center justify-center text-[14px] active:scale-[0.98]">
+                    <button type="submit" class="w-full bg-gradient-to-r from-teal-400 to-teal-500 hover:from-teal-500 hover:to-teal-600 text-white font-bold tracking-wide py-4 px-4 rounded-xl shadow-lg shadow-teal-500/30 transition-all flex items-center justify-center text-[0.875rem] active:scale-[0.98]">
                         MASUK <i class="ph-bold ph-arrow-right ml-2 text-lg"></i>
                     </button>
                 </form>

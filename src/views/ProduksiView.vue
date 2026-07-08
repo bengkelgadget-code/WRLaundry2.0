@@ -180,10 +180,10 @@ const saveModalData = async (formData) => {
                     <div class="flex items-center justify-end w-full gap-3">
                         <div class="relative flex items-center h-[34px] w-full max-w-[220px] bg-white border border-slate-200 rounded-lg focus-within:border-teal-400 focus-within:ring-1 focus-within:ring-teal-400 transition-all overflow-hidden shrink">
                             <i class="ph-bold ph-magnifying-glass text-slate-400 ml-3 shrink-0"></i>
-                            <input type="text" v-model="searchQuery" placeholder="Cari transaksi..." class="h-full w-full bg-transparent pl-2 pr-3 text-[13px] font-semibold text-slate-600 placeholder-slate-400 focus:outline-none min-w-0 border-none outline-none">
+                            <input type="text" v-model="searchQuery" placeholder="Cari transaksi..." class="h-full w-full bg-transparent pl-2 pr-3 text-[0.8125rem] font-semibold text-slate-600 placeholder-slate-400 focus:outline-none min-w-0 border-none outline-none">
                         </div>
-                        <button @click="openAddModal" class="shrink-0 h-[34px] bg-[#1bc5a3] hover:bg-[#15a387] text-white text-[13px] font-bold px-4 rounded-lg transition-all flex items-center justify-center whitespace-nowrap active:scale-95 shadow-sm border border-transparent">
-                            <i class="ph-bold ph-plus mr-1 text-[14px]"></i> Tambah
+                        <button @click="openAddModal" class="shrink-0 h-[34px] bg-[#1bc5a3] hover:bg-[#15a387] text-white text-[0.8125rem] font-bold px-4 rounded-lg transition-all flex items-center justify-center whitespace-nowrap active:scale-95 shadow-sm border border-transparent">
+                            <i class="ph-bold ph-plus mr-1 text-[0.875rem]"></i> Tambah
                         </button>
                     </div>
                 </div>
@@ -192,51 +192,51 @@ const saveModalData = async (formData) => {
                     <table class="table-modern w-full">
                         <thead class="sticky top-0 bg-white z-10">
                             <tr>
-                                <th @click="handleSort('Waktu Masuk')" class="w-[15%] cursor-pointer hover:bg-slate-50 transition-colors select-none group px-4 py-3"><div class="flex items-center justify-between"><span class="text-[10px]">WAKTU MASUK</span> <i class="ph-bold ph-caret-up-down text-slate-300 group-hover:text-slate-500"></i></div></th>
-                                <th @click="handleSort('Nama Pelanggan')" class="w-[20%] cursor-pointer hover:bg-slate-50 transition-colors select-none group px-4 py-3"><div class="flex items-center justify-between"><span class="text-[10px]">PELANGGAN</span> <i class="ph-bold ph-caret-up-down text-slate-300 group-hover:text-slate-500"></i></div></th>
-                                <th @click="handleSort('Layanan')" class="w-auto cursor-pointer hover:bg-slate-50 transition-colors select-none group px-4 py-3"><div class="flex items-center justify-between"><span class="text-[10px]">LAYANAN</span> <i class="ph-bold ph-caret-up-down text-slate-300 group-hover:text-slate-500"></i></div></th>
-                                <th @click="handleSort('Total Harga')" class="w-[15%] cursor-pointer hover:bg-slate-50 transition-colors select-none group px-4 py-3"><div class="flex items-center justify-between"><span class="text-[10px]">TOTAL HARGA</span> <i class="ph-bold ph-caret-up-down text-slate-300 group-hover:text-slate-500"></i></div></th>
-                                <th @click="handleSort('Status')" class="w-[12%] cursor-pointer hover:bg-slate-50 transition-colors select-none group px-4 py-3"><div class="flex items-center justify-center text-center"><span class="text-[10px]">STATUS</span> <i class="ph-bold ph-caret-up-down text-slate-300 group-hover:text-slate-500 ml-1"></i></div></th>
-                                <th class="w-[12%] !text-center px-4 py-3 text-[10px]">AKSI</th>
+                                <th @click="handleSort('Waktu Masuk')" class="w-[15%] cursor-pointer hover:bg-slate-50 transition-colors select-none group px-4 py-3"><div class="flex items-center justify-between"><span class="text-[0.625rem]">WAKTU MASUK</span> <i class="ph-bold ph-caret-up-down text-slate-300 group-hover:text-slate-500"></i></div></th>
+                                <th @click="handleSort('Nama Pelanggan')" class="w-[20%] cursor-pointer hover:bg-slate-50 transition-colors select-none group px-4 py-3"><div class="flex items-center justify-between"><span class="text-[0.625rem]">PELANGGAN</span> <i class="ph-bold ph-caret-up-down text-slate-300 group-hover:text-slate-500"></i></div></th>
+                                <th @click="handleSort('Layanan')" class="w-auto cursor-pointer hover:bg-slate-50 transition-colors select-none group px-4 py-3"><div class="flex items-center justify-between"><span class="text-[0.625rem]">LAYANAN</span> <i class="ph-bold ph-caret-up-down text-slate-300 group-hover:text-slate-500"></i></div></th>
+                                <th @click="handleSort('Total Harga')" class="w-[15%] cursor-pointer hover:bg-slate-50 transition-colors select-none group px-4 py-3"><div class="flex items-center justify-between"><span class="text-[0.625rem]">TOTAL HARGA</span> <i class="ph-bold ph-caret-up-down text-slate-300 group-hover:text-slate-500"></i></div></th>
+                                <th @click="handleSort('Status')" class="w-[12%] cursor-pointer hover:bg-slate-50 transition-colors select-none group px-4 py-3"><div class="flex items-center justify-center text-center"><span class="text-[0.625rem]">STATUS</span> <i class="ph-bold ph-caret-up-down text-slate-300 group-hover:text-slate-500 ml-1"></i></div></th>
+                                <th class="w-[12%] !text-center px-4 py-3 text-[0.625rem]">AKSI</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr v-for="tx in paginatedData" :key="tx.ID" class="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
                                 <td class="px-3 py-2.5">
-                                    <p class="font-bold text-slate-800 text-[13px]">{{ formatTanggal(tx['Waktu Masuk']) }}</p>
-                                    <p class="text-[11px] font-bold text-slate-400">{{ tx.ID }}</p>
+                                    <p class="font-bold text-slate-800 text-[0.8125rem]">{{ formatTanggal(tx['Waktu Masuk']) }}</p>
+                                    <p class="text-[0.6875rem] font-bold text-slate-400">{{ tx.ID }}</p>
                                 </td>
                                 <td class="px-3 py-2.5">
-                                    <p class="font-bold text-slate-800 text-[13px] uppercase">{{ getCustomerName(tx) }}</p>
-                                    <p class="text-[11px] font-bold text-indigo-400 uppercase">{{ tx['No Nota'] || '-' }}</p>
+                                    <p class="font-bold text-slate-800 text-[0.8125rem] uppercase">{{ getCustomerName(tx) }}</p>
+                                    <p class="text-[0.6875rem] font-bold text-indigo-400 uppercase">{{ tx['No Nota'] || '-' }}</p>
                                 </td>
                                 <td class="px-3 py-2.5">
-                                    <p class="font-semibold text-slate-600 text-[13px] whitespace-normal leading-snug min-w-[140px]">{{ tx['Layanan'] }}</p>
+                                    <p class="font-semibold text-slate-600 text-[0.8125rem] whitespace-normal leading-snug min-w-[140px]">{{ tx['Layanan'] }}</p>
                                 </td>
-                                <td class="px-3 py-2.5 font-bold text-slate-800 text-[13px] whitespace-nowrap">
+                                <td class="px-3 py-2.5 font-bold text-slate-800 text-[0.8125rem] whitespace-nowrap">
                                     {{ formatRupiah(tx['Total Harga']) }}
                                 </td>
                                 <td class="!text-center px-3 py-2.5">
-                                    <span v-if="tx.Status === 'Proses'" class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-white text-amber-500 border border-amber-300 whitespace-nowrap">
-                                        <i class="ph-bold ph-spinner-gap animate-spin mr-1 text-[12px]"></i> PROSES
+                                    <span v-if="tx.Status === 'Proses'" class="inline-flex items-center px-2 py-0.5 rounded-full text-[0.6875rem] font-bold bg-white text-amber-500 border border-amber-300 whitespace-nowrap">
+                                        <i class="ph-bold ph-spinner-gap animate-spin mr-1 text-[0.75rem]"></i> PROSES
                                     </span>
-                                    <span v-else-if="tx.Status === 'Selesai'" class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-white text-teal-500 border border-teal-300 whitespace-nowrap">
-                                        <i class="ph-bold ph-check-circle mr-1 text-[12px]"></i> SELESAI
+                                    <span v-else-if="tx.Status === 'Selesai'" class="inline-flex items-center px-2 py-0.5 rounded-full text-[0.6875rem] font-bold bg-white text-teal-500 border border-teal-300 whitespace-nowrap">
+                                        <i class="ph-bold ph-check-circle mr-1 text-[0.75rem]"></i> SELESAI
                                     </span>
-                                    <span v-else class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-white text-slate-500 border border-slate-300 uppercase whitespace-nowrap">
+                                    <span v-else class="inline-flex items-center px-2 py-0.5 rounded-full text-[0.6875rem] font-bold bg-white text-slate-500 border border-slate-300 uppercase whitespace-nowrap">
                                         {{ (tx.Status || 'UNKNOWN').toUpperCase() }}
                                     </span>
                                 </td>
                                 <td class="!text-center px-3 py-2.5">
                                     <div class="flex justify-center items-center gap-1">
                                         <button @click="openViewModal(tx)" class="w-7 h-7 rounded-full bg-indigo-50 text-indigo-500 flex items-center justify-center hover:bg-indigo-100 hover:text-indigo-600 transition-colors shrink-0" title="Lihat">
-                                            <i class="ph-bold ph-eye text-[13px]"></i>
+                                            <i class="ph-bold ph-eye text-[0.8125rem]"></i>
                                         </button>
                                         <button @click="openEditModal(tx)" class="w-7 h-7 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center hover:bg-amber-100 hover:text-amber-600 transition-colors shrink-0" title="Edit">
-                                            <i class="ph-bold ph-pencil-simple text-[13px]"></i>
+                                            <i class="ph-bold ph-pencil-simple text-[0.8125rem]"></i>
                                         </button>
                                         <button @click="deleteRow(tx.ID)" class="w-7 h-7 rounded-full bg-rose-50 text-rose-500 flex items-center justify-center hover:bg-rose-100 hover:text-rose-600 transition-colors shrink-0" title="Hapus">
-                                            <i class="ph-bold ph-trash text-[13px]"></i>
+                                            <i class="ph-bold ph-trash text-[0.8125rem]"></i>
                                         </button>
                                     </div>
                                 </td>
@@ -248,10 +248,10 @@ const saveModalData = async (formData) => {
                     </table>
                 </div>
                 
-                <div class="w-full shrink-0 border-t border-slate-100 bg-white rounded-b-[1.5rem] p-3 sm:p-4 flex justify-between items-center text-[13px] text-slate-500 pr-[19px]">
+                <div class="w-full shrink-0 border-t border-slate-100 bg-white rounded-b-[1.5rem] p-3 sm:p-4 flex justify-between items-center text-[0.8125rem] text-slate-500 pr-[19px]">
                     <div class="flex items-center gap-3">
                         <span class="font-bold text-slate-400">HAL <span class="text-teal-600">{{ currentPage }}</span> / {{ totalPages }}</span>
-                        <select v-model="itemsPerPage" @change="currentPage = 1" class="border border-slate-200 bg-white rounded-lg px-2 py-1 outline-none font-bold text-slate-700 hover:border-teal-400 focus:border-teal-400 focus:ring-1 focus:ring-teal-400 shadow-sm cursor-pointer appearance-none pr-7 relative bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZpbGw9Im5vbmUiIHZpZXdCb3g9IjAgMCAyNCAyNCIgc3Ryb2tlPSIjMTRiOGE2Ij48cGF0aCBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHN0cm9rZS13aWR0aD0iMiIgZD0iTTE5IDlsLTcgNy03LTciLz48L3N2Zz4=')] bg-[length:14px_14px] bg-[right_6px_center] bg-no-repeat text-[13px]">
+                        <select v-model="itemsPerPage" @change="currentPage = 1" class="border border-slate-200 bg-white rounded-lg px-2 py-1 outline-none font-bold text-slate-700 hover:border-teal-400 focus:border-teal-400 focus:ring-1 focus:ring-teal-400 shadow-sm cursor-pointer appearance-none pr-7 relative bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZpbGw9Im5vbmUiIHZpZXdCb3g9IjAgMCAyNCAyNCIgc3Ryb2tlPSIjMTRiOGE2Ij48cGF0aCBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHN0cm9rZS13aWR0aD0iMiIgZD0iTTE5IDlsLTcgNy03LTciLz48L3N2Zz4=')] bg-[length:14px_14px] bg-[right_6px_center] bg-no-repeat text-[0.8125rem]">
                             <option :value="15">15 Baris</option>
                             <option :value="25">25 Baris</option>
                             <option :value="50">50 Baris</option>

@@ -115,15 +115,15 @@ const saveSettings = async () => {
                         
                         <div class="space-y-4">
                             <div>
-                                <label class="block text-[11px] font-extrabold text-slate-500 mb-1.5 uppercase tracking-wide">Nama Laundry</label>
+                                <label class="block text-[0.6875rem] font-extrabold text-slate-500 mb-1.5 uppercase tracking-wide">Nama Laundry</label>
                                 <input type="text" v-model="formData.namaToko" placeholder="Masukkan nama toko..." class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-50 outline-none transition-all text-sm font-bold text-slate-800">
                             </div>
                             <div>
-                                <label class="block text-[11px] font-extrabold text-slate-500 mb-1.5 uppercase tracking-wide">Nomor Telepon / WA</label>
+                                <label class="block text-[0.6875rem] font-extrabold text-slate-500 mb-1.5 uppercase tracking-wide">Nomor Telepon / WA</label>
                                 <input type="text" v-model="formData.noTelp" placeholder="Contoh: 08123456789" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-50 outline-none transition-all text-sm font-bold text-slate-800">
                             </div>
                             <div>
-                                <label class="block text-[11px] font-extrabold text-slate-500 mb-1.5 uppercase tracking-wide">Alamat Toko</label>
+                                <label class="block text-[0.6875rem] font-extrabold text-slate-500 mb-1.5 uppercase tracking-wide">Alamat Toko</label>
                                 <textarea rows="3" v-model="formData.alamatToko" placeholder="Alamat lengkap toko..." class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-50 outline-none transition-all text-sm font-medium text-slate-700 resize-none"></textarea>
                             </div>
                         </div>
@@ -157,7 +157,7 @@ const saveSettings = async () => {
                                 <label for="logo-upload" class="cursor-pointer inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-fuchsia-50 to-fuchsia-100 hover:from-fuchsia-100 hover:to-fuchsia-200 border border-fuchsia-200 text-fuchsia-700 rounded-xl text-sm font-bold shadow-sm active:scale-95 transition-all">
                                     <i class="ph-bold ph-upload-simple mr-2 text-lg"></i> Pilih Gambar
                                 </label>
-                                <p class="text-[11px] font-semibold text-slate-400 mt-3 bg-slate-50 p-2 rounded-lg inline-block border border-slate-100">Format: JPG, PNG. Max: 1MB.</p>
+                                <p class="text-[0.6875rem] font-semibold text-slate-400 mt-3 bg-slate-50 p-2 rounded-lg inline-block border border-slate-100">Format: JPG, PNG. Max: 1MB.</p>
                             </div>
                         </div>
                     </div>
@@ -172,13 +172,13 @@ const saveSettings = async () => {
 
                         <div class="space-y-4">
                             <div>
-                                <label class="block text-[11px] font-extrabold text-slate-500 mb-2 uppercase tracking-wide">Ukuran Tampilan (Zoom)</label>
+                                <label class="block text-[0.6875rem] font-extrabold text-slate-500 mb-2 uppercase tracking-wide">Ukuran Tampilan (Zoom)</label>
                                 <div class="flex items-center gap-4">
                                     <span class="text-xs font-bold text-slate-400">A-</span>
                                     <input type="range" min="14" max="20" step="2" v-model="appZoom" class="w-full accent-emerald-500 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
                                     <span class="text-lg font-bold text-slate-600">A+</span>
                                 </div>
-                                <div class="flex justify-between text-[10px] font-bold text-slate-400 mt-2 px-1">
+                                <div class="flex justify-between text-[0.625rem] font-bold text-slate-400 mt-2 px-1">
                                     <span>S</span>
                                     <span>Normal</span>
                                     <span>L</span>
@@ -202,7 +202,7 @@ const saveSettings = async () => {
                             <!-- Printer selection uses global modal -->
                             <div v-if="store.connectedPrinter" class="p-4 bg-teal-50 border border-teal-100 rounded-xl flex items-center justify-between">
                                 <div>
-                                    <p class="text-[10px] font-bold text-teal-600 uppercase tracking-wider mb-1">Terkoneksi Saat Ini</p>
+                                    <p class="text-[0.625rem] font-bold text-teal-600 uppercase tracking-wider mb-1">Terkoneksi Saat Ini</p>
                                     <p class="font-bold text-slate-800">{{ store.connectedPrinter.name }}</p>
                                     <p class="text-xs text-slate-500">{{ store.connectedPrinter.address }}</p>
                                 </div>
@@ -216,7 +216,7 @@ const saveSettings = async () => {
                                 </div>
                                 <div>
                                     <p class="font-bold text-slate-700 text-sm">Belum Ada Printer</p>
-                                    <p class="text-[11px] text-slate-500 mt-0.5">Silakan cari dan hubungkan printer Anda.</p>
+                                    <p class="text-[0.6875rem] text-slate-500 mt-0.5">Silakan cari dan hubungkan printer Anda.</p>
                                 </div>
                             </div>
                             
@@ -235,9 +235,9 @@ const saveSettings = async () => {
                         
                         <div class="space-y-4">
                             <div>
-                                <label class="block text-[11px] font-extrabold text-slate-500 mb-1.5 uppercase tracking-wide">Pesan / Syarat & Ketentuan di Bawah Struk</label>
+                                <label class="block text-[0.6875rem] font-extrabold text-slate-500 mb-1.5 uppercase tracking-wide">Pesan / Syarat & Ketentuan di Bawah Struk</label>
                                 <textarea rows="4" v-model="formData.footerText" placeholder="Contoh:&#10;1. Cucian luntur bukan tanggung jawab kami.&#10;2. Terima kasih atas kunjungannya!" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-amber-400 focus:ring-2 focus:ring-amber-50 outline-none transition-all text-sm font-medium text-slate-700 resize-none leading-relaxed"></textarea>
-                                <p class="text-[11px] text-slate-400 font-medium mt-2 leading-relaxed">
+                                <p class="text-[0.6875rem] text-slate-400 font-medium mt-2 leading-relaxed">
                                     Teks ini akan dicetak otomatis di bagian paling bawah pada setiap struk pelanggan.
                                 </p>
                             </div>

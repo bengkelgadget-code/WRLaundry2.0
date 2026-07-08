@@ -150,19 +150,19 @@ const txImage = computed(() => {
                     <div class="space-y-5">
                         <!-- Informasi Umum -->
                         <div class="bg-white p-3 rounded-3xl shadow-sm border border-slate-100">
-                            <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 border-b border-slate-100 pb-2 flex items-center">
+                            <h4 class="text-[0.625rem] font-black text-slate-400 uppercase tracking-widest mb-2 border-b border-slate-100 pb-2 flex items-center">
                                 <i class="ph-bold ph-info mr-2"></i> Informasi Umum
                             </h4>
                             <div class="grid grid-cols-2 gap-y-2 gap-x-2 text-sm">
-                                <div class="text-slate-500 font-medium text-[12px]">ID Transaksi</div>
+                                <div class="text-slate-500 font-medium text-[0.75rem]">ID Transaksi</div>
                                 <div class="font-bold text-slate-800 text-right">{{ formData.ID }}</div>
-                                <div class="text-slate-500 font-medium text-[12px]">No Nota</div>
+                                <div class="text-slate-500 font-medium text-[0.75rem]">No Nota</div>
                                 <div class="font-mono font-bold text-indigo-600 text-right">{{ formData['No Nota'] || '-' }}</div>
-                                <div class="text-slate-500 font-medium text-[12px]">Waktu Masuk</div>
-                                <div class="font-semibold text-slate-800 text-right text-[12px]">{{ formData['Waktu Masuk'] ? String(formData['Waktu Masuk']).split(' ')[0] : '-' }}</div>
-                                <div class="text-slate-500 font-medium text-[12px]">Status</div>
+                                <div class="text-slate-500 font-medium text-[0.75rem]">Waktu Masuk</div>
+                                <div class="font-semibold text-slate-800 text-right text-[0.75rem]">{{ formData['Waktu Masuk'] ? String(formData['Waktu Masuk']).split(' ')[0] : '-' }}</div>
+                                <div class="text-slate-500 font-medium text-[0.75rem]">Status</div>
                                 <div class="text-right">
-                                    <span class="px-2.5 py-1 rounded-lg text-[10px] font-extrabold uppercase tracking-wider"
+                                    <span class="px-2.5 py-1 rounded-lg text-[0.625rem] font-extrabold uppercase tracking-wider"
                                           :class="formData.Status === 'Proses' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'">
                                         {{ formData.Status }}
                                     </span>
@@ -172,7 +172,7 @@ const txImage = computed(() => {
 
                         <!-- Pelanggan -->
                         <div class="bg-white p-3 rounded-3xl shadow-sm border border-slate-100">
-                            <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 border-b border-slate-100 pb-2 flex items-center">
+                            <h4 class="text-[0.625rem] font-black text-slate-400 uppercase tracking-widest mb-2 border-b border-slate-100 pb-2 flex items-center">
                                 <i class="ph-bold ph-user mr-2"></i> Pelanggan
                             </h4>
                             <div class="flex items-center">
@@ -188,35 +188,35 @@ const txImage = computed(() => {
 
                         <!-- Pembayaran -->
                         <div class="bg-white p-3 rounded-3xl shadow-sm border border-slate-100">
-                            <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 border-b border-slate-100 pb-2 flex items-center">
+                            <h4 class="text-[0.625rem] font-black text-slate-400 uppercase tracking-widest mb-2 border-b border-slate-100 pb-2 flex items-center">
                                 <i class="ph-bold ph-wallet mr-2"></i> Pembayaran
                             </h4>
                             <div class="grid grid-cols-2 gap-y-2 gap-x-2 text-sm">
                                 <template v-if="calculatedValues.pmbStatusVal === 'Potong Kuota' || calculatedValues.kgTerpakaiTx > 0">
-                                    <div class="text-slate-500 font-medium text-[12px]">Sisa Kuota</div>
+                                    <div class="text-slate-500 font-medium text-[0.75rem]">Sisa Kuota</div>
                                     <div class="font-bold text-indigo-600 text-right">{{ calculatedValues.currentSisaKuotaView }} Kg</div>
-                                    <div class="text-slate-500 font-medium text-[12px]">Status Bayar</div>
+                                    <div class="text-slate-500 font-medium text-[0.75rem]">Status Bayar</div>
                                     <div class="font-bold text-indigo-600 text-right">Potong Kuota</div>
                                     <div class="col-span-2 border-b border-dashed border-slate-200 my-1" v-if="!calculatedValues.isPureMember"></div>
                                 </template>
                                 
                                 <template v-if="!calculatedValues.isPureMember">
                                     <template v-if="calculatedValues.diskonTx > 0">
-                                        <div class="text-slate-500 font-medium text-[12px]">Diskon</div>
+                                        <div class="text-slate-500 font-medium text-[0.75rem]">Diskon</div>
                                         <div class="font-bold text-emerald-600 text-right">- Rp {{ calculatedValues.diskonTx.toLocaleString('id-ID') }}</div>
                                     </template>
-                                    <div class="text-slate-500 font-medium text-[12px]">Total Bayar</div>
-                                    <div class="font-black text-slate-800 text-right text-[15px]">Rp {{ calculatedValues.totalHarga.toLocaleString('id-ID') }}</div>
+                                    <div class="text-slate-500 font-medium text-[0.75rem]">Total Bayar</div>
+                                    <div class="font-black text-slate-800 text-right text-[0.9375rem]">Rp {{ calculatedValues.totalHarga.toLocaleString('id-ID') }}</div>
                                     
-                                    <div class="text-slate-500 font-medium text-[12px]">Status Bayar</div>
+                                    <div class="text-slate-500 font-medium text-[0.75rem]">Status Bayar</div>
                                     <div class="font-bold text-slate-800 text-right">{{ (calculatedValues.pmbStatusVal === 'Potong Kuota' && calculatedValues.totalHarga > 0) ? 'Belum Lunas' : calculatedValues.pmbStatusVal }}</div>
                                     
                                     <template v-if="calculatedValues.pmbStatusVal === 'DP' || (calculatedValues.pmbStatusVal === 'Potong Kuota' && calculatedValues.totalHarga > 0)">
-                                        <div class="text-slate-500 font-medium text-[12px]">DP</div>
+                                        <div class="text-slate-500 font-medium text-[0.75rem]">DP</div>
                                         <div class="font-semibold text-slate-800 text-right">Rp {{ calculatedValues.dp.toLocaleString('id-ID') }}</div>
                                         <div class="col-span-2 border-b border-dashed border-slate-200 my-1"></div>
-                                        <div class="text-slate-500 font-medium text-[12px]">Sisa Tagihan</div>
-                                        <div class="font-black text-rose-500 text-right text-[15px]">Rp {{ (calculatedValues.totalHarga - calculatedValues.dp).toLocaleString('id-ID') }}</div>
+                                        <div class="text-slate-500 font-medium text-[0.75rem]">Sisa Tagihan</div>
+                                        <div class="font-black text-rose-500 text-right text-[0.9375rem]">Rp {{ (calculatedValues.totalHarga - calculatedValues.dp).toLocaleString('id-ID') }}</div>
                                     </template>
                                 </template>
                             </div>
@@ -226,14 +226,14 @@ const txImage = computed(() => {
                     <div class="flex flex-col gap-3">
                         <!-- Detail Layanan -->
                         <div class="bg-white p-3 rounded-3xl shadow-sm border border-slate-100">
-                            <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 border-b border-slate-100 pb-2 flex items-center">
+                            <h4 class="text-[0.625rem] font-black text-slate-400 uppercase tracking-widest mb-2 border-b border-slate-100 pb-2 flex items-center">
                                 <i class="ph-bold ph-t-shirt mr-2"></i> Detail Layanan
                             </h4>
                             <div class="space-y-0" v-if="txItems.length > 0">
                                 <div v-for="(item, idx) in txItems" :key="idx" class="flex justify-between items-center py-2 border-b border-slate-100 last:border-0 gap-3">
                                     <div class="min-w-0">
                                         <p class="text-sm font-bold text-slate-700 uppercase break-words">{{ item.nama }}</p>
-                                        <p class="text-[11px] font-bold text-slate-400 mt-0.5">{{ item.qty }} {{ item.satuan }} x Rp {{ Number(item.subtotal/item.qty).toLocaleString('id-ID') }}</p>
+                                        <p class="text-[0.6875rem] font-bold text-slate-400 mt-0.5">{{ item.qty }} {{ item.satuan }} x Rp {{ Number(item.subtotal/item.qty).toLocaleString('id-ID') }}</p>
                                     </div>
                                     <p class="text-sm font-black text-slate-800 whitespace-nowrap shrink-0">Rp {{ Number(item.subtotal).toLocaleString('id-ID') }}</p>
                                 </div>
@@ -243,7 +243,7 @@ const txImage = computed(() => {
                         
                         <!-- Lampiran Foto -->
                         <div class="bg-white p-3 rounded-3xl shadow-sm border border-slate-100 flex-1 flex flex-col">
-                            <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 border-b border-slate-100 pb-2 flex items-center shrink-0">
+                            <h4 class="text-[0.625rem] font-black text-slate-400 uppercase tracking-widest mb-2 border-b border-slate-100 pb-2 flex items-center shrink-0">
                                 <i class="ph-bold ph-camera mr-2"></i> Lampiran Foto
                             </h4>
                             <a v-if="txImage" :href="formData.Foto" target="_blank" class="block w-full flex-1 min-h-[300px] rounded-2xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-md transition-shadow relative group bg-slate-100/50">
@@ -254,7 +254,7 @@ const txImage = computed(() => {
                             </a>
                             <div v-else class="w-full py-10 bg-slate-100/50 rounded-2xl border border-dashed border-slate-300 flex flex-col items-center justify-center text-slate-400">
                                 <i class="ph-duotone ph-image-broken text-4xl mb-2"></i>
-                                <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">Tidak Ada Foto</span>
+                                <span class="text-[0.625rem] font-black uppercase tracking-widest text-slate-400">Tidak Ada Foto</span>
                             </div>
                         </div>
                     </div>
@@ -267,7 +267,7 @@ const txImage = computed(() => {
                     <div v-for="field in displayFields" :key="field.key" 
                          :class="{'md:col-span-2': field.type === 'textarea'}">
                         
-                        <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">
+                        <label class="block text-[0.6875rem] font-bold text-slate-400 uppercase tracking-wider mb-2">
                             {{ field.key }}
                         </label>
                         
