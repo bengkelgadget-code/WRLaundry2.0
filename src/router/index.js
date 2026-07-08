@@ -54,19 +54,36 @@ const router = createRouter({
 });
 
 // Setup auth guard
-router.beforeEach((to, from) => {
+router.beforeEach(async (to, from) => {
   const userStr = localStorage.getItem('zettbotUserAuth');
+  
   if (to.name !== 'login' && !userStr) {
     return { name: 'login' };
   }
   
-  if (userStr && to.name !== 'login') {
+  if (userStr) {
     try {
       const user = JSON.parse(userStr);
+      const { useAppStore } = await import('../stores/useAppStore');
+      const store = useAppStore();
+      store.currentUser = user;
+      
+      // If navigating to login but already logged in, redirect to dashboard
+      if (to.name === 'login' || to.path === '/') {
+          if (String(user.Role).toUpperCase() === 'STAFF') {
+              return '/admin/staff';
+          } else {
+              return '/admin';
+          }
+      }
+      
       if (String(user.Role).toUpperCase() === 'STAFF' && to.path !== '/admin/staff') {
         return '/admin/staff';
       }
-    } catch(e) {}
+    } catch(e) {
+      // If parsing fails, force login
+      if (to.name !== 'login') return { name: 'login' };
+    }
   }
 });
 
