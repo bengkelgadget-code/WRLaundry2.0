@@ -197,6 +197,7 @@ const handleTouchMove = (e) => {
     const diff = currentY - startY;
     
     if (diff > 0) {
+        if (e.cancelable) e.preventDefault(); // Prevent native pull-to-refresh
         pullDistance.value = Math.min(diff * 0.4, 80);
     } else {
         pullDistance.value = 0;
@@ -264,10 +265,10 @@ const startScan = async () => {
         </div>
 
         <!-- Body POS -->
-        <div class="flex-1 overflow-y-auto overflow-x-hidden pb-6 w-full flex flex-col items-center bg-slate-50 relative" ref="scrollContainer" @touchstart="handleTouchStart" @touchmove="handleTouchMove" @touchend="handleTouchEnd">
+        <div class="flex-1 overflow-y-auto overflow-x-hidden pb-6 w-full flex flex-col items-center bg-slate-50 relative overscroll-y-contain" ref="scrollContainer" @touchstart="handleTouchStart" @touchmove="handleTouchMove" @touchend="handleTouchEnd">
             
             <!-- PTR Indicator -->
-            <div class="w-full flex justify-center items-end overflow-hidden transition-all duration-300 z-10 shrink-0" :style="{ height: pullDistance + 'px', opacity: pullDistance / 50 }">
+            <div class="w-full flex justify-center items-end overflow-hidden z-10 shrink-0" :class="[!isPulling || isRefreshing ? 'transition-all duration-300' : '']" :style="{ height: pullDistance + 'px', opacity: pullDistance / 50 }">
                 <div class="bg-white rounded-full p-2 mb-2 shadow-md flex items-center justify-center" :class="{ 'animate-spin': isRefreshing }">
                     <i class="ph-bold ph-arrow-clockwise text-teal-600 text-lg" :style="{ transform: `rotate(${pullDistance * 5}deg)` }"></i>
                 </div>
