@@ -1,5 +1,5 @@
 import fs from 'fs'
-import archiver from 'archiver'
+import { ZipArchive } from 'archiver'
 import path from 'path'
 import { fileURLToPath } from 'url'
 
@@ -18,7 +18,7 @@ if (!fs.existsSync(distDir)) {
 
 // Create a file to stream archive data to
 const output = fs.createWriteStream(tempZip)
-const archive = archiver('zip', {
+const archive = new ZipArchive({
   zlib: { level: 9 } // Sets the compression level.
 })
 
