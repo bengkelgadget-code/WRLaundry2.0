@@ -243,7 +243,13 @@ export const generateRawTextReceipt = (px, store) => {
         str += sizeDouble + appSettings.nama.toUpperCase() + "\n";
     }
 
-    str += sizeNormal + wrapTextCenterRaw(appSettings.alamat, 32) + "\n";
+    // Address and Phone
+    str += fontSmall;
+    str += appSettings.alamat + "\n";
+    if (appSettings.telp) {
+        str += "WA: " + appSettings.telp + "\n";
+    }
+    str += fontNormal;
     str += left + "-".repeat(32) + "\n";
 
     var tglMasuk = px['Waktu Masuk'] ? String(px['Waktu Masuk']).split(' ')[0] : '-';
@@ -315,7 +321,10 @@ export const generateRawTextReceipt = (px, store) => {
     }
     if (!isPureMember) {
         if (diskonTx > 0) str += splitKV("DISKON:", "- Rp " + diskonTx.toLocaleString('id-ID'));
-        str += sizeDoubleHeight + splitKV("TOTAL:", "Rp " + totalHarga.toLocaleString('id-ID')) + sizeNormal;
+        
+        str += ESC + "E\x01"; // Bold
+        str += splitKV("TOTAL:", "Rp " + totalHarga.toLocaleString('id-ID'));
+        str += ESC + "E\x00"; // Reset Bold
 
         var statusTagihan = pmbStatusVal; if (statusTagihan === 'Potong Kuota' && totalHarga > 0) statusTagihan = 'Belum Lunas';
         str += splitKV("Status Bayar:", statusTagihan);
@@ -324,9 +333,12 @@ export const generateRawTextReceipt = (px, store) => {
 
     if (!isPureMember && !usedQuota) {
         str += "-".repeat(32) + "\n";
+        str += center;
         str += "SISA BAYAR:\n";
-        if (nameCust.length > 15) { str += sizeDoubleHeight + "Rp " + sisaAmount.toLocaleString('id-ID') + sizeNormal + "\n"; }
-        else { str += sizeDouble + "Rp " + sisaAmount.toLocaleString('id-ID') + sizeNormal + "\n"; }
+        str += ESC + "E\x01"; // Bold
+        str += sizeDouble + "Rp " + sisaAmount.toLocaleString('id-ID') + sizeNormal + "\n";
+        str += ESC + "E\x00"; // Reset Bold
+        str += left;
         str += "-".repeat(32) + "\n";
     } else {
         str += "-".repeat(32) + "\n";
@@ -344,14 +356,14 @@ export const generateRawTextReceipt = (px, store) => {
         var linesF2 = footerText2.split('\n');
         for (var f2 = 0; f2 < linesF2.length; f2++) {
             if (linesF2[f2].trim() !== '') {
-                str += wrapTextHangingIndentRaw(linesF2[f2], 32, 3);
+                str += wrapTextHangingIndentRaw(linesF2[f2], 42, 3);
             }
         }
     } else {
-        str += wrapTextHangingIndentRaw("1. Pakaian luntur bkn tgg jawab kami.", 32, 3);
-        str += wrapTextHangingIndentRaw("2. Min perhitungan kiloan (1 Kg).", 32, 3);
-        str += wrapTextHangingIndentRaw("3. Tdk menerima laundry dalaman.", 32, 3);
-        str += wrapTextHangingIndentRaw("4. Cucian tdk diambil 1 bln bkn tgg jawab kami.", 32, 3);
+        str += wrapTextHangingIndentRaw("1. Pakaian luntur bkn tgg jawab kami.", 42, 3);
+        str += wrapTextHangingIndentRaw("2. Min perhitungan kiloan (1 Kg).", 42, 3);
+        str += wrapTextHangingIndentRaw("3. Tdk menerima laundry dalaman.", 42, 3);
+        str += wrapTextHangingIndentRaw("4. Cucian tdk diambil 1 bln bkn tgg jawab kami.", 42, 3);
     }
     str += fontNormal;
     str += "\n\n\n";
