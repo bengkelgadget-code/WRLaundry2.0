@@ -14,6 +14,35 @@ onMounted(async () => {
   
   try {
     await CapacitorUpdater.notifyAppReady();
+    
+    // Check for self-hosted updates from Vercel
+    const checkForUpdates = async () => {
+      try {
+        // Cache buster is important so it doesn't get a stale version.json
+        const response = await fetch('https://wr-laundry.vercel.app/version.json', { cache: 'no-store' });
+        const data = await response.json();
+        
+        const currentVersion = localStorage.getItem('app_version');
+        if (data.version && data.version !== currentVersion) {
+          console.log('New update found:', data.version);
+          
+          // Optionally notify user here (using custom toast/alert)
+          // For now, it will silently download and apply
+          const version = await CapacitorUpdater.download({
+            url: `https://wr-laundry.vercel.app${data.url}`,
+            version: data.version
+          });
+          
+          localStorage.setItem('app_version', data.version);
+          await CapacitorUpdater.set(version);
+        }
+      } catch (err) {
+        console.error('Failed to check for updates', err);
+      }
+    };
+    
+    checkForUpdates();
+
   } catch (e) {
     console.log("CapacitorUpdater not available in web", e);
   }
