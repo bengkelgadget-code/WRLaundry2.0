@@ -10,7 +10,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div id="app-root" class="w-full flex overflow-hidden text-slate-800 font-sans antialiased bg-slate-50" style="position: absolute; top: 0; bottom: 0; left: 0; right: 0;">
+  <div id="app-root" class="w-full flex overflow-hidden text-slate-800 font-sans antialiased bg-slate-50">
     <!-- GLOBAL LOADING -->
     <div v-if="store.isLoading" id="loading" class="fixed inset-0 bg-white/95 backdrop-blur-sm z-[110] flex flex-col items-center justify-center transition-opacity duration-300">
       <div id="loading-icon-box" class="w-16 h-16 bg-slate-800 rounded-2xl flex items-center justify-center mb-6 shadow-xl shadow-slate-900/20 animate-bounce overflow-hidden">
