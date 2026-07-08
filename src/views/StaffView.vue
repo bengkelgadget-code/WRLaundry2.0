@@ -331,9 +331,9 @@ const handleTouchEnd = async () => {
         </div>
 
         <!-- Footer POS -->
-        <div class="absolute bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t border-slate-200/50 pt-3 pb-5 sm:pb-3 px-4 shadow-[0_-5px_15px_rgba(0,0,0,0.05)] z-30 flex justify-center transition-all" style="padding-bottom: max(1.25rem, env(safe-area-inset-bottom));">
+        <div class="absolute bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t border-slate-200/50 pt-3 pb-12 sm:pb-5 px-4 shadow-[0_-5px_15px_rgba(0,0,0,0.05)] z-30 flex justify-center transition-all">
             <div class="w-full max-w-3xl">
-                <button @click="openAddTransaction" class="w-full bg-gradient-to-r from-teal-400 to-teal-500 hover:from-teal-500 hover:to-teal-600 text-white font-black tracking-wide py-2.5 rounded-xl shadow-sm shadow-teal-500/30 flex items-center justify-center text-[14px] transition-transform transform active:scale-95"><i class="ph-bold ph-plus-circle text-lg mr-2"></i> TAMBAH TRANSAKSI</button>
+                <button @click="openAddTransaction" class="w-full bg-gradient-to-r from-teal-400 to-teal-500 hover:from-teal-500 hover:to-teal-600 text-white font-black tracking-wide py-3 rounded-2xl shadow-sm shadow-teal-500/30 flex items-center justify-center text-[15px] transition-transform transform active:scale-95"><i class="ph-bold ph-plus-circle text-xl mr-2"></i> TAMBAH TRANSAKSI</button>
             </div>
         </div>
 
