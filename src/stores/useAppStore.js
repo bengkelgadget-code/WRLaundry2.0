@@ -43,7 +43,12 @@ export const useAppStore = defineStore('appData', {
         const savedPrinter = localStorage.getItem('waroenk_printer');
         if (savedPrinter) {
             try {
-                this.connectedPrinter = JSON.parse(savedPrinter);
+                const parsed = JSON.parse(savedPrinter);
+                if (parsed && parsed.address) {
+                    this.connectedPrinter = parsed;
+                } else {
+                    localStorage.removeItem('waroenk_printer');
+                }
             } catch (e) {
                 console.error('Gagal memuat printer tersimpan', e);
             }

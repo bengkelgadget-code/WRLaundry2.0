@@ -465,8 +465,8 @@ export const actionPrintReceipt = async (tx, store) => {
     if (!tx) { alert("Data struk tidak ditemukan"); return; }
     if (Capacitor.isNativePlatform()) {
         try {
-            if (!store.connectedPrinter) {
-                alert("Printer belum dikoneksikan. Silakan atur printer di menu atas.");
+            if (!store.connectedPrinter || !store.connectedPrinter.address) {
+                alert("Printer tidak valid atau koneksi kadaluarsa. Silakan HAPUS printer lama di menu Pengaturan/Atas lalu KONEKSIKAN ULANG printer Anda.");
                 return;
             }
             var strRaw = generateRawTextReceipt(tx, store);
