@@ -1,8 +1,9 @@
 <script setup>
-import { ref, computed, defineAsyncComponent } from 'vue';
+import { ref, computed, defineAsyncComponent, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
 import { useAppStore } from '../stores/useAppStore';
-import { generateReceiptHTML, actionPrintReceipt, actionSendWA } from '../utils/posUtils';
+import { generateReceiptHTML, actionPrintReceipt, actionSendWA, actionSharePDF, actionShareJPG } from '../utils/posUtils';
 import { getDatabase, ref as dbRef, update } from 'firebase/database';
 
 const TransactionFormModal = defineAsyncComponent(() => import('../components/TransactionFormModal.vue'));
@@ -215,6 +216,31 @@ const handleTouchEnd = async () => {
     pullDistance.value = 0;
     isPulling.value = false;
 };
+
+// Barcode Scanner
+const startScan = async () => {
+    try {
+        const { camera } = await BarcodeScanner.requestPermissions();
+        if (camera !== 'granted' && camera !== 'limited') {
+            alert("Akses kamera ditolak.");
+            return;
+        }
+        
+        // This will launch the native Google ML Kit scanner overlay
+        const { barcodes } = await BarcodeScanner.scan();
+        if (barcodes && barcodes.length > 0) {
+            searchQuery.value = barcodes[0].displayValue;
+            currentPage.value = 1;
+        }
+    } catch (e) {
+        console.error("Barcode scan error", e);
+        if(e.message && e.message.includes('not implemented')) {
+            alert('Fitur scanner hanya tersedia di APK Native Android.');
+        } else {
+            alert("Gagal scan: " + e.message);
+        }
+    }
+};
 </script>
 
 <template>
@@ -270,7 +296,10 @@ const handleTouchEnd = async () => {
                     
                     <div class="relative flex-1 min-w-0 h-[46px]">
                         <i class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
-                        <input type="text" v-model="searchQuery" @input="currentPage = 1" placeholder="Cari..." class="w-full h-full pl-9 pr-3 py-2 text-[13px] font-bold border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-teal-300 bg-white outline-none transition-all">
+                        <input type="text" v-model="searchQuery" @input="currentPage = 1" placeholder="Cari..." class="w-full h-full pl-9 pr-10 py-2 text-[13px] font-bold border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-teal-300 bg-white outline-none transition-all">
+                        <button @click="startScan" class="absolute right-2 top-1/2 transform -translate-y-1/2 w-7 h-7 bg-teal-50 text-teal-600 rounded-lg flex items-center justify-center hover:bg-teal-100 transition-colors" title="Scan Barcode Resi">
+                            <i class="ph-bold ph-barcode text-lg"></i>
+                        </button>
                     </div>
                     
                     <select v-model="filterStatus" @change="currentPage = 1" class="w-[105px] h-[46px] shrink-0 px-2 py-2 text-[13px] font-bold border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-teal-300 bg-white text-slate-700 outline-none transition-all cursor-pointer">
@@ -369,15 +398,21 @@ const handleTouchEnd = async () => {
                         </div>
                     </div>
                     
-                    <div class="flex items-center gap-3 w-full">
-                        <button type="button" @click="actionPrintReceipt(selectedTx, store)" title="Print Nota" class="w-14 h-14 bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-800 rounded-2xl shadow-sm active:scale-95 transition-all flex items-center justify-center shrink-0">
-                            <i class="ph-bold ph-printer text-2xl"></i>
+                    <div class="flex items-center gap-2 w-full">
+                        <button type="button" @click="actionPrintReceipt(selectedTx, store)" title="Print Nota" class="w-12 h-12 bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-800 rounded-2xl shadow-sm active:scale-95 transition-all flex items-center justify-center shrink-0">
+                            <i class="ph-bold ph-printer text-xl"></i>
                         </button>
-                        <button type="button" @click="actionSendWA(selectedTx, store)" title="Kirim WA" class="w-14 h-14 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 hover:text-emerald-700 rounded-2xl shadow-sm active:scale-95 transition-all flex items-center justify-center shrink-0">
-                            <i class="ph-bold ph-whatsapp-logo text-2xl"></i>
+                        <button type="button" @click="actionSendWA(selectedTx, store)" title="Kirim WA" class="w-12 h-12 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 hover:text-emerald-700 rounded-2xl shadow-sm active:scale-95 transition-all flex items-center justify-center shrink-0">
+                            <i class="ph-bold ph-whatsapp-logo text-xl"></i>
                         </button>
-                        <button type="button" @click="saveDetailStatus" class="flex-1 bg-gradient-to-r from-teal-400 to-teal-500 hover:from-teal-500 hover:to-teal-600 text-white font-black h-14 rounded-2xl shadow-xl shadow-teal-500/30 active:scale-95 transition-all flex items-center justify-center text-[15px]">
-                            <i class="ph-bold ph-floppy-disk mr-2 text-xl"></i> SIMPAN
+                        <button type="button" @click="actionSharePDF(selectedTx, store)" title="Share PDF" class="w-12 h-12 bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-700 rounded-2xl shadow-sm active:scale-95 transition-all flex items-center justify-center shrink-0">
+                            <i class="ph-bold ph-file-pdf text-xl"></i>
+                        </button>
+                        <button type="button" @click="actionShareJPG(selectedTx, store)" title="Share JPG" class="w-12 h-12 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 rounded-2xl shadow-sm active:scale-95 transition-all flex items-center justify-center shrink-0">
+                            <i class="ph-bold ph-image text-xl"></i>
+                        </button>
+                        <button type="button" @click="saveDetailStatus" class="flex-1 bg-gradient-to-r from-teal-400 to-teal-500 hover:from-teal-500 hover:to-teal-600 text-white font-black h-12 rounded-2xl shadow-xl shadow-teal-500/30 active:scale-95 transition-all flex items-center justify-center text-[13px]">
+                            <i class="ph-bold ph-floppy-disk mr-1 text-lg"></i> SIMPAN
                         </button>
                     </div>
                     
@@ -404,12 +439,18 @@ const handleTouchEnd = async () => {
                     <div class="w-full max-w-[300px] bg-white p-4 shadow-sm border border-slate-200" v-html="generateReceiptHTML(savedTxPreview, store)"></div>
                 </div>
 
-                <div class="p-4 bg-white border-t border-slate-100 shrink-0 flex gap-3" v-if="savedTxPreview">
-                    <button type="button" @click="actionPrintReceipt(savedTxPreview, store)" class="flex-1 bg-gradient-to-r from-teal-400 to-teal-500 text-white font-black py-3.5 rounded-2xl shadow-xl shadow-teal-500/30 hover:from-teal-500 hover:to-teal-600 flex items-center justify-center transition-transform active:scale-95 text-[14px]">
-                        <i class="ph-bold ph-printer text-xl mr-2"></i> PRINT
+                <div class="p-4 bg-white border-t border-slate-100 shrink-0 flex gap-2" v-if="savedTxPreview">
+                    <button type="button" @click="actionPrintReceipt(savedTxPreview, store)" class="flex-1 bg-slate-100 text-slate-600 font-black py-3 rounded-2xl shadow-sm hover:bg-slate-200 flex items-center justify-center transition-transform active:scale-95 text-[12px]">
+                        <i class="ph-bold ph-printer text-lg mr-1"></i> PRINT
                     </button>
-                    <button type="button" @click="actionSendWA(savedTxPreview, store)" class="flex-1 bg-gradient-to-r from-teal-400 to-teal-500 text-white font-black py-3.5 rounded-2xl shadow-xl shadow-teal-500/30 hover:from-teal-500 hover:to-teal-600 flex items-center justify-center transition-transform active:scale-95 text-[14px]">
-                        <i class="ph-bold ph-whatsapp-logo text-xl mr-2"></i> WA
+                    <button type="button" @click="actionSendWA(savedTxPreview, store)" class="flex-1 bg-emerald-50 text-emerald-600 font-black py-3 rounded-2xl shadow-sm hover:bg-emerald-100 flex items-center justify-center transition-transform active:scale-95 text-[12px]">
+                        <i class="ph-bold ph-whatsapp-logo text-lg mr-1"></i> WA
+                    </button>
+                    <button type="button" @click="actionSharePDF(savedTxPreview, store)" class="w-12 h-12 shrink-0 bg-rose-50 text-rose-600 font-black rounded-2xl shadow-sm hover:bg-rose-100 flex items-center justify-center transition-transform active:scale-95">
+                        <i class="ph-bold ph-file-pdf text-lg"></i>
+                    </button>
+                    <button type="button" @click="actionShareJPG(savedTxPreview, store)" class="w-12 h-12 shrink-0 bg-blue-50 text-blue-600 font-black rounded-2xl shadow-sm hover:bg-blue-100 flex items-center justify-center transition-transform active:scale-95">
+                        <i class="ph-bold ph-image text-lg"></i>
                     </button>
                 </div>
             </div>

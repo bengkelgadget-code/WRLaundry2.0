@@ -2,6 +2,13 @@ export const appSettings = {
     nama: "WAROENK LAUNDRY",
     alamat: "Jl. Markisa No 52 Rt 05, Tenggarong"
 };
+import { Capacitor } from '@capacitor/core';
+import { BluetoothSerial } from '@e-is/capacitor-bluetooth-serial';
+import { Share } from '@capacitor/share';
+import { Filesystem, Directory } from '@capacitor/filesystem';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
+
 
 export const parseDateDMY = (dateStr) => {
     if (!dateStr) return new Date(9999, 11, 31).getTime();
@@ -456,6 +463,23 @@ export const actionSendWA = (tx, store) => {
 
 export const actionPrintReceipt = async (tx, store) => {
     if (!tx) { alert("Data struk tidak ditemukan"); return; }
+    if (Capacitor.isNativePlatform()) {
+        try {
+            if (!store.connectedPrinter) {
+                alert("Printer belum dikoneksikan. Silakan atur printer di menu atas.");
+                return;
+            }
+            var strRaw = generateRawTextReceipt(tx, store);
+            await BluetoothSerial.write({ data: strRaw });
+            alert("Nota berhasil dicetak!");
+            return;
+        } catch (e) {
+            console.error("Capacitor Bluetooth Error:", e);
+            alert("Gagal mencetak: " + (e.message || 'Printer disconnect'));
+            return;
+        }
+    }
+
     var isWebBluetoothSupported = (navigator.bluetooth && window.isSecureContext);
 
     if (isWebBluetoothSupported) {
@@ -536,4 +560,94 @@ export const actionPrintReceipt = async (tx, store) => {
     setTimeout(function () {
         window.print();
     }, 800);
+};
+
+export const actionShareJPG = async (tx, store) => {
+    try {
+        const div = document.createElement('div');
+        div.innerHTML = generateReceiptHTML(tx, store);
+        div.style.position = 'absolute';
+        div.style.left = '-9999px';
+        div.style.top = '-9999px';
+        div.style.width = '58mm';
+        div.style.backgroundColor = 'white';
+        div.style.padding = '10px';
+        document.body.appendChild(div);
+
+        const canvas = await html2canvas(div, { scale: 2 });
+        document.body.removeChild(div);
+        
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+        const fileName = `Nota-${tx['No Nota'] || tx.ID}.jpg`;
+
+        if (Capacitor.isNativePlatform()) {
+            const base64Data = dataUrl.split(',')[1];
+            const savedFile = await Filesystem.writeFile({
+                path: fileName,
+                data: base64Data,
+                directory: Directory.Cache
+            });
+            await Share.share({
+                title: 'Share Nota JPG',
+                text: `Nota transaksi ${tx['No Nota'] || tx.ID}`,
+                url: savedFile.uri,
+                dialogTitle: 'Bagikan Nota'
+            });
+        } else {
+            const link = document.createElement('a');
+            link.download = fileName;
+            link.href = dataUrl;
+            link.click();
+        }
+    } catch (e) {
+        console.error(e);
+        alert('Gagal membagikan JPG: ' + e.message);
+    }
+};
+
+export const actionSharePDF = async (tx, store) => {
+    try {
+        const div = document.createElement('div');
+        div.innerHTML = generateReceiptHTML(tx, store);
+        div.style.position = 'absolute';
+        div.style.left = '-9999px';
+        div.style.top = '-9999px';
+        div.style.width = '58mm';
+        div.style.backgroundColor = 'white';
+        div.style.padding = '10px';
+        document.body.appendChild(div);
+
+        const canvas = await html2canvas(div, { scale: 2 });
+        document.body.removeChild(div);
+
+        const imgData = canvas.toDataURL('image/jpeg', 0.9);
+        const pdf = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: [58, canvas.height * (58 / canvas.width)]
+        });
+        pdf.addImage(imgData, 'JPEG', 0, 0, 58, canvas.height * (58 / canvas.width));
+        
+        const fileName = `Nota-${tx['No Nota'] || tx.ID}.pdf`;
+
+        if (Capacitor.isNativePlatform()) {
+            const base64Data = pdf.output('datauristring').split(',')[1];
+            const savedFile = await Filesystem.writeFile({
+                path: fileName,
+                data: base64Data,
+                directory: Directory.Cache
+            });
+            await Share.share({
+                title: 'Share Nota PDF',
+                text: `Nota transaksi ${tx['No Nota'] || tx.ID}`,
+                url: savedFile.uri,
+                dialogTitle: 'Bagikan Nota'
+            });
+        } else {
+            pdf.save(fileName);
+        }
+    } catch (e) {
+        console.error(e);
+        alert('Gagal membagikan PDF: ' + e.message);
+    }
 };

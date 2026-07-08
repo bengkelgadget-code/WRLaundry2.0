@@ -1,11 +1,19 @@
 <script setup>
 import { onMounted } from 'vue';
 import { useAppStore } from './stores/useAppStore';
+import { CapacitorUpdater } from '@capgo/capacitor-updater';
 
 const store = useAppStore();
 
-onMounted(() => {
+onMounted(async () => {
   store.fetchInitialData();
+  store.initBluetooth();
+  
+  try {
+    await CapacitorUpdater.notifyAppReady();
+  } catch (e) {
+    console.log("CapacitorUpdater not available in web", e);
+  }
 });
 </script>
 

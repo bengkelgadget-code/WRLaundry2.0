@@ -1,5 +1,7 @@
 <script setup>
+import { ref } from 'vue';
 import { useAppStore } from '../stores/useAppStore';
+import BluetoothManagerModal from './BluetoothManagerModal.vue';
 
 const props = defineProps({
     title: {
@@ -9,6 +11,8 @@ const props = defineProps({
 });
 const emit = defineEmits(['toggleSidebar']);
 const store = useAppStore();
+
+const isBluetoothModalOpen = ref(false);
 
 const refreshData = () => {
     store.fetchInitialData();
@@ -24,9 +28,15 @@ const refreshData = () => {
             <h1 class="text-xl font-black text-slate-800 tracking-tight">{{ title }}</h1>
         </div>
         <div class="flex items-center space-x-2">
+            <button @click="isBluetoothModalOpen = true" class="relative text-slate-500 hover:text-teal-600 transition-colors p-2.5 bg-slate-100 rounded-xl hover:bg-slate-200 shadow-sm active:scale-95" title="Bluetooth Printer">
+                <i class="ph-bold ph-printer text-xl"></i>
+                <div v-if="store.connectedPrinter" class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-500 border-2 border-slate-100 rounded-full"></div>
+            </button>
             <button @click="refreshData" class="text-slate-500 hover:text-slate-800 transition-colors p-2.5 bg-slate-100 rounded-xl hover:bg-slate-200 shadow-sm active:scale-95" title="Refresh Data">
                 <i :class="['ph-bold ph-arrows-clockwise text-xl', store.isLoading ? 'animate-spin' : '']"></i>
             </button>
         </div>
+        
+        <BluetoothManagerModal :is-open="isBluetoothModalOpen" @close="isBluetoothModalOpen = false" />
     </header>
 </template>

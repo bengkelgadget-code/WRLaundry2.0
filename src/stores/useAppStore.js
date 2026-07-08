@@ -35,8 +35,27 @@ export const useAppStore = defineStore('appData', {
     appConfig: {},
     isLoading: true,
     currentUser: null, // For auth
+    connectedPrinter: null, // For bluetooth printer {name, address}
   }),
   actions: {
+    initBluetooth() {
+        const savedPrinter = localStorage.getItem('waroenk_printer');
+        if (savedPrinter) {
+            try {
+                this.connectedPrinter = JSON.parse(savedPrinter);
+            } catch (e) {
+                console.error('Gagal memuat printer tersimpan', e);
+            }
+        }
+    },
+    setPrinter(printer) {
+        this.connectedPrinter = printer;
+        if (printer) {
+            localStorage.setItem('waroenk_printer', JSON.stringify(printer));
+        } else {
+            localStorage.removeItem('waroenk_printer');
+        }
+    },
     sanitizeFbKeys(data) {
         if (!data) return data;
         return JSON.parse(JSON.stringify(data).replace(/"Harga\/Kg":/g, '"Harga_Kg":').replace(/"Harga\/Pcs":/g, '"Harga_Pcs":'));

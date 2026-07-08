@@ -1,0 +1,58 @@
+name: Android Build & Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps || npm install --legacy-peer-deps
+
+      - name: Build Web Assets
+        run: npm run build
+
+      - name: Sync Capacitor
+        run: npx cap sync android
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Generate Keystore
+        run: |
+          keytool -genkey -v -keystore release.keystore -alias waroenklaundry -keyalg RSA -keysize 2048 -validity 10000 -storepass waroenklaundry -keypass waroenklaundry -dname "CN=Waroenk Laundry, OU=IT, O=Waroenk, L=Jakarta, ST=Jakarta, C=ID"
+          mv release.keystore android/app/release.keystore
+
+      - name: Build Release APK
+        working-directory: ./android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease -Pandroid.injected.signing.store.file=release.keystore -Pandroid.injected.signing.store.password=waroenklaundry -Pandroid.injected.signing.key.alias=waroenklaundry -Pandroid.injected.signing.key.password=waroenklaundry
+
+      - name: Rename APK
+        run: |
+          mv android/app/build/outputs/apk/release/app-release.apk Waroenk-Laundry-Release.apk
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Waroenk-Laundry-Release
+          path: Waroenk-Laundry-Release.apk

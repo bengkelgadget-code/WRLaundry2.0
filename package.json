@@ -10,11 +10,18 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
+    "@capacitor-mlkit/barcode-scanning": "^8.1.0",
     "@capacitor/android": "^8.4.1",
+    "@capacitor/camera": "^8.2.0",
     "@capacitor/core": "^8.4.1",
+    "@capacitor/filesystem": "^8.1.2",
+    "@capacitor/share": "^8.0.1",
+    "@capgo/capacitor-updater": "^8.50.2",
     "@e-is/capacitor-bluetooth-serial": "^6.0.3",
     "@phosphor-icons/vue": "^2.2.1",
     "firebase": "^12.15.0",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^4.2.1",
     "pinia": "^3.0.4",
     "vue": "^3.5.38",
     "vue-router": "^5.1.0"
