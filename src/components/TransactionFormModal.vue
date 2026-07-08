@@ -1,6 +1,8 @@
 <script setup>
 import { ref, computed, watch, onMounted, nextTick } from 'vue';
 import { useAppStore } from '../stores/useAppStore';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import { Capacitor } from '@capacitor/core';
 import { getDatabase, ref as dbRef, update, set } from 'firebase/database';
 
 const props = defineProps({
@@ -295,13 +297,43 @@ const customers = computed(() => store.appData.pelanggan || []);
 const filteredKiloan = (query) => {
     if (!query) return kiloanItems.value;
     const q = query.toLowerCase();
-    return kiloanItems.value.filter(k => k['Nama Layanan'].toLowerCase().includes(q));
+    return kiloanItems.value.filter(k => k['Nama Layanan'].toLowerCase().includes(q))
+    .map(k => {
+        let w = store.appData.waktu?.find(x => x.ID === k['Jenis Waktu']);
+        return { ...k, _waktuJam: w ? parseInt(w['Waktu (Jam)']) : 0 };
+    })
+    .sort((a, b) => {
+        const aName = a['Nama Layanan'].toLowerCase();
+        const bName = b['Nama Layanan'].toLowerCase();
+        if (aName === q && bName !== q) return -1;
+        if (bName === q && aName !== q) return 1;
+        const aStarts = aName.startsWith(q);
+        const bStarts = bName.startsWith(q);
+        if (aStarts && !bStarts) return -1;
+        if (bStarts && !aStarts) return 1;
+        return b._waktuJam - a._waktuJam;
+    });
 };
 
 const filteredSatuan = (query) => {
     if (!query) return satuanItems.value;
     const q = query.toLowerCase();
-    return satuanItems.value.filter(s => s['Nama Layanan'].toLowerCase().includes(q));
+    return satuanItems.value.filter(s => s['Nama Layanan'].toLowerCase().includes(q))
+    .map(s => {
+        let w = store.appData.waktu?.find(x => x.ID === s['Jenis Waktu']);
+        return { ...s, _waktuJam: w ? parseInt(w['Waktu (Jam)']) : 0 };
+    })
+    .sort((a, b) => {
+        const aName = a['Nama Layanan'].toLowerCase();
+        const bName = b['Nama Layanan'].toLowerCase();
+        if (aName === q && bName !== q) return -1;
+        if (bName === q && aName !== q) return 1;
+        const aStarts = aName.startsWith(q);
+        const bStarts = bName.startsWith(q);
+        if (aStarts && !bStarts) return -1;
+        if (bStarts && !aStarts) return 1;
+        return b._waktuJam - a._waktuJam;
+    });
 };
 
 const selectService = (item, id, data) => {
@@ -347,6 +379,27 @@ const handleFileChange = (e) => {
             imagePreview.value = event.target.result;
         };
         reader.readAsDataURL(file);
+    }
+};
+
+const takePicture = async () => {
+    if (Capacitor.isNativePlatform()) {
+        try {
+            const image = await Camera.getPhoto({
+                quality: 60,
+                allowEditing: false,
+                resultType: CameraResultType.DataUrl,
+                source: CameraSource.Prompt
+            });
+            if (image && image.dataUrl) {
+                imagePreview.value = image.dataUrl;
+            }
+        } catch (e) {
+            console.log("Kamera dibatalkan atau error:", e);
+        }
+    } else {
+        const hiddenInput = document.getElementById('hiddenFileInput');
+        if (hiddenInput) hiddenInput.click();
     }
 };
 
@@ -682,14 +735,14 @@ watch(() => props.isOpen, (newVal) => {
                                             <div v-if="item.showDropdown" class="absolute z-20 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-48 overflow-y-auto overflow-x-hidden">
                                                 <div class="py-1 px-3 text-[10px] font-black tracking-widest text-slate-400 uppercase bg-slate-50 border-b border-slate-100">Layanan Kiloan</div>
                                                 <div v-for="k in filteredKiloan(item.searchQuery)" :key="'K-'+k.ID" @mousedown.prevent="selectService(item, 'K-'+k.ID, k)" class="py-2 px-3 hover:bg-teal-50 cursor-pointer border-b border-slate-50 transition-colors">
-                                                    <span class="font-bold block text-slate-700 text-[13px] mb-0.5">{{ k['Nama Layanan'] }}</span>
+                                                    <span class="font-bold block text-slate-700 text-[16px] mb-0.5">{{ k['Nama Layanan'] }}</span>
                                                     <span class="text-[11px] font-bold text-teal-600">Rp {{ formatRupiah(k['Harga/Kg']) }} / Kg</span>
                                                 </div>
                                                 <div v-if="filteredKiloan(item.searchQuery).length === 0 && item.searchQuery" class="py-2 px-3 text-xs text-slate-400 italic">Tidak ditemukan...</div>
                                                 
                                                 <div class="py-1 px-3 text-[10px] font-black tracking-widest text-slate-400 uppercase bg-slate-50 border-b border-slate-100 border-t border-t-slate-200 mt-1">Layanan Satuan</div>
                                                 <div v-for="s in filteredSatuan(item.searchQuery)" :key="'S-'+s.ID" @mousedown.prevent="selectService(item, 'S-'+s.ID, s)" class="py-2 px-3 hover:bg-teal-50 cursor-pointer border-b border-slate-50 transition-colors">
-                                                    <span class="font-bold block text-slate-700 text-[13px] mb-0.5">{{ s['Nama Layanan'] }}</span>
+                                                    <span class="font-bold block text-slate-700 text-[16px] mb-0.5">{{ s['Nama Layanan'] }}</span>
                                                     <span class="text-[11px] font-bold text-teal-600">Rp {{ formatRupiah(s['Harga/Pcs']) }} / Pcs</span>
                                                 </div>
                                                 <div v-if="filteredSatuan(item.searchQuery).length === 0 && item.searchQuery" class="py-2 px-3 text-xs text-slate-400 italic">Tidak ditemukan...</div>
@@ -726,8 +779,8 @@ watch(() => props.isOpen, (newVal) => {
                                     <!-- Foto Placeholder -->
                                     <div class="w-[35%] sm:w-1/4 flex-shrink-0 pt-[22px] sm:pt-0">
                                         <label class="block text-[11px] font-bold text-slate-600 mb-1.5 uppercase opacity-0 hidden sm:block">Foto</label>
-                                        <div class="relative overflow-hidden w-full h-full min-h-[120px] border-2 border-dashed border-slate-300 rounded-2xl flex items-center justify-center bg-slate-50 group hover:border-slate-400 transition-colors cursor-pointer" title="Ambil Foto Nota / Cucian">
-                                            <input type="file" accept="image/*" @change="handleFileChange" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                                        <div @click="takePicture" class="relative overflow-hidden w-full h-full min-h-[120px] border-2 border-dashed border-slate-300 rounded-2xl flex items-center justify-center bg-slate-50 group hover:border-slate-400 transition-colors cursor-pointer" title="Ambil Foto Nota / Cucian">
+                                            <input type="file" id="hiddenFileInput" accept="image/*" @change="handleFileChange" class="hidden">
                                             
                                             <img v-if="imagePreview" :src="imagePreview" class="absolute inset-0 w-full h-full object-cover z-0">
                                             <div v-if="imagePreview" class="absolute inset-0 bg-slate-900/30 flex items-center justify-center z-0">
