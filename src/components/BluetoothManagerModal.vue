@@ -24,12 +24,12 @@ const loadPairedDevices = async () => {
   connectionError.value = '';
   try {
     const isEnabled = await BluetoothSerial.isEnabled();
-    if (!isEnabled) {
+    if (!isEnabled || !isEnabled.enabled) {
       connectionError.value = 'Bluetooth belum dinyalakan di HP Anda.';
       isScanning.value = false;
       return;
     }
-    const result = await BluetoothSerial.list();
+    const result = await BluetoothSerial.scan();
     devices.value = result.devices || [];
   } catch (err) {
     console.error(err);
