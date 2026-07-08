@@ -2,8 +2,11 @@
 import { onMounted } from 'vue';
 import { useAppStore } from './stores/useAppStore';
 import { CapacitorUpdater } from '@capgo/capacitor-updater';
+import { App as CapacitorApp } from '@capacitor/app';
+import { useRouter } from 'vue-router';
 
 const store = useAppStore();
+const router = useRouter();
 
 onMounted(async () => {
   store.fetchInitialData();
@@ -14,6 +17,24 @@ onMounted(async () => {
   } catch (e) {
     console.log("CapacitorUpdater not available in web", e);
   }
+
+  // Hardware Back Button Handler
+  CapacitorApp.addListener('backButton', ({ canGoBack }) => {
+    // Check if any modal close button exists (like the X button in Bluetooth modal)
+    // We look for button elements that contain a close icon (ph-x) within modal containers
+    const closeBtn = document.querySelector('.modal-enter button i.ph-x');
+    if (closeBtn && closeBtn.closest('button')) {
+      closeBtn.closest('button').click();
+      return;
+    }
+
+    // Otherwise standard back navigation
+    if (canGoBack) {
+      router.back();
+    } else {
+      CapacitorApp.exitApp();
+    }
+  });
 });
 </script>
 

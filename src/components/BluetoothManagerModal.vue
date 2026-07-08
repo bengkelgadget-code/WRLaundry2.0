@@ -72,8 +72,9 @@ watch(() => props.isOpen, (newVal) => {
 </script>
 
 <template>
-  <div v-if="isOpen" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm flex flex-col relative modal-enter overflow-hidden">
+  <Teleport to="body">
+    <div v-if="isOpen" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
+      <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm flex flex-col relative modal-enter overflow-hidden">
       <!-- Header -->
       <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-white z-20">
         <div class="flex items-center gap-2">
@@ -143,7 +144,8 @@ watch(() => props.isOpen, (newVal) => {
         </div>
       </div>
     </div>
-  </div>
+    </div>
+  </Teleport>
 </template>
 
 <style scoped>
