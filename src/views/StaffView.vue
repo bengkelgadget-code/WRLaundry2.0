@@ -427,7 +427,7 @@ const startScan = async () => {
         </div>
         
         <!-- Modals -->
-        <TransactionFormModal :is-open="isTransactionModalOpen" :initial-data="editingTx" @close="closeTransactionModal" @saved="handleTransactionSaved" />
+        <TransactionFormModal v-if="isTxFormOpen" :isOpen="isTxFormOpen" :initialData="txFormInitialData" @close="isTxFormOpen = false" @saved="handleTxSaved" />
         
         <BluetoothManagerModal :is-open="store.isBluetoothModalOpen" @close="store.isBluetoothModalOpen = false" />
         

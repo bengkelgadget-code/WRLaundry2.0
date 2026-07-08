@@ -23,11 +23,21 @@ const loadPairedDevices = async () => {
   isScanning.value = true;
   connectionError.value = '';
   try {
-    const isEnabled = await BluetoothSerial.isEnabled();
+    let isEnabled = await BluetoothSerial.isEnabled();
     if (!isEnabled || !isEnabled.enabled) {
-      connectionError.value = 'Bluetooth belum dinyalakan di HP Anda.';
-      isScanning.value = false;
-      return;
+      // Prompt user to enable Bluetooth (this also triggers permission requests on Android 12+)
+      try {
+        await BluetoothSerial.enable();
+        isEnabled = await BluetoothSerial.isEnabled();
+      } catch (e) {
+        console.error('Failed to enable bluetooth', e);
+      }
+      
+      if (!isEnabled || !isEnabled.enabled) {
+        connectionError.value = 'Bluetooth belum dinyalakan atau tidak diberi izin. Harap nyalakan/izinkan Bluetooth.';
+        isScanning.value = false;
+        return;
+      }
     }
     const result = await BluetoothSerial.scan();
     devices.value = result.devices || [];
