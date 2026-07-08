@@ -299,8 +299,9 @@ export const generateRawTextReceipt = (px, store) => {
                 str += estHtml;
                 trackingSisaKuota -= item.qty;
             } else {
-                str += splitKV(item.nama, "Rp " + Number(item.subtotal).toLocaleString('id-ID'));
-                str += item.qty + " " + item.satuan + " x Rp " + Number(item.subtotal / item.qty).toLocaleString('id-ID') + "\n";
+                str += item.nama + "\n";
+                var qtyStr = "  " + item.qty + " " + item.satuan + " x " + Number(item.subtotal / item.qty).toLocaleString('id-ID');
+                str += splitKV(qtyStr, "Rp " + Number(item.subtotal).toLocaleString('id-ID'));
                 str += estHtml;
             }
         });
