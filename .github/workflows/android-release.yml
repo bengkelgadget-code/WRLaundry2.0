@@ -45,7 +45,13 @@ jobs:
         working-directory: ./android
         run: |
           chmod +x gradlew
-          ./gradlew assembleRelease
+          ./gradlew assembleRelease --info > build-log.txt 2>&1 || true
+
+      - name: Upload Build Log
+        uses: actions/upload-artifact@v4
+        with:
+          name: Build-Log
+          path: android/build-log.txt
 
       - name: Rename APK
         run: |
