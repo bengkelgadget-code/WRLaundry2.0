@@ -168,22 +168,29 @@ const saveSettings = async () => {
                         </h3>
                         
                         <div class="space-y-4">
-                            <div>
-                                <label class="block text-[11px] font-extrabold text-slate-500 mb-1.5 uppercase tracking-wide">Alamat MAC / Nama Printer</label>
-                                <div class="relative">
-                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <i class="ph-bold ph-bluetooth text-blue-400 text-lg"></i>
-                                    </div>
-                                    <input type="text" v-model="formData.printerMac" placeholder="Contoh: 00:11:22:33:44:55 atau MPT-II" class="w-full pl-11 pr-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-50 outline-none transition-all text-sm font-bold text-slate-800">
+                            <!-- Printer selection uses global modal -->
+                            <div v-if="store.connectedPrinter" class="p-4 bg-teal-50 border border-teal-100 rounded-xl flex items-center justify-between">
+                                <div>
+                                    <p class="text-[10px] font-bold text-teal-600 uppercase tracking-wider mb-1">Terkoneksi Saat Ini</p>
+                                    <p class="font-bold text-slate-800">{{ store.connectedPrinter.name }}</p>
+                                    <p class="text-xs text-slate-500">{{ store.connectedPrinter.address }}</p>
                                 </div>
-                                <p class="text-[11px] text-slate-400 font-medium mt-2 leading-relaxed">
-                                    Masukkan <span class="font-bold text-slate-500">MAC Address</span> atau <span class="font-bold text-slate-500">Nama Device Bluetooth</span> yang digunakan untuk mencetak struk thermal.
-                                </p>
+                                <div class="w-10 h-10 rounded-full bg-teal-100 text-teal-600 flex items-center justify-center">
+                                    <i class="ph-fill ph-check-circle text-2xl"></i>
+                                </div>
+                            </div>
+                            <div v-else class="p-4 bg-slate-50 border border-slate-200 rounded-xl flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-slate-200 text-slate-400 flex items-center justify-center shrink-0">
+                                    <i class="ph-bold ph-printer-slash text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-slate-700 text-sm">Belum Ada Printer</p>
+                                    <p class="text-[11px] text-slate-500 mt-0.5">Silakan cari dan hubungkan printer Anda.</p>
+                                </div>
                             </div>
                             
-                            <!-- Dummy button just to show UI completeness for bluetooth -->
-                            <button type="button" class="w-full py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-xl text-sm transition-colors border border-slate-200 flex justify-center items-center">
-                                <i class="ph-bold ph-magnifying-glass mr-2"></i> Cari Printer (Beta)
+                            <button @click="store.isBluetoothModalOpen = true" type="button" class="w-full py-3.5 px-4 bg-blue-50 hover:bg-blue-100 text-blue-600 font-bold rounded-xl text-sm transition-colors border border-blue-200 flex justify-center items-center shadow-sm">
+                                <i class="ph-bold ph-magnifying-glass mr-2 text-lg"></i> Cari Printer Bluetooth
                             </button>
                         </div>
                     </div>

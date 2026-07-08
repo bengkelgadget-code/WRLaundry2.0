@@ -36,6 +36,7 @@ export const useAppStore = defineStore('appData', {
     isLoading: true,
     currentUser: null, // For auth
     connectedPrinter: null, // For bluetooth printer {name, address}
+    isBluetoothModalOpen: false,
   }),
   actions: {
     initBluetooth() {

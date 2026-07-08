@@ -12,8 +12,6 @@ const props = defineProps({
 const emit = defineEmits(['toggleSidebar']);
 const store = useAppStore();
 
-const isBluetoothModalOpen = ref(false);
-
 const refreshData = () => {
     store.fetchInitialData();
 };
@@ -28,7 +26,7 @@ const refreshData = () => {
             <h1 class="text-xl font-black text-slate-800 tracking-tight">{{ title }}</h1>
         </div>
         <div class="flex items-center space-x-2">
-            <button @click="isBluetoothModalOpen = true" class="relative text-slate-500 hover:text-teal-600 transition-colors p-2.5 bg-slate-100 rounded-xl hover:bg-slate-200 shadow-sm active:scale-95" title="Bluetooth Printer">
+            <button @click="store.isBluetoothModalOpen = true" class="relative text-slate-500 hover:text-teal-600 transition-colors p-2.5 bg-slate-100 rounded-xl hover:bg-slate-200 shadow-sm active:scale-95" title="Bluetooth Printer">
                 <i class="ph-bold ph-printer text-xl"></i>
                 <div v-if="store.connectedPrinter" class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-500 border-2 border-slate-100 rounded-full"></div>
             </button>
@@ -37,6 +35,6 @@ const refreshData = () => {
             </button>
         </div>
         
-        <BluetoothManagerModal :is-open="isBluetoothModalOpen" @close="isBluetoothModalOpen = false" />
+        <BluetoothManagerModal :is-open="store.isBluetoothModalOpen" @close="store.isBluetoothModalOpen = false" />
     </header>
 </template>
