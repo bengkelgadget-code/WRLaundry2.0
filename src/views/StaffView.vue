@@ -5,8 +5,8 @@ import { BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
 import { useAppStore } from '../stores/useAppStore';
 import { generateReceiptHTML, actionPrintReceipt, actionSendWA, actionSharePDF, actionShareJPG } from '../utils/posUtils';
 import { getDatabase, ref as dbRef, update } from 'firebase/database';
-
 const TransactionFormModal = defineAsyncComponent(() => import('../components/TransactionFormModal.vue'));
+const BluetoothManagerModal = defineAsyncComponent(() => import('../components/BluetoothManagerModal.vue'));
 
 const store = useAppStore();
 const router = useRouter();
@@ -254,7 +254,10 @@ const startScan = async () => {
                 </div>
                 <div class="flex items-center gap-2">
                     <button v-if="String(store.currentUser?.Role || '').toUpperCase() === 'ADMIN'" @click="goAdmin" class="w-9 h-9 bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center hover:bg-slate-200 transition-all duration-300 active:scale-95 shadow-sm"><i class="ph-bold ph-squares-four text-lg"></i></button>
-                    <button title="Hubungkan Printer Bluetooth" class="w-9 h-9 bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center hover:bg-slate-200 transition-all duration-300 active:scale-95 shadow-sm"><i class="ph-bold ph-printer text-lg"></i></button>
+                    <button @click="store.isBluetoothModalOpen = true" title="Hubungkan Printer Bluetooth" class="relative w-9 h-9 bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center hover:bg-slate-200 transition-all duration-300 active:scale-95 shadow-sm">
+                        <i class="ph-bold ph-printer text-lg"></i>
+                        <div v-if="store.connectedPrinter" class="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 border-2 border-slate-100 rounded-full"></div>
+                    </button>
                     <button @click="logout" title="Logout" class="w-9 h-9 bg-red-50 text-red-600 rounded-xl flex items-center justify-center hover:bg-red-100 transition-all duration-300 active:scale-95 shadow-sm"><i class="ph-bold ph-power text-lg"></i></button>
                 </div>
             </div>
@@ -423,7 +426,10 @@ const startScan = async () => {
             </div>
         </div>
         
-        <TransactionFormModal v-if="isTxFormOpen" :isOpen="isTxFormOpen" :initialData="txFormInitialData" @close="isTxFormOpen = false" @saved="handleTxSaved" />
+        <!-- Modals -->
+        <TransactionFormModal :is-open="isTransactionModalOpen" :initial-data="editingTx" @close="closeTransactionModal" @saved="handleTransactionSaved" />
+        
+        <BluetoothManagerModal :is-open="store.isBluetoothModalOpen" @close="store.isBluetoothModalOpen = false" />
         
         <!-- Success Modal (After Save) -->
         <div v-if="isSuccessModalOpen" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[9999] flex items-center justify-center p-4">
