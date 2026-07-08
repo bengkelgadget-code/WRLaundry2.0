@@ -237,18 +237,25 @@ export const generateRawTextReceipt = (px, store) => {
 
     var nameCust = resolvePelangganName(px, store);
 
+    var pSetting = store?.appData?.pengaturan;
+    if (Array.isArray(pSetting)) pSetting = pSetting[0] || {};
+    else pSetting = pSetting || {};
+    var tokoWA = pSetting.noTelp || pSetting['No Telp'] || '';
+    var tokoAlamat = pSetting.alamatToko || pSetting['Alamat Toko'] || appSettings.alamat;
+    var tokoNama = pSetting.namaToko || pSetting['Nama Toko'] || appSettings.nama;
+
     if (nameCust.length > 15) {
-        str += sizeDoubleHeight + appSettings.nama.toUpperCase() + "\n";
+        str += sizeDoubleHeight + tokoNama.toUpperCase() + "\n";
     } else {
-        str += sizeDouble + appSettings.nama.toUpperCase() + "\n";
+        str += sizeDouble + tokoNama.toUpperCase() + "\n";
     }
 
     // Address and Phone
     str += sizeNormal; // Fix: reset size before applying small font
     str += fontSmall;
-    str += appSettings.alamat + "\n";
-    if (appSettings.telp) {
-        str += "WA: " + appSettings.telp + "\n";
+    str += tokoAlamat + "\n";
+    if (tokoWA) {
+        str += "WA: " + tokoWA + "\n";
     }
     str += fontNormal;
     str += left + "-".repeat(32) + "\n";
