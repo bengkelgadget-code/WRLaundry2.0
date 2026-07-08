@@ -244,6 +244,7 @@ export const generateRawTextReceipt = (px, store) => {
     }
 
     // Address and Phone
+    str += sizeNormal; // Fix: reset size before applying small font
     str += fontSmall;
     str += appSettings.alamat + "\n";
     if (appSettings.telp) {
@@ -291,7 +292,7 @@ export const generateRawTextReceipt = (px, store) => {
             var isCoveredByQuota = false; var kgDeducted = 0;
             if (pmbStatusVal === 'Potong Kuota' && item.satuan === 'Kg' && remainingKg > 0) { isCoveredByQuota = true; kgDeducted = Math.min(item.qty, remainingKg); remainingKg -= kgDeducted; }
             var itemEst = item.estimasiSelesai ? String(item.estimasiSelesai) : '';
-            var estHtml = (!allSameDate && itemEst) ? (italicOn + '  Selesai: ' + itemEst + italicOff + '\n') : '';
+            var estHtml = (!allSameDate && itemEst) ? (fontSmall + italicOn + 'Selesai: ' + itemEst + italicOff + fontNormal + '\n') : '';
 
             if (isCoveredByQuota) {
                 str += item.nama + "\n";
@@ -300,12 +301,12 @@ export const generateRawTextReceipt = (px, store) => {
                 trackingSisaKuota -= item.qty;
             } else {
                 str += item.nama + "\n";
-                var qtyStr = "  " + item.qty + " " + item.satuan + " x " + Number(item.subtotal / item.qty).toLocaleString('id-ID');
+                var qtyStr = item.qty + " " + item.satuan + " x " + Number(item.subtotal / item.qty).toLocaleString('id-ID');
                 str += splitKV(qtyStr, "Rp " + Number(item.subtotal).toLocaleString('id-ID'));
                 str += estHtml;
             }
         });
-        if (allSameDate && firstFull) { str += italicOn + "Selesai: " + firstFull + italicOff + "\n"; }
+        if (allSameDate && firstFull) { str += fontSmall + italicOn + "Selesai: " + firstFull + italicOff + fontNormal + "\n"; }
     } else {
         str += (px['Layanan'] || '').replace(/\+/g, '\n') + "\n";
     }
