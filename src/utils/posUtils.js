@@ -166,11 +166,21 @@ export const generateReceiptHTML = (px, store) => {
     var nameFontSize = nameFontSizeNum + 'px';
     var sisaFontSize = (nameFontSizeNum - 2) + 'px';
 
+    var pSettingHtml = store?.appData?.pengaturan;
+    if (Array.isArray(pSettingHtml)) pSettingHtml = pSettingHtml[0] || {};
+    else pSettingHtml = pSettingHtml || {};
+    var htmlWA = pSettingHtml.noTelp || pSettingHtml['No Telp'] || '';
+    var htmlAlamat = pSettingHtml.alamatToko || pSettingHtml['Alamat Toko'] || appSettings.alamat;
+    var htmlNama = pSettingHtml.namaToko || pSettingHtml['Nama Toko'] || appSettings.nama;
+
     var finalHtml = '<style>@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap");</style>';
     finalHtml += '<div style="font-family: monospace; color: black; font-size: 11px; width: 100%;">';
     finalHtml += '<div style="text-align: center; margin: 18px 0 8px 0; padding-bottom:4px;">';
-    finalHtml += '<h2 style="margin:0 0 6px 0; font-size:' + nameFontSize + '; font-weight:900; letter-spacing:1px; color:black; font-family:\'Bricolage Grotesque\', sans-serif;">' + (appSettings.nama.toUpperCase()) + '</h2>';
-    finalHtml += '<p style="margin:0; font-size:10px; color:black; line-height:1.3; white-space: normal; word-wrap: break-word; text-align: center;">' + (appSettings.alamat) + '</p>';
+    finalHtml += '<h2 style="margin:0 0 6px 0; font-size:' + nameFontSize + '; font-weight:900; letter-spacing:1px; color:black; font-family:\'Bricolage Grotesque\', sans-serif;">' + htmlNama.toUpperCase() + '</h2>';
+    finalHtml += '<p style="margin:0; font-size:10px; color:black; line-height:1.3; white-space: normal; word-wrap: break-word; text-align: center;">' + htmlAlamat + '</p>';
+    if (htmlWA) {
+        finalHtml += '<p style="margin:2px 0 0 0; font-size:10px; color:black; font-weight:bold; text-align: center;">WA: ' + htmlWA + '</p>';
+    }
     finalHtml += '</div>';
     finalHtml += '<div style="border-top: 1px dashed black; border-bottom: 1px dashed black; height: 2px; margin: 6px 0;"></div>';
     finalHtml += '<table width="100%" style="font-size:11px; color:black; margin-bottom:6px; font-weight:bold;">';
