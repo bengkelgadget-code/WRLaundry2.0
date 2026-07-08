@@ -254,8 +254,8 @@ const startScan = async () => {
                 </div>
                 <div class="flex items-center gap-2">
                     <button v-if="String(store.currentUser?.Role || '').toUpperCase() === 'ADMIN'" @click="goAdmin" class="w-9 h-9 bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center hover:bg-slate-200 transition-all duration-300 active:scale-95 shadow-sm"><i class="ph-bold ph-squares-four text-lg"></i></button>
-                    <button @click="store.isBluetoothModalOpen = true" title="Hubungkan Printer Bluetooth" class="relative w-9 h-9 bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center hover:bg-slate-200 transition-all duration-300 active:scale-95 shadow-sm">
-                        <i class="ph-bold ph-printer text-lg"></i>
+                    <button @click="router.push('/admin/pengaturan')" title="Pengaturan Aplikasi" class="relative w-9 h-9 bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center hover:bg-slate-200 transition-all duration-300 active:scale-95 shadow-sm">
+                        <i class="ph-bold ph-gear text-lg"></i>
                         <div v-if="store.connectedPrinter" class="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 border-2 border-slate-100 rounded-full"></div>
                     </button>
                     <button @click="logout" title="Logout" class="w-9 h-9 bg-red-50 text-red-600 rounded-xl flex items-center justify-center hover:bg-red-100 transition-all duration-300 active:scale-95 shadow-sm"><i class="ph-bold ph-power text-lg"></i></button>

@@ -14,6 +14,9 @@ onMounted(async () => {
   store.fetchInitialData();
   store.initBluetooth();
   
+  // Set initial zoom
+  document.documentElement.style.fontSize = store.appZoom + 'px';
+  
   // Request All Permissions at Startup (as requested by user)
   const requestPermissions = async () => {
     const hasRequested = localStorage.getItem('permissions_requested');

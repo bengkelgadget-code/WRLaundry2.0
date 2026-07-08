@@ -37,8 +37,14 @@ export const useAppStore = defineStore('appData', {
     currentUser: null, // For auth
     connectedPrinter: null, // For bluetooth printer {name, address}
     isBluetoothModalOpen: false,
+    appZoom: parseInt(localStorage.getItem('waroenk_zoom')) || 16,
   }),
   actions: {
+    setAppZoom(zoomValue) {
+        this.appZoom = zoomValue;
+        localStorage.setItem('waroenk_zoom', zoomValue);
+        document.documentElement.style.fontSize = zoomValue + 'px';
+    },
     initBluetooth() {
         const savedPrinter = localStorage.getItem('waroenk_printer');
         if (savedPrinter) {

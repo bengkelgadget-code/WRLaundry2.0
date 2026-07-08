@@ -1,8 +1,14 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useAppStore } from '../stores/useAppStore';
+import { getDatabase, ref as dbRef, set } from 'firebase/database';
 
 const store = useAppStore();
+
+const appZoom = computed({
+    get: () => store.appZoom,
+    set: (val) => store.setAppZoom(parseInt(val))
+});
 
 const formData = ref({
     namaToko: '',
@@ -18,7 +24,6 @@ const saveSuccess = ref(false);
 
 const loadSettings = () => {
     if (store.appData && store.appData.pengaturan) {
-        // Since 'pengaturan' might still be an array from previous migrations, let's handle it
         let p = store.appData.pengaturan;
         if (Array.isArray(p)) {
             p = p[0] || {};
@@ -153,6 +158,32 @@ const saveSettings = async () => {
                                     <i class="ph-bold ph-upload-simple mr-2 text-lg"></i> Pilih Gambar
                                 </label>
                                 <p class="text-[11px] font-semibold text-slate-400 mt-3 bg-slate-50 p-2 rounded-lg inline-block border border-slate-100">Format: JPG, PNG. Max: 1MB.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Col 1: Tampilan Aplikasi -->
+                    <div class="bg-white rounded-[2rem] p-6 sm:p-8 shadow-sm border border-slate-100 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-50 to-white rounded-bl-full -z-10 opacity-60"></div>
+                        
+                        <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center">
+                            <i class="ph-fill ph-monitor text-emerald-500 mr-2 text-xl"></i> Tampilan Aplikasi
+                        </h3>
+
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-[11px] font-extrabold text-slate-500 mb-2 uppercase tracking-wide">Ukuran Tampilan (Zoom)</label>
+                                <div class="flex items-center gap-4">
+                                    <span class="text-xs font-bold text-slate-400">A-</span>
+                                    <input type="range" min="14" max="20" step="2" v-model="appZoom" class="w-full accent-emerald-500 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                                    <span class="text-lg font-bold text-slate-600">A+</span>
+                                </div>
+                                <div class="flex justify-between text-[10px] font-bold text-slate-400 mt-2 px-1">
+                                    <span>S</span>
+                                    <span>Normal</span>
+                                    <span>L</span>
+                                    <span>XL</span>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -725,6 +725,7 @@ watch(() => props.isOpen, (newVal) => {
                                         <div class="mb-3 relative w-full">
                                             <input type="text" v-model="item.searchQuery" 
                                                    @focus="item.showDropdown = true; scrollToActive($event)" 
+                                                   @input="item.showDropdown = true"
                                                    @blur="closeServiceDropdown(item)"
                                                    @keydown.tab="handleServiceKeydown($event, item, index)"
                                                    @keydown.enter.prevent="handleServiceKeydown($event, item, index)"
