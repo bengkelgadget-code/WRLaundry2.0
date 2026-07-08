@@ -4,6 +4,8 @@ import { useAppStore } from './stores/useAppStore';
 import { CapacitorUpdater } from '@capgo/capacitor-updater';
 import { App as CapacitorApp } from '@capacitor/app';
 import { useRouter } from 'vue-router';
+import { BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
+import { BluetoothSerial } from '@e-is/capacitor-bluetooth-serial';
 
 const store = useAppStore();
 const router = useRouter();
@@ -11,6 +13,24 @@ const router = useRouter();
 onMounted(async () => {
   store.fetchInitialData();
   store.initBluetooth();
+  
+  // Request All Permissions at Startup (as requested by user)
+  const requestPermissions = async () => {
+    const hasRequested = localStorage.getItem('permissions_requested');
+    if (!hasRequested) {
+      try {
+        // Request Camera Permission for Barcode Scanner
+        await BarcodeScanner.requestPermissions();
+        // Request Bluetooth & Location Permissions
+        await BluetoothSerial.enable();
+        
+        localStorage.setItem('permissions_requested', 'true');
+      } catch (e) {
+        console.error("Failed to request permissions on startup", e);
+      }
+    }
+  };
+  requestPermissions();
   
   try {
     await CapacitorUpdater.notifyAppReady();

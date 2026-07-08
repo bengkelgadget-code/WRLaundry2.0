@@ -470,7 +470,10 @@ export const actionPrintReceipt = async (tx, store) => {
                 return;
             }
             var strRaw = generateRawTextReceipt(tx, store);
-            await BluetoothSerial.write({ data: strRaw });
+            await BluetoothSerial.write({ 
+                address: store.connectedPrinter.address, 
+                value: strRaw 
+            });
             alert("Nota berhasil dicetak!");
             return;
         } catch (e) {
