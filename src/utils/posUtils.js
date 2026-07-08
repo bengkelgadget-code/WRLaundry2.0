@@ -483,9 +483,24 @@ export const actionPrintReceipt = async (tx, store) => {
                 alert("Printer tidak valid atau koneksi kadaluarsa. Silakan HAPUS printer lama di menu Pengaturan/Atas lalu KONEKSIKAN ULANG printer Anda.");
                 return;
             }
+            var printerAddress = store.connectedPrinter.address;
+            
+            // Auto reconnect if not connected
+            try {
+                var connStat = await BluetoothSerial.isConnected({ address: printerAddress });
+                if (!connStat || !connStat.connected) {
+                    console.log("Auto-reconnecting to printer...");
+                    await BluetoothSerial.connect({ address: printerAddress });
+                }
+            } catch (reconErr) {
+                console.error("Auto-reconnect error:", reconErr);
+                alert("Gagal koneksi ulang ke printer. Pastikan printer menyala.");
+                return;
+            }
+
             var strRaw = generateRawTextReceipt(tx, store);
             await BluetoothSerial.write({ 
-                address: store.connectedPrinter.address, 
+                address: printerAddress, 
                 value: strRaw 
             });
             alert("Nota berhasil dicetak!");
