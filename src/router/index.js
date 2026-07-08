@@ -77,7 +77,7 @@ router.beforeEach(async (to, from) => {
           }
       }
       
-      if (String(user.Role).toUpperCase() === 'STAFF' && to.path !== '/admin/staff') {
+      if (String(user.Role).toUpperCase() === 'STAFF' && to.path !== '/admin/staff' && to.path !== '/admin/pengaturan') {
         return '/admin/staff';
       }
     } catch(e) {
