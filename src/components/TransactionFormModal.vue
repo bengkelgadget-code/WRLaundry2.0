@@ -111,12 +111,16 @@ const addServiceRow = () => {
     calculateTotals();
     
     // Focus new service input after render
-    nextTick(() => {
+    setTimeout(() => {
         const srvInputs = document.querySelectorAll('.service-input');
         if (srvInputs.length > 0) {
-            srvInputs[srvInputs.length - 1].focus();
+            const el = srvInputs[srvInputs.length - 1];
+            el.focus();
+            setTimeout(() => {
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 150);
         }
-    });
+    }, 150);
 };
 
 const removeServiceRow = (index) => {
