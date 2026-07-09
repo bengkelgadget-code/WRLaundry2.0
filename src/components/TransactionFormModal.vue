@@ -480,9 +480,7 @@ const saveTransaction = async () => {
                 'Paket Member': '',
                 'Sisa Kuota (Kg)': 0
             };
-            const db = getDatabase();
-            const pRef = dbRef(db, 'appData/pelanggan/' + newCust.ID);
-            await set(pRef, newCust);
+            await store.saveRecord('Pelanggan', newCust);
         }
 
         // Format Detail Layanan
@@ -572,9 +570,7 @@ const saveTransaction = async () => {
             payload['No Nota'] = formData.value['No Nota'] || notaPrefix + String(maxNota + 1).padStart(3, '0');
             payload['Waktu Masuk'] = new Intl.DateTimeFormat('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(dDate);
             
-            const db = getDatabase();
-            const txRef = dbRef(db, 'appData/produksi/' + payload.ID);
-            await set(txRef, payload);
+            await store.saveRecord('Produksi', payload);
         }
         
         // Deduct Sisa Kuota if new is Potong Kuota
@@ -584,9 +580,7 @@ const saveTransaction = async () => {
                 let sisa = parseFloat(c['Sisa Kuota (Kg)']) - parseFloat(payload['Kg Terpakai']);
                 c['Sisa Kuota (Kg)'] = sisa < 0 ? 0 : Math.round(sisa * 100) / 100;
                 
-                const db = getDatabase();
-                const cRef = dbRef(db, 'appData/pelanggan/' + c.ID);
-                await update(cRef, c);
+                await store.updateRecord('Pelanggan', c.ID, c);
             }
         }
         

@@ -32,9 +32,7 @@ const closeDetailModal = () => {
 const saveDetailStatus = async () => {
     if (!selectedTx.value) return;
     try {
-        const db = getDatabase();
-        const txRef = dbRef(db, 'appData/produksi/' + selectedTx.value.ID);
-        await update(txRef, {
+        await store.updateRecord('Produksi', selectedTx.value.ID, {
             Status: selectedTx.value.Status,
             Pembayaran: selectedTx.value.Pembayaran
         });
