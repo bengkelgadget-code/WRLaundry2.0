@@ -177,10 +177,18 @@ const selectCustomer = (c) => {
     formData.value['ID Pelanggan'] = c.ID;
     formData.value['Nama Pelanggan'] = c['Nama Pelanggan'] || '';
     formData.value['No Telpon'] = c['No Telpon'] || '';
+    formData.value['No Telpon'] = c['No Telpon'] || '';
     showNamaDropdown.value = false;
     showHpDropdown.value = false;
     
     // Potong Kuota status should be reset or checked based on this
+    setTimeout(() => {
+        const firstSrv = document.querySelector('.service-input');
+        if (firstSrv) {
+            firstSrv.focus();
+            firstSrv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }, 150);
 };
 
 const handleCustomerInput = (field) => {
@@ -245,6 +253,17 @@ const handleQtyFocus = (e) => {
     if (e && e.target) {
         e.target.select();
     }
+};
+
+const focusDiskon = () => {
+    setTimeout(() => {
+        const diskonEl = document.querySelector('.diskon-input');
+        if (diskonEl) {
+            diskonEl.focus();
+            diskonEl.select();
+            diskonEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }, 150);
 };
 
 const focusQty = (index) => {
@@ -336,11 +355,20 @@ const filteredSatuan = (query) => {
     });
 };
 
-const selectService = (item, id, data) => {
+const selectService = (item, index, id, data) => {
     item.serviceId = id;
     item.searchQuery = data['Nama Layanan'];
     item.showDropdown = false;
     handleServiceChange(item);
+    
+    setTimeout(() => {
+        const qtyEl = document.getElementById(`qty-input-${index}`);
+        if (qtyEl) {
+            qtyEl.focus();
+            qtyEl.select();
+            qtyEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }, 150);
 };
 
 const closeServiceDropdown = (item) => {
@@ -627,6 +655,14 @@ watch(() => props.isOpen, (newVal) => {
             imagePreview.value = '';
             imageFile.value = null;
         }
+        
+        setTimeout(() => {
+            const namaEl = document.querySelector('.nama-pelanggan-input');
+            if (namaEl) {
+                namaEl.focus();
+                namaEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 300);
     }
 }, { immediate: true });
 
@@ -672,7 +708,7 @@ watch(() => props.isOpen, (newVal) => {
                                     <!-- Input Nama -->
                                     <div class="relative">
                                         <label class="block text-[0.6875rem] font-bold text-slate-600 mb-1.5 uppercase">Nama Pelanggan <span class="text-red-500">*</span></label>
-                                        <input type="text" v-model="formData['Nama Pelanggan']" required @focus="showNamaDropdown = true; scrollToActive($event)" @input="handleCustomerInput('nama')" @blur="closeNamaDropdown" @keydown.tab="handleAutocompleteKeydown($event, 'nama')" @keydown.enter.prevent="handleAutocompleteKeydown($event, 'nama')" placeholder="Ketik nama pelanggan..." class="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 focus:border-teal-400 focus:ring-2 focus:ring-teal-50 outline-none transition-all text-sm font-bold text-slate-800">
+                                        <input type="text" v-model="formData['Nama Pelanggan']" required @focus="showNamaDropdown = true; scrollToActive($event)" @input="handleCustomerInput('nama')" @blur="closeNamaDropdown" @keydown.tab="handleAutocompleteKeydown($event, 'nama')" @keydown.enter.prevent="handleAutocompleteKeydown($event, 'nama')" placeholder="Ketik nama pelanggan..." class="nama-pelanggan-input w-full px-4 py-3 rounded-xl bg-white border border-slate-200 focus:border-teal-400 focus:ring-2 focus:ring-teal-50 outline-none transition-all text-sm font-bold text-slate-800">
                                         
                                         <!-- Dropdown Nama -->
                                         <div v-if="showNamaDropdown" class="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-48 overflow-y-auto overflow-x-hidden">
@@ -753,7 +789,7 @@ watch(() => props.isOpen, (newVal) => {
                                         <div class="flex gap-3 items-end">
                                             <div class="w-1/3">
                                                 <label class="block text-[0.625rem] font-black text-slate-400 mb-1.5 uppercase">{{ item.type === 'Kiloan' ? 'Bobot (Kg)' : 'Qty (Pcs)' }}</label>
-                                                <input type="number" step="any" min="0.1" v-model.number="item.qty" @focus="handleQtyFocus($event)" @input="calculateItemSubtotal(item)" class="qty-input w-full px-3 py-2.5 rounded-xl bg-white border border-slate-200 focus:border-teal-400 outline-none text-sm font-black text-slate-700 text-center">
+                                                <input type="number" step="any" min="0.1" v-model.number="item.qty" @focus="handleQtyFocus($event)" @input="calculateItemSubtotal(item)" @keydown.enter.prevent="focusDiskon()" class="qty-input w-full px-3 py-2.5 rounded-xl bg-white border border-slate-200 focus:border-teal-400 outline-none text-sm font-black text-slate-700 text-center" :id="`qty-input-${index}`">
                                             </div>
                                             <div class="w-2/3">
                                                 <label class="block text-[0.625rem] font-black text-slate-400 mb-1.5 uppercase text-right">Subtotal</label>
@@ -797,7 +833,7 @@ watch(() => props.isOpen, (newVal) => {
                                     <div class="flex-1 flex flex-col gap-3">
                                         <div>
                                             <label class="block text-[0.6875rem] font-bold text-slate-600 mb-1.5 uppercase">Diskon (Rp)</label>
-                                            <input type="number" v-model.number="formData.Diskon" @focus="scrollToActive($event)" placeholder="Rp 0" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 outline-none text-sm font-bold focus:ring-2 focus:ring-teal-300 font-mono text-slate-700">
+                                            <input type="number" v-model.number="formData.Diskon" @focus="scrollToActive($event)" placeholder="Rp 0" class="diskon-input w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 outline-none text-sm font-bold focus:ring-2 focus:ring-teal-300 font-mono text-slate-700">
                                         </div>
                                         <div>
                                             <label class="block text-[0.6875rem] font-bold text-slate-600 mb-1.5 uppercase">Status Pembayaran</label>
