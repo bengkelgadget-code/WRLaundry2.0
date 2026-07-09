@@ -691,7 +691,7 @@ watch(() => props.isOpen, (newVal) => {
                 
                 <!-- Body Area -->
                 <div class="overflow-x-hidden overflow-y-auto flex-1 w-full bg-slate-50 flex flex-col items-center scroll-smooth p-4 sm:p-6" id="form-scroll-area">
-                    <div class="w-full max-w-3xl pb-24">
+                    <div class="w-full max-w-3xl pb-[50vh]">
                         <form @submit.prevent="saveTransaction" class="space-y-4">
                             <!-- Section Pelanggan -->
                             <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-100">
@@ -771,14 +771,14 @@ watch(() => props.isOpen, (newVal) => {
                                             
                                             <div v-if="item.showDropdown" class="absolute z-20 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-48 overflow-y-auto overflow-x-hidden">
                                                 <div class="py-1 px-3 text-[0.625rem] font-black tracking-widest text-slate-400 uppercase bg-slate-50 border-b border-slate-100">Layanan Kiloan</div>
-                                                <div v-for="k in filteredKiloan(item.searchQuery)" :key="'K-'+k.ID" @mousedown.prevent="selectService(item, 'K-'+k.ID, k)" class="py-2 px-3 hover:bg-teal-50 cursor-pointer border-b border-slate-50 transition-colors">
+                                                <div v-for="k in filteredKiloan(item.searchQuery)" :key="'K-'+k.ID" @mousedown.prevent="selectService(item, index, 'K-'+k.ID, k)" class="py-2 px-3 hover:bg-teal-50 cursor-pointer border-b border-slate-50 transition-colors">
                                                     <span class="font-bold block text-slate-700 text-[1rem] mb-0.5">{{ k['Nama Layanan'] }}</span>
                                                     <span class="text-[0.6875rem] font-bold text-teal-600">Rp {{ formatRupiah(k['Harga/Kg']) }} / Kg</span>
                                                 </div>
                                                 <div v-if="filteredKiloan(item.searchQuery).length === 0 && item.searchQuery" class="py-2 px-3 text-xs text-slate-400 italic">Tidak ditemukan...</div>
                                                 
                                                 <div class="py-1 px-3 text-[0.625rem] font-black tracking-widest text-slate-400 uppercase bg-slate-50 border-b border-slate-100 border-t border-t-slate-200 mt-1">Layanan Satuan</div>
-                                                <div v-for="s in filteredSatuan(item.searchQuery)" :key="'S-'+s.ID" @mousedown.prevent="selectService(item, 'S-'+s.ID, s)" class="py-2 px-3 hover:bg-teal-50 cursor-pointer border-b border-slate-50 transition-colors">
+                                                <div v-for="s in filteredSatuan(item.searchQuery)" :key="'S-'+s.ID" @mousedown.prevent="selectService(item, index, 'S-'+s.ID, s)" class="py-2 px-3 hover:bg-teal-50 cursor-pointer border-b border-slate-50 transition-colors">
                                                     <span class="font-bold block text-slate-700 text-[1rem] mb-0.5">{{ s['Nama Layanan'] }}</span>
                                                     <span class="text-[0.6875rem] font-bold text-teal-600">Rp {{ formatRupiah(s['Harga/Pcs']) }} / Pcs</span>
                                                 </div>
