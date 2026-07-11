@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { initializeApp } from 'firebase/app';
-import { getDatabase, ref, set, get, onValue } from 'firebase/database';
+import { getDatabase, ref, set, get, onValue, remove } from 'firebase/database';
 
 const GAS_URL = "https://script.google.com/macros/s/AKfycbw4LsV2mB_x517QfNxQtA4AQmdYzyaUNPp0KCcC1F-_o-0wJtUaKYvdlqKmZcWBKq4Cyw/exec";
 
@@ -70,7 +70,19 @@ export const useAppStore = defineStore('appData', {
     },
     sanitizeFbKeys(data) {
         if (!data) return data;
-        return JSON.parse(JSON.stringify(data).replace(/"Harga\/Kg":/g, '"Harga_Kg":').replace(/"Harga\/Pcs":/g, '"Harga_Pcs":'));
+        let sanitized = JSON.parse(JSON.stringify(data).replace(/"Harga\/Kg":/g, '"Harga_Kg":').replace(/"Harga\/Pcs":/g, '"Harga_Pcs":'));
+        ['produksi', 'pelanggan', 'waktu', 'kiloan', 'satuan', 'pewangi', 'member', 'users'].forEach(k => {
+            if (sanitized[k] && Array.isArray(sanitized[k])) {
+                let obj = {};
+                sanitized[k].forEach(item => {
+                    if (item && item.ID) {
+                        obj[item.ID] = item;
+                    }
+                });
+                sanitized[k] = obj;
+            }
+        });
+        return sanitized;
     },
     restoreFbKeys(data) {
         if (!data) return data;
@@ -220,7 +232,7 @@ export const useAppStore = defineStore('appData', {
         this.appData[key].push(dataObj);
         this.appData[key] = this.sortDataByIdDesc(this.appData[key]); 
         
-        await set(ref(database, `appData/${key}`), this.sanitizeFbKeys(this.appData[key]));
+        await set(ref(database, `appData/${key}/${dataObj.ID}`), this.sanitizeFbKeys(dataObj));
         
         fetch(GAS_URL, { 
             method: 'POST', 
@@ -240,7 +252,7 @@ export const useAppStore = defineStore('appData', {
             this.appData[key][idx] = { ...this.appData[key][idx], ...dataObj, ID: id };
             this.appData[key] = this.sortDataByIdDesc(this.appData[key]);
             
-            await set(ref(database, `appData/${key}`), this.sanitizeFbKeys(this.appData[key]));
+            await set(ref(database, `appData/${key}/${id}`), this.sanitizeFbKeys(dataObj));
             
             fetch(GAS_URL, { 
                 method: 'POST', 
@@ -260,7 +272,7 @@ export const useAppStore = defineStore('appData', {
         if (idx !== -1) {
             this.appData[key].splice(idx, 1);
             
-            await set(ref(database, `appData/${key}`), this.sanitizeFbKeys(this.appData[key]));
+            await remove(ref(database, `appData/${key}/${id}`));
             
             fetch(GAS_URL, { 
                 method: 'POST', 
