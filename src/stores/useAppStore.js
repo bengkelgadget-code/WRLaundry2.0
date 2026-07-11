@@ -96,6 +96,7 @@ export const useAppStore = defineStore('appData', {
                 ['produksi', 'pelanggan', 'waktu', 'kiloan', 'satuan', 'pewangi', 'member', 'users'].forEach((k) => {
                     if (restored[k]) {
                         if (!Array.isArray(restored[k])) restored[k] = Object.values(restored[k]);
+                        restored[k] = restored[k].filter(item => item && item.ID);
                         restored[k] = this.sortDataByIdDesc(restored[k]);
                     }
                 });
@@ -125,6 +126,7 @@ export const useAppStore = defineStore('appData', {
                 ['produksi', 'pelanggan', 'waktu', 'kiloan', 'satuan', 'pewangi', 'member', 'users'].forEach((k) => {
                     if (restored[k]) {
                         if (!Array.isArray(restored[k])) restored[k] = Object.values(restored[k]);
+                        restored[k] = restored[k].filter(item => item && item.ID);
                         restored[k] = this.sortDataByIdDesc(restored[k]);
                     }
                 });
@@ -192,7 +194,7 @@ export const useAppStore = defineStore('appData', {
             }
         });
         this.appData.produksi = this.sortDataByIdDesc(merged);
-        set(ref(database, 'appData'), this.sanitizeFbKeys(this.appData));
+        set(ref(database, 'appData/produksi'), this.sanitizeFbKeys(this.appData.produksi));
     },
     async saveRecord(sheet, dataObj) {
         let key = sheet.toLowerCase().replace('layanan', '');
@@ -218,7 +220,7 @@ export const useAppStore = defineStore('appData', {
         this.appData[key].push(dataObj);
         this.appData[key] = this.sortDataByIdDesc(this.appData[key]); 
         
-        await set(ref(database, 'appData'), this.sanitizeFbKeys(this.appData));
+        await set(ref(database, `appData/${key}`), this.sanitizeFbKeys(this.appData[key]));
         
         fetch(GAS_URL, { 
             method: 'POST', 
@@ -238,7 +240,7 @@ export const useAppStore = defineStore('appData', {
             this.appData[key][idx] = { ...this.appData[key][idx], ...dataObj, ID: id };
             this.appData[key] = this.sortDataByIdDesc(this.appData[key]);
             
-            await set(ref(database, 'appData'), this.sanitizeFbKeys(this.appData));
+            await set(ref(database, `appData/${key}`), this.sanitizeFbKeys(this.appData[key]));
             
             fetch(GAS_URL, { 
                 method: 'POST', 
@@ -258,7 +260,7 @@ export const useAppStore = defineStore('appData', {
         if (idx !== -1) {
             this.appData[key].splice(idx, 1);
             
-            await set(ref(database, 'appData'), this.sanitizeFbKeys(this.appData));
+            await set(ref(database, `appData/${key}`), this.sanitizeFbKeys(this.appData[key]));
             
             fetch(GAS_URL, { 
                 method: 'POST', 
