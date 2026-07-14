@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { initializeApp } from 'firebase/app';
-import { getDatabase, ref, set, get, onValue, remove } from 'firebase/database';
+import { getDatabase, ref, set, get, onValue, remove, update } from 'firebase/database';
 
 const GAS_URL = "https://script.google.com/macros/s/AKfycbw4LsV2mB_x517QfNxQtA4AQmdYzyaUNPp0KCcC1F-_o-0wJtUaKYvdlqKmZcWBKq4Cyw/exec";
 
@@ -252,7 +252,7 @@ export const useAppStore = defineStore('appData', {
             this.appData[key][idx] = { ...this.appData[key][idx], ...dataObj, ID: id };
             this.appData[key] = this.sortDataByIdDesc(this.appData[key]);
             
-            await set(ref(database, `appData/${key}/${id}`), this.sanitizeFbKeys(dataObj));
+            await update(ref(database, `appData/${key}/${id}`), this.sanitizeFbKeys(dataObj));
             
             fetch(GAS_URL, { 
                 method: 'POST', 
