@@ -13,7 +13,6 @@ const router = useRouter();
 
 const searchQuery = ref('');
 const filterStatus = ref('');
-const filterDateEnabled = ref(false);
 const filterDate = ref('');
 
 const isDetailModalOpen = ref(false);
@@ -87,7 +86,7 @@ const filteredTransactions = computed(() => {
     if (filterStatus.value) {
         data = data.filter(d => d.Status === filterStatus.value);
     }
-    if (filterDateEnabled.value && filterDate.value) {
+    if (filterDate.value) {
         data = data.filter(d => {
             if (!d['Waktu Masuk']) return false;
             // Assuming Waktu Masuk is in DD/MM/YYYY format or similar
@@ -216,8 +215,16 @@ const handleTouchEnd = async () => {
 const forceRefresh = async () => {
     isRefreshing.value = true;
     pullDistance.value = 50;
+    
+    // Reset filters
+    filterDate.value = '';
+    searchQuery.value = '';
+    filterStatus.value = '';
+    currentPage.value = 1;
+
     try {
-        await store.fetchFromGas();
+        const minDelay = new Promise(resolve => setTimeout(resolve, 800));
+        await Promise.all([store.fetchInitialData(), minDelay]);
     } finally {
         isRefreshing.value = false;
         pullDistance.value = 0;
@@ -291,24 +298,18 @@ const startScan = async () => {
                 </div>
                 
                 <div class="slide-up-fade flex gap-2 w-full items-center mb-4">
-                    <div class="flex items-center gap-2.5 shrink-0 bg-white border border-slate-200 rounded-2xl p-1.5 shadow-sm z-20 h-[46px]">
-                        <label class="relative inline-flex items-center cursor-pointer ml-1.5" title="Aktifkan/Matikan Filter Tanggal">
-                            <input type="checkbox" v-model="filterDateEnabled" class="sr-only peer">
-                            <div class="w-[36px] h-5 bg-rose-500 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500 shadow-inner"></div>
-                        </label>
-                        <div class="w-px h-6 bg-slate-100"></div>
-                        <div :class="['relative w-[34px] h-[34px] transition-all duration-300', !filterDateEnabled ? 'opacity-40 grayscale pointer-events-none' : '']">
-                            <input type="date" v-model="filterDate" @change="currentPage = 1" title="Pilih Tanggal" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" :disabled="!filterDateEnabled">
-                            <div class="w-full h-full bg-slate-50 rounded-xl flex items-center justify-center text-slate-500 relative transition-colors border border-transparent active:scale-95">
-                                <i class="ph-bold ph-calendar-blank text-[1.375rem]"></i>
-                            </div>
-                        </div>
+                    <!-- Simplified Date Filter -->
+                    <div class="relative w-[46px] h-[46px] shrink-0 bg-white border border-slate-200 rounded-2xl flex items-center justify-center text-slate-500 hover:bg-slate-50 transition-colors shadow-sm cursor-pointer" :class="{'ring-2 ring-emerald-400 border-emerald-400 bg-emerald-50 text-emerald-600': filterDate}">
+                        <input type="date" v-model="filterDate" @change="currentPage = 1" title="Pilih Tanggal" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                        <i class="ph-bold ph-calendar-blank text-xl"></i>
+                        <div v-if="filterDate" class="absolute top-1 right-1 w-2 h-2 bg-rose-500 rounded-full border border-white"></div>
                     </div>
                     
+                    <!-- Search Field -->
                     <div class="relative flex-1 min-w-0 h-[46px]">
                         <i class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
-                        <input type="text" v-model="searchQuery" @input="currentPage = 1" placeholder="Cari nota, nama, hp..." class="w-full h-full pl-9 pr-10 py-2 text-[0.8125rem] font-bold border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-teal-300 bg-white outline-none transition-all">
-                        <button @click="startScan" class="absolute right-2 top-1/2 transform -translate-y-1/2 w-7 h-7 bg-teal-50 text-teal-600 rounded-lg flex items-center justify-center hover:bg-teal-100 transition-colors" title="Scan Barcode Resi">
+                        <input type="text" v-model="searchQuery" @input="currentPage = 1" placeholder="Cari nota, nama, hp..." class="w-full h-full pl-9 pr-10 py-2 text-[0.8125rem] font-bold border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-teal-300 bg-white outline-none transition-all placeholder-slate-400 text-slate-700">
+                        <button @click="startScan" class="absolute right-1 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-teal-50 text-teal-600 rounded-xl flex items-center justify-center hover:bg-teal-100 transition-colors" title="Scan Barcode Resi">
                             <i class="ph-bold ph-barcode text-lg"></i>
                         </button>
                     </div>
