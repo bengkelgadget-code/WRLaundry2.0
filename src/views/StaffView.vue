@@ -206,14 +206,23 @@ const handleTouchEnd = async () => {
     if (!isPulling.value || isRefreshing.value) return;
     
     if (pullDistance.value > 50) {
-        isRefreshing.value = true;
-        pullDistance.value = 50;
-        await store.fetchFromGas();
-        isRefreshing.value = false;
+        forceRefresh();
+    } else {
+        pullDistance.value = 0;
+        isPulling.value = false;
     }
-    
-    pullDistance.value = 0;
-    isPulling.value = false;
+};
+
+const forceRefresh = async () => {
+    isRefreshing.value = true;
+    pullDistance.value = 50;
+    try {
+        await store.fetchFromGas();
+    } finally {
+        isRefreshing.value = false;
+        pullDistance.value = 0;
+        isPulling.value = false;
+    }
 };
 
 // Barcode Scanner
@@ -298,11 +307,15 @@ const startScan = async () => {
                     
                     <div class="relative flex-1 min-w-0 h-[46px]">
                         <i class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
-                        <input type="text" v-model="searchQuery" @input="currentPage = 1" placeholder="Cari..." class="w-full h-full pl-9 pr-10 py-2 text-[0.8125rem] font-bold border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-teal-300 bg-white outline-none transition-all">
+                        <input type="text" v-model="searchQuery" @input="currentPage = 1" placeholder="Cari nota, nama, hp..." class="w-full h-full pl-9 pr-10 py-2 text-[0.8125rem] font-bold border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-teal-300 bg-white outline-none transition-all">
                         <button @click="startScan" class="absolute right-2 top-1/2 transform -translate-y-1/2 w-7 h-7 bg-teal-50 text-teal-600 rounded-lg flex items-center justify-center hover:bg-teal-100 transition-colors" title="Scan Barcode Resi">
                             <i class="ph-bold ph-barcode text-lg"></i>
                         </button>
                     </div>
+
+                    <button @click="forceRefresh" :disabled="isRefreshing" title="Segarkan Data" class="w-[46px] h-[46px] shrink-0 bg-white border border-slate-200 rounded-2xl flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-all active:scale-95 shadow-sm disabled:opacity-50">
+                        <i class="ph-bold ph-arrows-clockwise text-lg" :class="{'animate-spin': isRefreshing}"></i>
+                    </button>
                     
                     <select v-model="filterStatus" @change="currentPage = 1" class="w-[105px] h-[46px] shrink-0 px-2 py-2 text-[0.8125rem] font-bold border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-teal-300 bg-white text-slate-700 outline-none transition-all cursor-pointer">
                         <option value="">Semua</option>
