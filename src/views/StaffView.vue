@@ -313,10 +313,6 @@ const startScan = async () => {
                             <i class="ph-bold ph-barcode text-lg"></i>
                         </button>
                     </div>
-
-                    <button @click="forceRefresh" :disabled="isRefreshing" title="Segarkan Data" class="w-[46px] h-[46px] shrink-0 bg-white border border-slate-200 rounded-2xl flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-all active:scale-95 shadow-sm disabled:opacity-50">
-                        <i class="ph-bold ph-arrows-clockwise text-lg" :class="{'animate-spin': isRefreshing}"></i>
-                    </button>
                     
                     <select v-model="filterStatus" @change="currentPage = 1" class="w-[105px] h-[46px] shrink-0 px-2 py-2 text-[0.8125rem] font-bold border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-teal-300 bg-white text-slate-700 outline-none transition-all cursor-pointer">
                         <option value="">Semua</option>
