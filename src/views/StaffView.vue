@@ -181,7 +181,7 @@ const isRefreshing = ref(false);
 let startY = 0;
 
 const handleTouchStart = (e) => {
-    if (scrollContainer.value && scrollContainer.value.scrollTop === 0) {
+    if (scrollContainer.value && scrollContainer.value.scrollTop <= 5) {
         startY = e.touches[0].clientY;
         isPulling.value = true;
     } else {
@@ -194,7 +194,7 @@ const handleTouchMove = (e) => {
     const currentY = e.touches[0].clientY;
     const diff = currentY - startY;
     
-    if (diff > 0) {
+    if (diff > 0 && scrollContainer.value.scrollTop <= 5) {
         if (e.cancelable) e.preventDefault(); // Prevent native pull-to-refresh
         pullDistance.value = Math.min(diff * 0.4, 80);
     } else {
@@ -208,7 +208,7 @@ const handleTouchEnd = async () => {
     if (pullDistance.value > 50) {
         isRefreshing.value = true;
         pullDistance.value = 50;
-        await store.fetchInitialData();
+        await store.fetchFromGas();
         isRefreshing.value = false;
     }
     
