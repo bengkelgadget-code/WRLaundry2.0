@@ -44,26 +44,32 @@ watch(searchQuery, () => {
     selectedRows.value = []; // Clear selection when search changes to prevent applying bulk action to hidden items
 });
 
-const applyBulkStatus = async () => {
-    if (!bulkStatus.value || selectedRows.value.length === 0) return;
-    if (confirm(`Apakah Anda yakin ingin mengubah status ${selectedRows.value.length} transaksi menjadi '${bulkStatus.value.toUpperCase()}'?`)) {
-        for (const id of selectedRows.value) {
-            await store.updateRecord('Produksi', id, { Status: bulkStatus.value });
-        }
-        selectedRows.value = [];
+const applyBulkUpdate = async () => {
+    if ((!bulkStatus.value && !bulkPembayaran.value) || selectedRows.value.length === 0) return;
+    
+    let confirmMsg = `Apakah Anda yakin ingin mengubah `;
+    if (bulkStatus.value && bulkPembayaran.value) {
+        confirmMsg += `status menjadi '${bulkStatus.value.toUpperCase()}' dan pembayaran menjadi '${bulkPembayaran.value.toUpperCase()}'`;
+    } else if (bulkStatus.value) {
+        confirmMsg += `status menjadi '${bulkStatus.value.toUpperCase()}'`;
+    } else if (bulkPembayaran.value) {
+        confirmMsg += `pembayaran menjadi '${bulkPembayaran.value.toUpperCase()}'`;
     }
-    bulkStatus.value = '';
-};
+    confirmMsg += ` untuk ${selectedRows.value.length} transaksi?`;
 
-const applyBulkPembayaran = async () => {
-    if (!bulkPembayaran.value || selectedRows.value.length === 0) return;
-    if (confirm(`Apakah Anda yakin ingin mengubah status pembayaran ${selectedRows.value.length} transaksi menjadi '${bulkPembayaran.value.toUpperCase()}'?`)) {
+    if (confirm(confirmMsg)) {
+        const updateData = {};
+        if (bulkStatus.value) updateData.Status = bulkStatus.value;
+        if (bulkPembayaran.value) updateData.Pembayaran = bulkPembayaran.value;
+
         for (const id of selectedRows.value) {
-            await store.updateRecord('Produksi', id, { Pembayaran: bulkPembayaran.value });
+            await store.updateRecord('Produksi', id, updateData);
         }
+        
         selectedRows.value = [];
+        bulkStatus.value = '';
+        bulkPembayaran.value = '';
     }
-    bulkPembayaran.value = '';
 };
 
 // Modal State
@@ -264,18 +270,21 @@ const saveModalData = async (formData) => {
                         <!-- Bulk Actions -->
                         <template v-if="selectedRows.length > 0">
                             <span class="text-[0.6875rem] font-bold text-slate-500 whitespace-nowrap bg-slate-100 px-2 py-1.5 rounded-md border border-slate-200">{{ selectedRows.length }} dipilih</span>
-                            <select v-model="bulkStatus" @change="applyBulkStatus" class="h-[34px] text-[0.8125rem] font-semibold border border-slate-200 rounded-lg bg-white text-slate-600 focus:border-teal-400 focus:ring-1 focus:ring-teal-400 outline-none cursor-pointer shadow-sm px-2">
+                            <select v-model="bulkStatus" class="h-[34px] text-[0.8125rem] font-semibold border border-slate-200 rounded-lg bg-white text-slate-600 focus:border-teal-400 focus:ring-1 focus:ring-teal-400 outline-none cursor-pointer shadow-sm px-2">
                                 <option value="" disabled selected>Ubah Status...</option>
                                 <option value="Proses">Proses</option>
                                 <option value="Selesai">Selesai</option>
                                 <option value="Diambil">Diambil</option>
                                 <option value="Batal">Batal</option>
                             </select>
-                            <select v-model="bulkPembayaran" @change="applyBulkPembayaran" class="h-[34px] text-[0.8125rem] font-semibold border border-slate-200 rounded-lg bg-white text-slate-600 focus:border-teal-400 focus:ring-1 focus:ring-teal-400 outline-none cursor-pointer shadow-sm px-2">
+                            <select v-model="bulkPembayaran" class="h-[34px] text-[0.8125rem] font-semibold border border-slate-200 rounded-lg bg-white text-slate-600 focus:border-teal-400 focus:ring-1 focus:ring-teal-400 outline-none cursor-pointer shadow-sm px-2">
                                 <option value="" disabled selected>Ubah Bayar...</option>
                                 <option value="Lunas">Lunas</option>
                                 <option value="Belum Lunas">Belum Lunas</option>
                             </select>
+                            <button @click="applyBulkUpdate" :disabled="!bulkStatus && !bulkPembayaran" class="shrink-0 h-[34px] bg-indigo-500 hover:bg-indigo-600 text-white text-[0.8125rem] font-bold px-4 rounded-lg transition-all flex items-center justify-center whitespace-nowrap active:scale-95 shadow-sm disabled:opacity-50 border border-transparent">
+                                Terapkan
+                            </button>
                         </template>
                     </div>
 
