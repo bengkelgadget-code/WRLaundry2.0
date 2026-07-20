@@ -266,6 +266,41 @@ export const useAppStore = defineStore('appData', {
         }
         return false;
     },
+    async updateBulkRecord(sheet, updatesArray) {
+        let key = sheet.toLowerCase().replace('layanan', '');
+        if (!this.appData[key]) return false;
+        
+        let fbUpdates = {};
+        
+        updatesArray.forEach(req => {
+            let idx = this.appData[key].findIndex(r => r.ID === req.id);
+            if (idx !== -1) {
+                this.appData[key][idx] = { ...this.appData[key][idx], ...req.data, ID: req.id };
+                let sanitized = this.sanitizeFbKeys(req.data);
+                for (let prop in sanitized) {
+                    fbUpdates[`appData/${key}/${req.id}/${prop}`] = sanitized[prop];
+                }
+            }
+        });
+        
+        this.appData[key] = this.sortDataByIdDesc(this.appData[key]);
+        
+        if (Object.keys(fbUpdates).length > 0) {
+            await update(ref(database), fbUpdates);
+            
+            updatesArray.forEach(req => {
+                fetch(GAS_URL, { 
+                    method: 'POST', 
+                    redirect: 'follow',
+                    keepalive: true, 
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
+                    body: JSON.stringify({ action: 'updateRecord', payload: {sheetName: sheet, id: req.id, data: req.data} }) 
+                }).catch(e => console.warn("GAS sync failed", e));
+            });
+        }
+        
+        return true;
+    },
     async deleteRecord(sheet, id) {
         let key = sheet.toLowerCase().replace('layanan', '');
         if (!this.appData[key]) return false;

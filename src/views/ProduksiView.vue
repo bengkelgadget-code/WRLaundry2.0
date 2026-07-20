@@ -62,9 +62,8 @@ const applyBulkUpdate = async () => {
         if (bulkStatus.value) updateData.Status = bulkStatus.value;
         if (bulkPembayaran.value) updateData.Pembayaran = bulkPembayaran.value;
 
-        for (const id of selectedRows.value) {
-            await store.updateRecord('Produksi', id, updateData);
-        }
+        let updatesArray = selectedRows.value.map(id => ({ id, data: updateData }));
+        await store.updateBulkRecord('Produksi', updatesArray);
         
         selectedRows.value = [];
         bulkStatus.value = '';
