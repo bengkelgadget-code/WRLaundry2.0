@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useAppStore } from '../stores/useAppStore';
 import TransactionModal from '../components/TransactionModal.vue';
 import TransactionFormModal from '../components/TransactionFormModal.vue';
@@ -12,6 +12,50 @@ const sortOrder = ref('desc'); // 'asc' or 'desc'
 // Pagination State
 const currentPage = ref(1);
 const itemsPerPage = ref(15);
+
+// Bulk Actions State
+const selectedRows = ref([]);
+const bulkStatus = ref('');
+const bulkPembayaran = ref('');
+
+const isAllSelected = computed({
+    get: () => {
+        return filteredAndSortedData.value.length > 0 && selectedRows.value.length === filteredAndSortedData.value.length;
+    },
+    set: (val) => {
+        if (val) {
+            selectedRows.value = filteredAndSortedData.value.map(tx => tx.ID);
+        } else {
+            selectedRows.value = [];
+        }
+    }
+});
+
+watch(searchQuery, () => {
+    selectedRows.value = []; // Clear selection when search changes to prevent applying bulk action to hidden items
+});
+
+const applyBulkStatus = async () => {
+    if (!bulkStatus.value || selectedRows.value.length === 0) return;
+    if (confirm(`Apakah Anda yakin ingin mengubah status ${selectedRows.value.length} transaksi menjadi '${bulkStatus.value.toUpperCase()}'?`)) {
+        for (const id of selectedRows.value) {
+            await store.updateRecord('Produksi', id, { Status: bulkStatus.value });
+        }
+        selectedRows.value = [];
+    }
+    bulkStatus.value = '';
+};
+
+const applyBulkPembayaran = async () => {
+    if (!bulkPembayaran.value || selectedRows.value.length === 0) return;
+    if (confirm(`Apakah Anda yakin ingin mengubah status pembayaran ${selectedRows.value.length} transaksi menjadi '${bulkPembayaran.value.toUpperCase()}'?`)) {
+        for (const id of selectedRows.value) {
+            await store.updateRecord('Produksi', id, { Pembayaran: bulkPembayaran.value });
+        }
+        selectedRows.value = [];
+    }
+    bulkPembayaran.value = '';
+};
 
 // Modal State
 const isModalOpen = ref(false);
@@ -176,9 +220,28 @@ const saveModalData = async (formData) => {
 
         <div class="w-full max-w-7xl flex-1 flex flex-col min-h-0">
             <div class="bg-white rounded-[1.5rem] shadow-sm border border-slate-100 flex flex-col flex-1 overflow-hidden min-h-0 min-w-0">
-                <div class="p-3 sm:p-5 flex justify-end items-center bg-white z-10 shrink-0">
-                    <div class="flex items-center justify-end w-full gap-3">
-                        <div class="relative flex items-center h-[34px] w-full max-w-[220px] bg-white border border-slate-200 rounded-lg focus-within:border-teal-400 focus-within:ring-1 focus-within:ring-teal-400 transition-all overflow-hidden shrink">
+                <div class="p-3 sm:p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white z-10 shrink-0 gap-3 border-b border-slate-100">
+                    <!-- Bulk Actions -->
+                    <div class="flex items-center gap-2 overflow-x-auto min-w-0 w-full sm:w-auto" v-if="selectedRows.length > 0">
+                        <span class="text-[0.6875rem] font-bold text-slate-500 whitespace-nowrap bg-slate-100 px-2 py-1.5 rounded-md border border-slate-200">{{ selectedRows.length }} dipilih</span>
+                        <select v-model="bulkStatus" @change="applyBulkStatus" class="h-[34px] text-[0.8125rem] font-semibold border border-slate-200 rounded-lg bg-white text-slate-600 focus:border-teal-400 focus:ring-1 focus:ring-teal-400 outline-none cursor-pointer shadow-sm px-2">
+                            <option value="" disabled selected>Ubah Status...</option>
+                            <option value="Proses">Proses</option>
+                            <option value="Selesai">Selesai</option>
+                            <option value="Diambil">Diambil</option>
+                            <option value="Batal">Batal</option>
+                        </select>
+                        <select v-model="bulkPembayaran" @change="applyBulkPembayaran" class="h-[34px] text-[0.8125rem] font-semibold border border-slate-200 rounded-lg bg-white text-slate-600 focus:border-teal-400 focus:ring-1 focus:ring-teal-400 outline-none cursor-pointer shadow-sm px-2">
+                            <option value="" disabled selected>Ubah Bayar...</option>
+                            <option value="Lunas">Lunas</option>
+                            <option value="Belum Lunas">Belum Lunas</option>
+                        </select>
+                    </div>
+                    <div v-else class="hidden sm:block"></div>
+
+                    <!-- Search and Add -->
+                    <div class="flex items-center justify-end gap-3 shrink-0 w-full sm:w-auto">
+                        <div class="relative flex items-center h-[34px] w-full sm:max-w-[220px] bg-white border border-slate-200 rounded-lg focus-within:border-teal-400 focus-within:ring-1 focus-within:ring-teal-400 transition-all overflow-hidden shrink shadow-sm">
                             <i class="ph-bold ph-magnifying-glass text-slate-400 ml-3 shrink-0"></i>
                             <input type="text" v-model="searchQuery" placeholder="Cari transaksi..." class="h-full w-full bg-transparent pl-2 pr-3 text-[0.8125rem] font-semibold text-slate-600 placeholder-slate-400 focus:outline-none min-w-0 border-none outline-none">
                         </div>
@@ -192,6 +255,11 @@ const saveModalData = async (formData) => {
                     <table class="table-modern w-full">
                         <thead class="sticky top-0 bg-white z-10">
                             <tr>
+                                <th class="w-[40px] px-4 py-3 border-r border-slate-50">
+                                    <div class="flex items-center justify-center">
+                                        <input type="checkbox" v-model="isAllSelected" class="w-4 h-4 text-teal-500 bg-white border-slate-300 rounded focus:ring-teal-500 cursor-pointer accent-teal-500">
+                                    </div>
+                                </th>
                                 <th @click="handleSort('Waktu Masuk')" class="w-[15%] cursor-pointer hover:bg-slate-50 transition-colors select-none group px-4 py-3"><div class="flex items-center justify-between"><span class="text-[0.625rem]">WAKTU MASUK</span> <i class="ph-bold ph-caret-up-down text-slate-300 group-hover:text-slate-500"></i></div></th>
                                 <th @click="handleSort('Nama Pelanggan')" class="w-[20%] cursor-pointer hover:bg-slate-50 transition-colors select-none group px-4 py-3"><div class="flex items-center justify-between"><span class="text-[0.625rem]">PELANGGAN</span> <i class="ph-bold ph-caret-up-down text-slate-300 group-hover:text-slate-500"></i></div></th>
                                 <th @click="handleSort('Layanan')" class="w-auto cursor-pointer hover:bg-slate-50 transition-colors select-none group px-4 py-3"><div class="flex items-center justify-between"><span class="text-[0.625rem]">LAYANAN</span> <i class="ph-bold ph-caret-up-down text-slate-300 group-hover:text-slate-500"></i></div></th>
@@ -201,7 +269,12 @@ const saveModalData = async (formData) => {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="tx in paginatedData" :key="tx.ID" class="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
+                            <tr v-for="tx in paginatedData" :key="tx.ID" :class="['border-b border-slate-50 transition-colors hover:bg-slate-50/80', selectedRows.includes(tx.ID) ? 'bg-teal-50/30' : '']">
+                                <td class="px-4 py-2.5 border-r border-slate-50">
+                                    <div class="flex items-center justify-center">
+                                        <input type="checkbox" v-model="selectedRows" :value="tx.ID" class="w-4 h-4 text-teal-500 bg-white border-slate-300 rounded focus:ring-teal-500 cursor-pointer accent-teal-500">
+                                    </div>
+                                </td>
                                 <td class="px-3 py-2.5">
                                     <p class="font-bold text-slate-800 text-[0.8125rem]">{{ formatTanggal(tx['Waktu Masuk']) }}</p>
                                     <p class="text-[0.6875rem] font-bold text-slate-400">{{ tx.ID }}</p>
@@ -242,7 +315,7 @@ const saveModalData = async (formData) => {
                                 </td>
                             </tr>
                             <tr v-if="paginatedData.length === 0">
-                                <td colspan="6" class="!text-center py-12 text-slate-400">Belum ada transaksi</td>
+                                <td colspan="7" class="!text-center py-12 text-slate-400">Belum ada transaksi</td>
                             </tr>
                         </tbody>
                     </table>
