@@ -193,20 +193,20 @@ export const useAppStore = defineStore('appData', {
         let validNewData = newData.filter(row => row && row.ID);
         let merged = (this.appData.produksi || []).filter(row => row && row.ID).slice();
         
+        let hasChanges = false;
         validNewData.forEach(newRow => {
             let existIdx = merged.findIndex(x => String(x.ID) === String(newRow.ID));
-            if (existIdx >= 0) {
-                let oldRow = merged[existIdx];
-                if (oldRow['Foto'] && String(oldRow['Foto']).startsWith('data:') && (!newRow['Foto'] || !String(newRow['Foto']).startsWith('http'))) {
-                    newRow['Foto'] = oldRow['Foto'];
-                }
-                merged[existIdx] = newRow;
-            } else {
+            if (existIdx === -1) {
+                // Only add missing rows from GAS, do NOT overwrite existing Firebase rows!
                 merged.push(newRow);
+                hasChanges = true;
             }
         });
-        this.appData.produksi = this.sortDataByIdDesc(merged);
-        set(ref(database, 'appData/produksi'), this.sanitizeFbKeys(this.appData.produksi));
+        
+        if (hasChanges) {
+            this.appData.produksi = this.sortDataByIdDesc(merged);
+            set(ref(database, 'appData/produksi'), this.sanitizeFbKeys(this.appData.produksi));
+        }
     },
     async saveRecord(sheet, dataObj) {
         let key = sheet.toLowerCase().replace('layanan', '');
@@ -236,7 +236,8 @@ export const useAppStore = defineStore('appData', {
         
         fetch(GAS_URL, { 
             method: 'POST', 
-            redirect: 'follow', 
+            redirect: 'follow',
+            keepalive: true, 
             headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
             body: JSON.stringify({ action: 'saveRecord', payload: {sheetName: sheet, data: dataObj} }) 
         }).catch(e => console.warn("GAS sync failed", e));
@@ -256,7 +257,8 @@ export const useAppStore = defineStore('appData', {
             
             fetch(GAS_URL, { 
                 method: 'POST', 
-                redirect: 'follow', 
+                redirect: 'follow',
+                keepalive: true, 
                 headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
                 body: JSON.stringify({ action: 'updateRecord', payload: {sheetName: sheet, id: id, data: dataObj} }) 
             }).catch(e => console.warn("GAS sync failed", e));
@@ -276,7 +278,8 @@ export const useAppStore = defineStore('appData', {
             
             fetch(GAS_URL, { 
                 method: 'POST', 
-                redirect: 'follow', 
+                redirect: 'follow',
+                keepalive: true, 
                 headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
                 body: JSON.stringify({ action: 'deleteRecord', payload: {sheetName: sheet, id: id} }) 
             }).catch(e => console.warn("GAS sync failed", e));
