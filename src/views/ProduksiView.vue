@@ -13,6 +13,15 @@ const sortOrder = ref('desc'); // 'asc' or 'desc'
 const currentPage = ref(1);
 const itemsPerPage = ref(15);
 
+// Filter State
+const filterType = ref('all');
+const filterMonth = ref('');
+const filterDate = ref('');
+
+watch([filterType, filterMonth, filterDate], () => {
+    currentPage.value = 1;
+});
+
 // Bulk Actions State
 const selectedRows = ref([]);
 const bulkStatus = ref('');
@@ -71,6 +80,20 @@ const filteredAndSortedData = computed(() => {
         const harga = parseRupiah(d['Total Harga']);
         return harga < 100000000;
     });
+
+    if (filterType.value === 'month' && filterMonth.value) {
+        const [yyyy, mm] = filterMonth.value.split('-');
+        data = data.filter(d => {
+            if (!d['Waktu Masuk']) return false;
+            return d['Waktu Masuk'].includes(`${mm}/${yyyy}`) || d['Waktu Masuk'].includes(`${yyyy}-${mm}`);
+        });
+    } else if (filterType.value === 'date' && filterDate.value) {
+        const [yyyy, mm, dd] = filterDate.value.split('-');
+        data = data.filter(d => {
+            if (!d['Waktu Masuk']) return false;
+            return d['Waktu Masuk'].includes(`${dd}/${mm}/${yyyy}`) || d['Waktu Masuk'].includes(filterDate.value);
+        });
+    }
     
     if (searchQuery.value) {
         const q = searchQuery.value.toLowerCase();
@@ -220,24 +243,41 @@ const saveModalData = async (formData) => {
 
         <div class="w-full max-w-7xl flex-1 flex flex-col min-h-0">
             <div class="bg-white rounded-[1.5rem] shadow-sm border border-slate-100 flex flex-col flex-1 overflow-hidden min-h-0 min-w-0">
-                <div class="p-3 sm:p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white z-10 shrink-0 gap-3 border-b border-slate-100">
-                    <!-- Bulk Actions -->
-                    <div class="flex items-center gap-2 overflow-x-auto min-w-0 w-full sm:w-auto" v-if="selectedRows.length > 0">
-                        <span class="text-[0.6875rem] font-bold text-slate-500 whitespace-nowrap bg-slate-100 px-2 py-1.5 rounded-md border border-slate-200">{{ selectedRows.length }} dipilih</span>
-                        <select v-model="bulkStatus" @change="applyBulkStatus" class="h-[34px] text-[0.8125rem] font-semibold border border-slate-200 rounded-lg bg-white text-slate-600 focus:border-teal-400 focus:ring-1 focus:ring-teal-400 outline-none cursor-pointer shadow-sm px-2">
-                            <option value="" disabled selected>Ubah Status...</option>
-                            <option value="Proses">Proses</option>
-                            <option value="Selesai">Selesai</option>
-                            <option value="Diambil">Diambil</option>
-                            <option value="Batal">Batal</option>
-                        </select>
-                        <select v-model="bulkPembayaran" @change="applyBulkPembayaran" class="h-[34px] text-[0.8125rem] font-semibold border border-slate-200 rounded-lg bg-white text-slate-600 focus:border-teal-400 focus:ring-1 focus:ring-teal-400 outline-none cursor-pointer shadow-sm px-2">
-                            <option value="" disabled selected>Ubah Bayar...</option>
-                            <option value="Lunas">Lunas</option>
-                            <option value="Belum Lunas">Belum Lunas</option>
-                        </select>
+                <div class="p-3 sm:p-5 flex flex-col lg:flex-row justify-between items-start lg:items-center bg-white z-10 shrink-0 gap-3 border-b border-slate-100">
+                    <!-- Left Side: Date Filters and Bulk Actions -->
+                    <div class="flex items-center gap-2 overflow-x-auto min-w-0 w-full lg:w-auto shrink-0 flex-wrap">
+                        
+                        <!-- Date Filter -->
+                        <div class="flex gap-2 items-center">
+                            <select v-model="filterType" class="h-[34px] px-2 rounded-lg bg-slate-50 border border-slate-200 text-[0.8125rem] font-bold text-slate-600 outline-none focus:ring-1 focus:ring-teal-400 cursor-pointer">
+                                <option value="all">Semua Waktu</option>
+                                <option value="month">Per Bulan</option>
+                                <option value="date">Tanggal</option>
+                            </select>
+                            <input v-if="filterType === 'month'" type="month" v-model="filterMonth" class="h-[34px] px-2 rounded-lg bg-slate-50 border border-slate-200 text-[0.8125rem] font-bold text-slate-600 outline-none focus:ring-1 focus:ring-teal-400 slide-left">
+                            <input v-if="filterType === 'date'" type="date" v-model="filterDate" class="h-[34px] px-2 rounded-lg bg-slate-50 border border-slate-200 text-[0.8125rem] font-bold text-slate-600 outline-none focus:ring-1 focus:ring-teal-400 slide-left">
+                        </div>
+
+                        <!-- Divider if both are present -->
+                        <div v-if="selectedRows.length > 0" class="w-px h-6 bg-slate-200 hidden sm:block mx-1"></div>
+
+                        <!-- Bulk Actions -->
+                        <template v-if="selectedRows.length > 0">
+                            <span class="text-[0.6875rem] font-bold text-slate-500 whitespace-nowrap bg-slate-100 px-2 py-1.5 rounded-md border border-slate-200">{{ selectedRows.length }} dipilih</span>
+                            <select v-model="bulkStatus" @change="applyBulkStatus" class="h-[34px] text-[0.8125rem] font-semibold border border-slate-200 rounded-lg bg-white text-slate-600 focus:border-teal-400 focus:ring-1 focus:ring-teal-400 outline-none cursor-pointer shadow-sm px-2">
+                                <option value="" disabled selected>Ubah Status...</option>
+                                <option value="Proses">Proses</option>
+                                <option value="Selesai">Selesai</option>
+                                <option value="Diambil">Diambil</option>
+                                <option value="Batal">Batal</option>
+                            </select>
+                            <select v-model="bulkPembayaran" @change="applyBulkPembayaran" class="h-[34px] text-[0.8125rem] font-semibold border border-slate-200 rounded-lg bg-white text-slate-600 focus:border-teal-400 focus:ring-1 focus:ring-teal-400 outline-none cursor-pointer shadow-sm px-2">
+                                <option value="" disabled selected>Ubah Bayar...</option>
+                                <option value="Lunas">Lunas</option>
+                                <option value="Belum Lunas">Belum Lunas</option>
+                            </select>
+                        </template>
                     </div>
-                    <div v-else class="hidden sm:block"></div>
 
                     <!-- Search and Add -->
                     <div class="flex items-center justify-end gap-3 shrink-0 w-full sm:w-auto">
