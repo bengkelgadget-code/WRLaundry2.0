@@ -19,6 +19,8 @@ onMounted(async () => {
   
   // Request All Permissions at Startup (as requested by user)
   const requestPermissions = async () => {
+    if (!Capacitor.isNativePlatform()) return;
+    
     const hasRequested = localStorage.getItem('permissions_requested');
     if (!hasRequested) {
       try {
@@ -29,7 +31,7 @@ onMounted(async () => {
         
         localStorage.setItem('permissions_requested', 'true');
       } catch (e) {
-        console.error("Failed to request permissions on startup", e);
+        console.warn("Failed to request permissions on startup", e);
       }
     }
   };
