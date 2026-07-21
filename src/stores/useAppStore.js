@@ -244,38 +244,30 @@ export const useAppStore = defineStore('appData', {
         let key = sheet.toLowerCase().replace('layanan', '');
         if (!this.appData[key]) return false;
         
-        let fbUpdates = {};
-        
         updatesArray.forEach(req => {
             let idx = this.appData[key].findIndex(r => r.ID === req.id);
             if (idx !== -1) {
                 // Update local state completely
-                let updatedRow = { ...this.appData[key][idx], ...req.data, ID: req.id };
-                this.appData[key][idx] = updatedRow;
-                
-                // Use FULL object for Firebase update to guarantee ID is present
-                // This prevents the new node from being filtered out if Firebase structure is an array
-                let sanitizedFullObj = this.sanitizeFbKeys(updatedRow);
-                fbUpdates[`appData/${key}/${req.id}`] = sanitizedFullObj;
+                this.appData[key][idx] = { ...this.appData[key][idx], ...req.data, ID: req.id };
             }
         });
         
         this.appData[key] = this.sortDataByIdDesc(this.appData[key]);
         
-        if (Object.keys(fbUpdates).length > 0) {
-            console.log("🔥 [DEBUG] Mengirim Bulk Update ke Firebase:", fbUpdates);
-            await update(ref(database), fbUpdates);
-            
-            updatesArray.forEach(req => {
-                fetch(GAS_URL, { 
-                    method: 'POST', 
-                    redirect: 'follow',
-                    keepalive: true, 
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
-                    body: JSON.stringify({ action: 'updateRecord', payload: {sheetName: sheet, id: req.id, data: req.data} }) 
-                }).catch(e => console.warn("GAS sync failed", e));
-            });
-        }
+        // REWRITE THE ENTIRE SHEET AS AN OBJECT
+        // This converts any numeric array keys to string keys in Firebase, fixing duplicates permanently.
+        let sheetDataForFirebase = this.sanitizeFbKeys({ [key]: this.appData[key] })[key];
+        await set(ref(database, `appData/${key}`), sheetDataForFirebase);
+        
+        updatesArray.forEach(req => {
+            fetch(GAS_URL, { 
+                method: 'POST', 
+                redirect: 'follow',
+                keepalive: true, 
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
+                body: JSON.stringify({ action: 'updateRecord', payload: {sheetName: sheet, id: req.id, data: req.data} }) 
+            }).catch(e => console.warn("GAS sync failed", e));
+        });
         
         return true;
     },
