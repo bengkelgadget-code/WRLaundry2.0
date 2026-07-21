@@ -233,11 +233,14 @@ export const useAppStore = defineStore('appData', {
         updatesArray.forEach(req => {
             let idx = this.appData[key].findIndex(r => r.ID === req.id);
             if (idx !== -1) {
-                this.appData[key][idx] = { ...this.appData[key][idx], ...req.data, ID: req.id };
-                let sanitized = this.sanitizeFbKeys(req.data);
-                for (let prop in sanitized) {
-                    fbUpdates[`appData/${key}/${req.id}/${prop}`] = sanitized[prop];
-                }
+                // Update local state completely
+                let updatedRow = { ...this.appData[key][idx], ...req.data, ID: req.id };
+                this.appData[key][idx] = updatedRow;
+                
+                // Use FULL object for Firebase update to guarantee ID is present
+                // This prevents the new node from being filtered out if Firebase structure is an array
+                let sanitizedFullObj = this.sanitizeFbKeys(updatedRow);
+                fbUpdates[`appData/${key}/${req.id}`] = sanitizedFullObj;
             }
         });
         
