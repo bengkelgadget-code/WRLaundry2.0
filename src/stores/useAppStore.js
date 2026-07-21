@@ -108,7 +108,15 @@ export const useAppStore = defineStore('appData', {
                 ['produksi', 'pelanggan', 'waktu', 'kiloan', 'satuan', 'pewangi', 'member', 'users'].forEach((k) => {
                     if (restored[k]) {
                         if (!Array.isArray(restored[k])) restored[k] = Object.values(restored[k]);
-                        restored[k] = restored[k].filter(item => item && item.ID);
+                        
+                        // Deduplicate by ID
+                        let uniqueMap = {};
+                        restored[k].forEach(item => {
+                            if (item && item.ID) {
+                                uniqueMap[item.ID] = item;
+                            }
+                        });
+                        restored[k] = Object.values(uniqueMap);
                         restored[k] = this.sortDataByIdDesc(restored[k]);
                     }
                 });
@@ -135,7 +143,15 @@ export const useAppStore = defineStore('appData', {
                 ['produksi', 'pelanggan', 'waktu', 'kiloan', 'satuan', 'pewangi', 'member', 'users'].forEach((k) => {
                     if (restored[k]) {
                         if (!Array.isArray(restored[k])) restored[k] = Object.values(restored[k]);
-                        restored[k] = restored[k].filter(item => item && item.ID);
+                        
+                        // Deduplicate by ID to prevent ghost records from numeric keys
+                        let uniqueMap = {};
+                        restored[k].forEach(item => {
+                            if (item && item.ID) {
+                                uniqueMap[item.ID] = item;
+                            }
+                        });
+                        restored[k] = Object.values(uniqueMap);
                         restored[k] = this.sortDataByIdDesc(restored[k]);
                     }
                 });
