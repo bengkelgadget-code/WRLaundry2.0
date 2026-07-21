@@ -308,12 +308,13 @@ const saveModalData = async (formData) => {
                                         <input type="checkbox" v-model="isAllSelected" class="w-4 h-4 text-teal-500 bg-white border-slate-300 rounded focus:ring-teal-500 cursor-pointer accent-teal-500">
                                     </div>
                                 </th>
-                                <th @click="handleSort('Waktu Masuk')" class="w-[15%] cursor-pointer hover:bg-slate-50 transition-colors select-none group px-4 py-3"><div class="flex items-center justify-between"><span class="text-[0.625rem]">WAKTU MASUK</span> <i class="ph-bold ph-caret-up-down text-slate-300 group-hover:text-slate-500"></i></div></th>
-                                <th @click="handleSort('Nama Pelanggan')" class="w-[20%] cursor-pointer hover:bg-slate-50 transition-colors select-none group px-4 py-3"><div class="flex items-center justify-between"><span class="text-[0.625rem]">PELANGGAN</span> <i class="ph-bold ph-caret-up-down text-slate-300 group-hover:text-slate-500"></i></div></th>
+                                <th @click="handleSort('Waktu Masuk')" class="w-[13%] cursor-pointer hover:bg-slate-50 transition-colors select-none group px-4 py-3"><div class="flex items-center justify-between"><span class="text-[0.625rem]">WAKTU MASUK</span> <i class="ph-bold ph-caret-up-down text-slate-300 group-hover:text-slate-500"></i></div></th>
+                                <th @click="handleSort('Nama Pelanggan')" class="w-[17%] cursor-pointer hover:bg-slate-50 transition-colors select-none group px-4 py-3"><div class="flex items-center justify-between"><span class="text-[0.625rem]">PELANGGAN</span> <i class="ph-bold ph-caret-up-down text-slate-300 group-hover:text-slate-500"></i></div></th>
                                 <th @click="handleSort('Layanan')" class="w-auto cursor-pointer hover:bg-slate-50 transition-colors select-none group px-4 py-3"><div class="flex items-center justify-between"><span class="text-[0.625rem]">LAYANAN</span> <i class="ph-bold ph-caret-up-down text-slate-300 group-hover:text-slate-500"></i></div></th>
-                                <th @click="handleSort('Total Harga')" class="w-[15%] cursor-pointer hover:bg-slate-50 transition-colors select-none group px-4 py-3"><div class="flex items-center justify-between"><span class="text-[0.625rem]">TOTAL HARGA</span> <i class="ph-bold ph-caret-up-down text-slate-300 group-hover:text-slate-500"></i></div></th>
-                                <th @click="handleSort('Status')" class="w-[12%] cursor-pointer hover:bg-slate-50 transition-colors select-none group px-4 py-3"><div class="flex items-center justify-center text-center"><span class="text-[0.625rem]">STATUS</span> <i class="ph-bold ph-caret-up-down text-slate-300 group-hover:text-slate-500 ml-1"></i></div></th>
-                                <th class="w-[12%] !text-center px-4 py-3 text-[0.625rem]">AKSI</th>
+                                <th @click="handleSort('Total Harga')" class="w-[12%] cursor-pointer hover:bg-slate-50 transition-colors select-none group px-4 py-3"><div class="flex items-center justify-between"><span class="text-[0.625rem]">TOTAL HARGA</span> <i class="ph-bold ph-caret-up-down text-slate-300 group-hover:text-slate-500"></i></div></th>
+                                <th @click="handleSort('Status')" class="w-[10%] cursor-pointer hover:bg-slate-50 transition-colors select-none group px-4 py-3"><div class="flex items-center justify-center text-center"><span class="text-[0.625rem]">STATUS</span> <i class="ph-bold ph-caret-up-down text-slate-300 group-hover:text-slate-500 ml-1"></i></div></th>
+                                <th @click="handleSort('Pembayaran')" class="w-[10%] cursor-pointer hover:bg-slate-50 transition-colors select-none group px-4 py-3"><div class="flex items-center justify-center text-center"><span class="text-[0.625rem]">BAYAR</span> <i class="ph-bold ph-caret-up-down text-slate-300 group-hover:text-slate-500 ml-1"></i></div></th>
+                                <th class="w-[10%] !text-center px-4 py-3 text-[0.625rem]">AKSI</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -346,6 +347,26 @@ const saveModalData = async (formData) => {
                                     </span>
                                     <span v-else class="inline-flex items-center px-2 py-0.5 rounded-full text-[0.6875rem] font-bold bg-white text-slate-500 border border-slate-300 uppercase whitespace-nowrap">
                                         {{ (tx.Status || 'UNKNOWN').toUpperCase() }}
+                                    </span>
+                                </td>
+                                <td class="!text-center px-3 py-2.5">
+                                    <span v-if="tx.Pembayaran === 'Lunas'" class="inline-flex items-center px-2 py-0.5 rounded-full text-[0.6875rem] font-bold bg-emerald-50 text-emerald-600 border border-emerald-200 whitespace-nowrap">
+                                        <i class="ph-bold ph-check-circle mr-1 text-[0.75rem]"></i> LUNAS
+                                    </span>
+                                    <span v-else-if="tx.Pembayaran === 'Belum Lunas'" class="inline-flex items-center px-2 py-0.5 rounded-full text-[0.6875rem] font-bold bg-rose-50 text-rose-500 border border-rose-200 whitespace-nowrap">
+                                        <i class="ph-bold ph-x-circle mr-1 text-[0.75rem]"></i> BELUM
+                                    </span>
+                                    <span v-else-if="tx.Pembayaran === 'DP'" class="inline-flex items-center px-2 py-0.5 rounded-full text-[0.6875rem] font-bold bg-amber-50 text-amber-600 border border-amber-200 whitespace-nowrap">
+                                        <i class="ph-bold ph-coins mr-1 text-[0.75rem]"></i> DP
+                                    </span>
+                                    <span v-else-if="tx.Pembayaran === 'Potong Kuota'" class="inline-flex items-center px-2 py-0.5 rounded-full text-[0.6875rem] font-bold bg-indigo-50 text-indigo-600 border border-indigo-200 whitespace-nowrap">
+                                        <i class="ph-bold ph-ticket mr-1 text-[0.75rem]"></i> KUOTA
+                                    </span>
+                                    <span v-else-if="tx.Pembayaran === 'Transfer'" class="inline-flex items-center px-2 py-0.5 rounded-full text-[0.6875rem] font-bold bg-blue-50 text-blue-600 border border-blue-200 whitespace-nowrap">
+                                        <i class="ph-bold ph-bank mr-1 text-[0.75rem]"></i> TRANSFER
+                                    </span>
+                                    <span v-else class="inline-flex items-center px-2 py-0.5 rounded-full text-[0.6875rem] font-bold bg-slate-50 text-slate-500 border border-slate-200 uppercase whitespace-nowrap">
+                                        {{ (tx.Pembayaran || '-').toUpperCase() }}
                                     </span>
                                 </td>
                                 <td class="!text-center px-3 py-2.5">
