@@ -118,9 +118,6 @@ export const useAppStore = defineStore('appData', {
                 
                 // Set up real-time listener
                 this.setupRealtimeListener();
-
-                // Background sync from GAS to make sure nothing was missed
-                this.backgroundSyncGasToFirebase();
             } else {
                 console.log("Memuat dari GAS (Firebase Kosong)");
                 await this.fetchFromGas();
@@ -167,45 +164,6 @@ export const useAppStore = defineStore('appData', {
         } catch (error) {
             console.error("Gagal load dari GAS", error);
             this.isLoading = false;
-        }
-    },
-    backgroundSyncGasToFirebase() {
-        setTimeout(async () => {
-            try {
-                const res = await fetch(GAS_URL + "?action=getInitialData");
-                const data = await res.json();
-                if (data && data.success) {
-                    // In a full implementation, you'd merge data here,
-                    // but since Firebase is the source of truth, 
-                    // we'll only update if Firebase is somehow out of sync or missing data.
-                    console.log("Background sync dari GAS sukses");
-                    // Actually, the original script does a mergeProduksiData here.
-                    // Let's implement mergeProduksiData briefly.
-                    this.mergeProduksiData(data.data.produksi);
-                }
-            } catch (error) {
-                console.warn("Background sync terganggu.", error);
-            }
-        }, 3000);
-    },
-    mergeProduksiData(newData) {
-        if (!newData || !Array.isArray(newData)) return;
-        let validNewData = newData.filter(row => row && row.ID);
-        let merged = (this.appData.produksi || []).filter(row => row && row.ID).slice();
-        
-        let hasChanges = false;
-        validNewData.forEach(newRow => {
-            let existIdx = merged.findIndex(x => String(x.ID) === String(newRow.ID));
-            if (existIdx === -1) {
-                // Only add missing rows from GAS, do NOT overwrite existing Firebase rows!
-                merged.push(newRow);
-                hasChanges = true;
-            }
-        });
-        
-        if (hasChanges) {
-            this.appData.produksi = this.sortDataByIdDesc(merged);
-            set(ref(database, 'appData/produksi'), this.sanitizeFbKeys(this.appData.produksi));
         }
     },
     async saveRecord(sheet, dataObj) {
@@ -286,6 +244,7 @@ export const useAppStore = defineStore('appData', {
         this.appData[key] = this.sortDataByIdDesc(this.appData[key]);
         
         if (Object.keys(fbUpdates).length > 0) {
+            console.log("🔥 [DEBUG] Mengirim Bulk Update ke Firebase:", fbUpdates);
             await update(ref(database), fbUpdates);
             
             updatesArray.forEach(req => {
