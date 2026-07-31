@@ -244,30 +244,43 @@ export const useAppStore = defineStore('appData', {
         let key = sheet.toLowerCase().replace('layanan', '');
         if (!this.appData[key]) return false;
         
-        updatesArray.forEach(req => {
+        let fullUpdatedRecords = [];
+        
+        for (const req of updatesArray) {
             let idx = this.appData[key].findIndex(r => r.ID === req.id);
             if (idx !== -1) {
-                // Update local state completely
-                this.appData[key][idx] = { ...this.appData[key][idx], ...req.data, ID: req.id };
+                // Update local state completely with full object
+                let fullObj = { ...this.appData[key][idx], ...req.data, ID: req.id };
+                this.appData[key][idx] = fullObj;
+                fullUpdatedRecords.push(fullObj);
+                
+                // Update Firebase at record level (same exact path and method as single updateRecord)
+                try {
+                    await update(ref(database, `appData/${key}/${req.id}`), this.sanitizeFbKeys(fullObj));
+                } catch (e) {
+                    console.error(`Firebase update failed for ${req.id}`, e);
+                }
             }
-        });
+        }
         
         this.appData[key] = this.sortDataByIdDesc(this.appData[key]);
         
-        // REWRITE THE ENTIRE SHEET AS AN OBJECT
-        // This converts any numeric array keys to string keys in Firebase, fixing duplicates permanently.
-        let sheetDataForFirebase = this.sanitizeFbKeys({ [key]: this.appData[key] })[key];
-        await set(ref(database, `appData/${key}`), sheetDataForFirebase);
-        
-        updatesArray.forEach(req => {
-            fetch(GAS_URL, { 
-                method: 'POST', 
-                redirect: 'follow',
-                keepalive: true, 
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
-                body: JSON.stringify({ action: 'updateRecord', payload: {sheetName: sheet, id: req.id, data: req.data} }) 
-            }).catch(e => console.warn("GAS sync failed", e));
-        });
+        // Synchronize with Google Apps Script sequentially using full objects
+        // Sending full object prevents GAS from creating duplicate rows due to missing fields like ID
+        // Sending sequentially prevents race conditions and conflicts in Google Sheets
+        for (const fullObj of fullUpdatedRecords) {
+            try {
+                await fetch(GAS_URL, { 
+                    method: 'POST', 
+                    redirect: 'follow',
+                    keepalive: true, 
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
+                    body: JSON.stringify({ action: 'updateRecord', payload: {sheetName: sheet, id: fullObj.ID, data: fullObj} }) 
+                });
+            } catch (e) {
+                console.warn("GAS sync failed for " + fullObj.ID, e);
+            }
+        }
         
         return true;
     },
