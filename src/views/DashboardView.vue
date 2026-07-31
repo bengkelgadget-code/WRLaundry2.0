@@ -243,24 +243,25 @@ const formatWaktu = (val) => {
             </div>
         </div>
 
-        <!-- NEW SECTION: LAPORAN LAUNDRY MASUK (KG) & ANALISA -->
+        <!-- NEW SECTION: LAPORAN LAUNDRY MASUK (KG) & PENDAPATAN -->
         <div class="mb-8 shrink-0">
             <div class="flex flex-col sm:flex-row justify-between sm:items-end gap-2 mb-4">
                 <div>
                     <h2 class="text-xl font-black text-slate-800 flex items-center gap-2.5">
-                        <span class="w-2 h-7 bg-gradient-to-b from-teal-500 to-blue-600 rounded-full inline-block shadow-sm"></span>
-                        Laporan Beban Laundry Masuk (KG)
+                        <span class="w-2.5 h-7 bg-gradient-to-b from-emerald-500 via-teal-500 to-blue-600 rounded-full inline-block shadow-sm"></span>
+                        Laporan Beban Masuk (KG) & Omzet Pendapatan
                     </h2>
-                    <p class="text-xs font-semibold text-slate-500 mt-1 ml-4">Pantau volume berat cucian yang masuk, jumlah transaksi, serta nilai estimasi pendapatan</p>
+                    <p class="text-xs font-semibold text-slate-500 mt-1 ml-5">Pantau performa beban cucian dan total pendapatan secara real-time untuk Harian, Mingguan, dan Bulanan</p>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <!-- CARD 1: HARIAN -->
-                <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200/80 hover:shadow-md hover:border-emerald-300 transition-all duration-300 relative overflow-hidden group flex flex-col justify-between">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-emerald-500/15 via-teal-500/5 to-transparent rounded-bl-[100px] pointer-events-none group-hover:scale-105 transition-transform duration-500"></div>
+                <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200/80 hover:shadow-lg hover:border-emerald-400 transition-all duration-300 relative overflow-hidden group flex flex-col justify-between">
+                    <div class="absolute top-0 right-0 w-40 h-40 bg-gradient-to-bl from-emerald-500/15 via-teal-500/5 to-transparent rounded-bl-[120px] pointer-events-none group-hover:scale-110 transition-transform duration-500"></div>
                     <div>
-                        <div class="flex items-center justify-between mb-4">
+                        <!-- Header -->
+                        <div class="flex items-center justify-between mb-5">
                             <div class="flex items-center gap-3">
                                 <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-100 to-teal-100 text-emerald-600 flex items-center justify-center text-2xl shadow-inner border border-emerald-200/60">
                                     <i class="ph-bold ph-sun"></i>
@@ -270,37 +271,62 @@ const formatWaktu = (val) => {
                                     <h4 class="text-sm font-extrabold text-slate-700">Hari Ini</h4>
                                 </div>
                             </div>
-                            <span class="text-xs font-bold text-slate-500 bg-slate-100/80 px-3 py-1 rounded-xl border border-slate-200/60">{{ new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) }}</span>
+                            <span class="text-xs font-bold text-slate-600 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200/60 shadow-2xs">{{ new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) }}</span>
                         </div>
 
-                        <div class="my-4 flex items-baseline gap-2">
-                            <span class="text-4xl sm:text-5xl font-black text-slate-800 tracking-tight">{{ laporanKg.harian.kg }}</span>
-                            <span class="text-lg font-black text-emerald-600 uppercase bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-200/60 shadow-2xs">KG</span>
+                        <!-- Dual Hero Metrics -->
+                        <div class="space-y-3 my-3">
+                            <!-- Metric 1: Beban Laundry -->
+                            <div class="bg-gradient-to-r from-emerald-50/80 to-teal-50/40 p-4 rounded-2xl border border-emerald-200/60 flex items-center justify-between shadow-2xs">
+                                <div>
+                                    <p class="text-[0.6875rem] font-black uppercase tracking-wider text-emerald-700 mb-1 flex items-center gap-1.5">
+                                        <i class="ph-bold ph-scales text-sm text-emerald-600"></i> Beban Laundry Masuk
+                                    </p>
+                                    <div class="flex items-baseline gap-2">
+                                        <span class="text-3xl sm:text-4xl font-black text-slate-800 tracking-tight">{{ laporanKg.harian.kg }}</span>
+                                        <span class="text-sm font-black text-emerald-700 uppercase bg-emerald-100 px-2 py-0.5 rounded-md border border-emerald-300/50">KG</span>
+                                    </div>
+                                </div>
+                                <div class="w-11 h-11 rounded-xl bg-white text-emerald-600 shadow-sm flex items-center justify-center text-2xl border border-emerald-100 shrink-0">
+                                    <i class="ph-fill ph-barbell"></i>
+                                </div>
+                            </div>
+
+                            <!-- Metric 2: Total Pendapatan -->
+                            <div class="bg-gradient-to-br from-emerald-500 to-teal-600 p-4.5 rounded-2xl shadow-md shadow-emerald-500/20 text-white flex items-center justify-between group-hover:shadow-lg transition-shadow">
+                                <div class="overflow-hidden w-full mr-3">
+                                    <p class="text-[0.6875rem] font-black uppercase tracking-wider text-emerald-100 mb-1 flex items-center gap-1.5">
+                                        <i class="ph-bold ph-wallet text-sm text-white"></i> Total Omzet / Pendapatan
+                                    </p>
+                                    <div class="text-2xl sm:text-3xl font-black truncate text-white tracking-tight">
+                                        {{ formatRupiah(laporanKg.harian.pendapatan) }}
+                                    </div>
+                                </div>
+                                <div class="w-11 h-11 rounded-xl bg-white/20 backdrop-blur-md text-white shrink-0 flex items-center justify-center text-2xl border border-white/30 shadow-inner">
+                                    <i class="ph-fill ph-coins"></i>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="mt-4 pt-4 border-t border-slate-100 grid grid-cols-2 gap-3 text-xs">
-                        <div class="bg-slate-50 rounded-2xl p-3 border border-slate-100 flex flex-col">
-                            <span class="text-slate-400 font-bold mb-1 uppercase tracking-wider text-[0.65rem]">Total Pesanan</span>
-                            <span class="font-black text-slate-700 text-sm flex items-center gap-1.5">
-                                <i class="ph-fill ph-receipt text-emerald-500"></i>
-                                {{ laporanKg.harian.trx }} Transaksi
-                            </span>
-                        </div>
-                        <div class="bg-slate-50 rounded-2xl p-3 border border-slate-100 flex flex-col">
-                            <span class="text-slate-400 font-bold mb-1 uppercase tracking-wider text-[0.65rem]">Nilai Transaksi</span>
-                            <span class="font-black text-emerald-600 text-sm flex items-center gap-1 truncate" :title="formatRupiah(laporanKg.harian.pendapatan)">
-                                {{ formatRupiah(laporanKg.harian.pendapatan) }}
-                            </span>
-                        </div>
+                    <!-- Footer Details -->
+                    <div class="mt-4 pt-3.5 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-500">
+                        <span class="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1.5 rounded-xl border border-slate-100 text-slate-700">
+                            <i class="ph-fill ph-receipt text-emerald-500 text-sm"></i>
+                            Volume: <strong class="text-slate-900 font-black">{{ laporanKg.harian.trx }} Pesanan</strong>
+                        </span>
+                        <span v-if="laporanKg.harian.trx > 0" class="text-[0.7rem] bg-emerald-50 text-emerald-700 font-black px-2.5 py-1 rounded-xl border border-emerald-100">
+                            ~{{ formatRupiah(laporanKg.harian.pendapatan / laporanKg.harian.trx) }}/trx
+                        </span>
                     </div>
                 </div>
 
                 <!-- CARD 2: MINGGUAN -->
-                <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200/80 hover:shadow-md hover:border-blue-300 transition-all duration-300 relative overflow-hidden group flex flex-col justify-between">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-blue-500/15 via-cyan-500/5 to-transparent rounded-bl-[100px] pointer-events-none group-hover:scale-105 transition-transform duration-500"></div>
+                <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200/80 hover:shadow-lg hover:border-blue-400 transition-all duration-300 relative overflow-hidden group flex flex-col justify-between">
+                    <div class="absolute top-0 right-0 w-40 h-40 bg-gradient-to-bl from-blue-500/15 via-cyan-500/5 to-transparent rounded-bl-[120px] pointer-events-none group-hover:scale-110 transition-transform duration-500"></div>
                     <div>
-                        <div class="flex items-center justify-between mb-4">
+                        <!-- Header -->
+                        <div class="flex items-center justify-between mb-5">
                             <div class="flex items-center gap-3">
                                 <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-100 to-cyan-100 text-blue-600 flex items-center justify-center text-2xl shadow-inner border border-blue-200/60">
                                     <i class="ph-bold ph-calendar-check"></i>
@@ -310,37 +336,62 @@ const formatWaktu = (val) => {
                                     <h4 class="text-sm font-extrabold text-slate-700">7 Hari Terakhir</h4>
                                 </div>
                             </div>
-                            <span class="text-xs font-bold text-blue-700 bg-blue-50/80 px-2.5 py-1 rounded-xl border border-blue-200/60">{{ laporanKg.mingguan.startDateStr }} - {{ laporanKg.mingguan.endDateStr }}</span>
+                            <span class="text-xs font-bold text-blue-700 bg-blue-50/90 px-3 py-1.5 rounded-xl border border-blue-200/60 shadow-2xs">{{ laporanKg.mingguan.startDateStr }} - {{ laporanKg.mingguan.endDateStr }}</span>
                         </div>
 
-                        <div class="my-4 flex items-baseline gap-2">
-                            <span class="text-4xl sm:text-5xl font-black text-slate-800 tracking-tight">{{ laporanKg.mingguan.kg }}</span>
-                            <span class="text-lg font-black text-blue-600 uppercase bg-blue-50 px-2 py-0.5 rounded-lg border border-blue-200/60 shadow-2xs">KG</span>
+                        <!-- Dual Hero Metrics -->
+                        <div class="space-y-3 my-3">
+                            <!-- Metric 1: Beban Laundry -->
+                            <div class="bg-gradient-to-r from-blue-50/80 to-cyan-50/40 p-4 rounded-2xl border border-blue-200/60 flex items-center justify-between shadow-2xs">
+                                <div>
+                                    <p class="text-[0.6875rem] font-black uppercase tracking-wider text-blue-700 mb-1 flex items-center gap-1.5">
+                                        <i class="ph-bold ph-scales text-sm text-blue-600"></i> Beban Laundry Masuk
+                                    </p>
+                                    <div class="flex items-baseline gap-2">
+                                        <span class="text-3xl sm:text-4xl font-black text-slate-800 tracking-tight">{{ laporanKg.mingguan.kg }}</span>
+                                        <span class="text-sm font-black text-blue-700 uppercase bg-blue-100 px-2 py-0.5 rounded-md border border-blue-300/50">KG</span>
+                                    </div>
+                                </div>
+                                <div class="w-11 h-11 rounded-xl bg-white text-blue-600 shadow-sm flex items-center justify-center text-2xl border border-blue-100 shrink-0">
+                                    <i class="ph-fill ph-barbell"></i>
+                                </div>
+                            </div>
+
+                            <!-- Metric 2: Total Pendapatan -->
+                            <div class="bg-gradient-to-br from-blue-500 to-cyan-600 p-4.5 rounded-2xl shadow-md shadow-blue-500/20 text-white flex items-center justify-between group-hover:shadow-lg transition-shadow">
+                                <div class="overflow-hidden w-full mr-3">
+                                    <p class="text-[0.6875rem] font-black uppercase tracking-wider text-blue-100 mb-1 flex items-center gap-1.5">
+                                        <i class="ph-bold ph-wallet text-sm text-white"></i> Total Omzet / Pendapatan
+                                    </p>
+                                    <div class="text-2xl sm:text-3xl font-black truncate text-white tracking-tight">
+                                        {{ formatRupiah(laporanKg.mingguan.pendapatan) }}
+                                    </div>
+                                </div>
+                                <div class="w-11 h-11 rounded-xl bg-white/20 backdrop-blur-md text-white shrink-0 flex items-center justify-center text-2xl border border-white/30 shadow-inner">
+                                    <i class="ph-fill ph-coins"></i>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="mt-4 pt-4 border-t border-slate-100 grid grid-cols-2 gap-3 text-xs">
-                        <div class="bg-slate-50 rounded-2xl p-3 border border-slate-100 flex flex-col">
-                            <span class="text-slate-400 font-bold mb-1 uppercase tracking-wider text-[0.65rem]">Total Pesanan</span>
-                            <span class="font-black text-slate-700 text-sm flex items-center gap-1.5">
-                                <i class="ph-fill ph-receipt text-blue-500"></i>
-                                {{ laporanKg.mingguan.trx }} Transaksi
-                            </span>
-                        </div>
-                        <div class="bg-slate-50 rounded-2xl p-3 border border-slate-100 flex flex-col">
-                            <span class="text-slate-400 font-bold mb-1 uppercase tracking-wider text-[0.65rem]">Nilai Transaksi</span>
-                            <span class="font-black text-blue-600 text-sm flex items-center gap-1 truncate" :title="formatRupiah(laporanKg.mingguan.pendapatan)">
-                                {{ formatRupiah(laporanKg.mingguan.pendapatan) }}
-                            </span>
-                        </div>
+                    <!-- Footer Details -->
+                    <div class="mt-4 pt-3.5 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-500">
+                        <span class="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1.5 rounded-xl border border-slate-100 text-slate-700">
+                            <i class="ph-fill ph-receipt text-blue-500 text-sm"></i>
+                            Volume: <strong class="text-slate-900 font-black">{{ laporanKg.mingguan.trx }} Pesanan</strong>
+                        </span>
+                        <span v-if="laporanKg.mingguan.trx > 0" class="text-[0.7rem] bg-blue-50 text-blue-700 font-black px-2.5 py-1 rounded-xl border border-blue-100">
+                            ~{{ formatRupiah(laporanKg.mingguan.pendapatan / laporanKg.mingguan.trx) }}/trx
+                        </span>
                     </div>
                 </div>
 
                 <!-- CARD 3: BULANAN DENGAN FILTER -->
-                <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200/80 hover:shadow-md hover:border-purple-300 transition-all duration-300 relative overflow-hidden group flex flex-col justify-between">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-purple-500/15 via-fuchsia-500/5 to-transparent rounded-bl-[100px] pointer-events-none group-hover:scale-105 transition-transform duration-500"></div>
+                <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200/80 hover:shadow-lg hover:border-purple-400 transition-all duration-300 relative overflow-hidden group flex flex-col justify-between">
+                    <div class="absolute top-0 right-0 w-40 h-40 bg-gradient-to-bl from-purple-500/15 via-fuchsia-500/5 to-transparent rounded-bl-[120px] pointer-events-none group-hover:scale-110 transition-transform duration-500"></div>
                     <div>
-                        <div class="flex items-center justify-between gap-2 mb-4">
+                        <!-- Header & Month Filter -->
+                        <div class="flex items-center justify-between gap-2 mb-5">
                             <div class="flex items-center gap-3 shrink-0">
                                 <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-100 to-fuchsia-100 text-purple-600 flex items-center justify-center text-2xl shadow-inner border border-purple-200/60">
                                     <i class="ph-bold ph-chart-bar"></i>
@@ -354,32 +405,56 @@ const formatWaktu = (val) => {
                                 <input 
                                     type="month" 
                                     v-model="selectedMonth" 
-                                    class="bg-purple-50 hover:bg-purple-100/80 focus:bg-white text-purple-700 text-xs font-black px-2.5 py-1.5 rounded-xl border border-purple-200 focus:border-purple-600 focus:ring-2 focus:ring-purple-200 transition-all outline-none shadow-2xs cursor-pointer"
+                                    class="bg-purple-50 hover:bg-purple-100/80 focus:bg-white text-purple-700 text-xs font-black px-3 py-1.5 rounded-xl border border-purple-200 focus:border-purple-600 focus:ring-2 focus:ring-purple-200 transition-all outline-none shadow-2xs cursor-pointer"
                                     title="Pilih Bulan untuk Analisa"
                                 />
                             </div>
                         </div>
 
-                        <div class="my-4 flex items-baseline gap-2">
-                            <span class="text-4xl sm:text-5xl font-black text-slate-800 tracking-tight">{{ laporanKg.bulanan.kg }}</span>
-                            <span class="text-lg font-black text-purple-600 uppercase bg-purple-50 px-2 py-0.5 rounded-lg border border-purple-200/60 shadow-2xs">KG</span>
+                        <!-- Dual Hero Metrics -->
+                        <div class="space-y-3 my-3">
+                            <!-- Metric 1: Beban Laundry -->
+                            <div class="bg-gradient-to-r from-purple-50/80 to-fuchsia-50/40 p-4 rounded-2xl border border-purple-200/60 flex items-center justify-between shadow-2xs">
+                                <div>
+                                    <p class="text-[0.6875rem] font-black uppercase tracking-wider text-purple-700 mb-1 flex items-center gap-1.5">
+                                        <i class="ph-bold ph-scales text-sm text-purple-600"></i> Beban Laundry Masuk
+                                    </p>
+                                    <div class="flex items-baseline gap-2">
+                                        <span class="text-3xl sm:text-4xl font-black text-slate-800 tracking-tight">{{ laporanKg.bulanan.kg }}</span>
+                                        <span class="text-sm font-black text-purple-700 uppercase bg-purple-100 px-2 py-0.5 rounded-md border border-purple-300/50">KG</span>
+                                    </div>
+                                </div>
+                                <div class="w-11 h-11 rounded-xl bg-white text-purple-600 shadow-sm flex items-center justify-center text-2xl border border-purple-100 shrink-0">
+                                    <i class="ph-fill ph-barbell"></i>
+                                </div>
+                            </div>
+
+                            <!-- Metric 2: Total Pendapatan -->
+                            <div class="bg-gradient-to-br from-purple-600 to-indigo-600 p-4.5 rounded-2xl shadow-md shadow-purple-500/20 text-white flex items-center justify-between group-hover:shadow-lg transition-shadow">
+                                <div class="overflow-hidden w-full mr-3">
+                                    <p class="text-[0.6875rem] font-black uppercase tracking-wider text-purple-100 mb-1 flex items-center gap-1.5">
+                                        <i class="ph-bold ph-wallet text-sm text-white"></i> Total Omzet / Pendapatan
+                                    </p>
+                                    <div class="text-2xl sm:text-3xl font-black truncate text-white tracking-tight">
+                                        {{ formatRupiah(laporanKg.bulanan.pendapatan) }}
+                                    </div>
+                                </div>
+                                <div class="w-11 h-11 rounded-xl bg-white/20 backdrop-blur-md text-white shrink-0 flex items-center justify-center text-2xl border border-white/30 shadow-inner">
+                                    <i class="ph-fill ph-coins"></i>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="mt-4 pt-4 border-t border-slate-100 grid grid-cols-2 gap-3 text-xs">
-                        <div class="bg-slate-50 rounded-2xl p-3 border border-slate-100 flex flex-col">
-                            <span class="text-slate-400 font-bold mb-1 uppercase tracking-wider text-[0.65rem]">Total Pesanan</span>
-                            <span class="font-black text-slate-700 text-sm flex items-center gap-1.5">
-                                <i class="ph-fill ph-receipt text-purple-500"></i>
-                                {{ laporanKg.bulanan.trx }} Transaksi
-                            </span>
-                        </div>
-                        <div class="bg-slate-50 rounded-2xl p-3 border border-slate-100 flex flex-col">
-                            <span class="text-slate-400 font-bold mb-1 uppercase tracking-wider text-[0.65rem]">Nilai Transaksi</span>
-                            <span class="font-black text-purple-600 text-sm flex items-center gap-1 truncate" :title="formatRupiah(laporanKg.bulanan.pendapatan)">
-                                {{ formatRupiah(laporanKg.bulanan.pendapatan) }}
-                            </span>
-                        </div>
+                    <!-- Footer Details -->
+                    <div class="mt-4 pt-3.5 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-500">
+                        <span class="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1.5 rounded-xl border border-slate-100 text-slate-700">
+                            <i class="ph-fill ph-receipt text-purple-500 text-sm"></i>
+                            Volume: <strong class="text-slate-900 font-black">{{ laporanKg.bulanan.trx }} Pesanan</strong>
+                        </span>
+                        <span v-if="laporanKg.bulanan.trx > 0" class="text-[0.7rem] bg-purple-50 text-purple-700 font-black px-2.5 py-1 rounded-xl border border-purple-100">
+                            ~{{ formatRupiah(laporanKg.bulanan.pendapatan / laporanKg.bulanan.trx) }}/trx
+                        </span>
                     </div>
                 </div>
             </div>
