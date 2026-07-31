@@ -293,7 +293,7 @@ const formatWaktu = (val) => {
                             </div>
 
                             <!-- Metric 2: Total Pendapatan -->
-                            <div class="bg-gradient-to-br from-emerald-500 to-teal-600 p-4.5 rounded-2xl shadow-md shadow-emerald-500/20 text-white flex items-center justify-between group-hover:shadow-lg transition-shadow">
+                            <div class="bg-gradient-to-br from-emerald-500 to-teal-600 p-4 px-5 rounded-2xl shadow-md shadow-emerald-500/20 text-white flex items-center justify-between group-hover:shadow-lg transition-shadow">
                                 <div class="overflow-hidden w-full mr-3">
                                     <p class="text-[0.6875rem] font-black uppercase tracking-wider text-emerald-100 mb-1 flex items-center gap-1.5">
                                         <i class="ph-bold ph-wallet text-sm text-white"></i> Total Omzet / Pendapatan
@@ -358,7 +358,7 @@ const formatWaktu = (val) => {
                             </div>
 
                             <!-- Metric 2: Total Pendapatan -->
-                            <div class="bg-gradient-to-br from-blue-500 to-cyan-600 p-4.5 rounded-2xl shadow-md shadow-blue-500/20 text-white flex items-center justify-between group-hover:shadow-lg transition-shadow">
+                            <div class="bg-gradient-to-br from-blue-500 to-cyan-600 p-4 px-5 rounded-2xl shadow-md shadow-blue-500/20 text-white flex items-center justify-between group-hover:shadow-lg transition-shadow">
                                 <div class="overflow-hidden w-full mr-3">
                                     <p class="text-[0.6875rem] font-black uppercase tracking-wider text-blue-100 mb-1 flex items-center gap-1.5">
                                         <i class="ph-bold ph-wallet text-sm text-white"></i> Total Omzet / Pendapatan
@@ -430,7 +430,7 @@ const formatWaktu = (val) => {
                             </div>
 
                             <!-- Metric 2: Total Pendapatan -->
-                            <div class="bg-gradient-to-br from-purple-600 to-indigo-600 p-4.5 rounded-2xl shadow-md shadow-purple-500/20 text-white flex items-center justify-between group-hover:shadow-lg transition-shadow">
+                            <div class="bg-gradient-to-br from-purple-600 to-indigo-600 p-4 px-5 rounded-2xl shadow-md shadow-purple-500/20 text-white flex items-center justify-between group-hover:shadow-lg transition-shadow">
                                 <div class="overflow-hidden w-full mr-3">
                                     <p class="text-[0.6875rem] font-black uppercase tracking-wider text-purple-100 mb-1 flex items-center gap-1.5">
                                         <i class="ph-bold ph-wallet text-sm text-white"></i> Total Omzet / Pendapatan
