@@ -1,42 +1,185 @@
 <script setup>
-import { computed } from 'vue';
+import { ref, computed } from 'vue';
 import { useAppStore } from '../stores/useAppStore';
 
 const store = useAppStore();
+const selectedMonth = ref('');
+
+// Initialize month filter to current month (YYYY-MM)
+const initDate = new Date();
+const initMonthStr = String(initDate.getMonth() + 1).padStart(2, '0');
+selectedMonth.value = `${initDate.getFullYear()}-${initMonthStr}`;
+
+const parseTxDate = (dateStr) => {
+    if (!dateStr) return null;
+    const str = String(dateStr).trim().split(' ')[0];
+    if (str.includes('-') && str.split('-')[0].length === 4) {
+        const d = new Date(str);
+        if (!isNaN(d.getTime())) return d;
+    }
+    const parts = str.split(/[/-]/);
+    if (parts.length === 3) {
+        const day = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10) - 1;
+        const year = parseInt(parts[2], 10);
+        if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
+            return new Date(year, month, day);
+        }
+    }
+    const d = new Date(dateStr);
+    return isNaN(d.getTime()) ? null : d;
+};
+
+const getTransactionKg = (tx) => {
+    if (!tx) return 0;
+    let totalKg = 0;
+
+    // 1. Try parsing from Detail Layanan JSON
+    if (tx['Detail Layanan JSON']) {
+        try {
+            const parsed = JSON.parse(tx['Detail Layanan JSON']);
+            const items = parsed.items || (Array.isArray(parsed) ? parsed : []);
+            let foundInJson = false;
+            items.forEach(item => {
+                const satuan = String(item.satuan || '').toLowerCase();
+                if (satuan === 'kg') {
+                    totalKg += parseFloat(item.qty) || 0;
+                    foundInJson = true;
+                }
+            });
+            if (foundInJson && totalKg > 0) return Math.round(totalKg * 10) / 10;
+        } catch (e) {
+            // ignore JSON errors
+        }
+    }
+
+    // 2. Try regex matching on "Layanan" text field (e.g., "Cuci Kering x 5Kg")
+    if (tx['Layanan']) {
+        const regex = /x?\s*([\d.]+)\s*kg/gi;
+        let match;
+        let foundInText = false;
+        while ((match = regex.exec(tx['Layanan'])) !== null) {
+            totalKg += parseFloat(match[1]) || 0;
+            foundInText = true;
+        }
+        if (foundInText && totalKg > 0) return Math.round(totalKg * 10) / 10;
+    }
+
+    // 3. Fallback to Kg Terpakai if present
+    if (tx['Kg Terpakai'] && parseFloat(tx['Kg Terpakai']) > 0) {
+        return Math.round(parseFloat(tx['Kg Terpakai']) * 10) / 10;
+    }
+
+    return Math.round(totalKg * 10) / 10;
+};
 
 const dashboardStats = computed(() => {
     let masuk = 0, proses = 0, selesai = 0, pendapatan = 0;
     const produksi = store.appData.produksi || [];
     
-    const todayObj = new Date();
-    const d = String(todayObj.getDate()).padStart(2, '0');
-    const m = String(todayObj.getMonth() + 1).padStart(2, '0');
-    const y = todayObj.getFullYear();
-    const today1 = `${d}/${m}/${y}`;
-    const today2 = `${todayObj.getDate()}/${todayObj.getMonth() + 1}/${y}`;
+    const today = new Date();
+    const todayY = today.getFullYear();
+    const todayM = today.getMonth();
+    const todayD = today.getDate();
 
     produksi.forEach(item => {
         if (!item) return;
         const status = item['Status'] || '';
         if (status === 'Proses') {
-            masuk++;
             proses++;
         } else if (status === 'Selesai' || status === 'Diambil') {
             selesai++;
         }
         
-        const waktuMasuk = String(item['Waktu Masuk'] || '');
-        if (waktuMasuk.includes(today1) || waktuMasuk.includes(today2) || waktuMasuk.includes(new Date().toLocaleDateString('id-ID'))) {
-             let total = parseRupiah(item['Total Harga']);
-             pendapatan += total;
+        const txDate = parseTxDate(item['Waktu Masuk']);
+        if (txDate && txDate.getFullYear() === todayY && txDate.getMonth() === todayM && txDate.getDate() === todayD) {
+            masuk++;
+            pendapatan += parseRupiah(item['Total Harga']);
         }
     });
 
     return { masuk, proses, selesai, pendapatan };
 });
 
+const laporanKg = computed(() => {
+    const produksi = store.appData.produksi || [];
+    const today = new Date();
+    const todayY = today.getFullYear();
+    const todayM = today.getMonth();
+    const todayD = today.getDate();
+
+    // 7 days rolling period (6 days ago + today)
+    const weekStart = new Date(todayY, todayM, todayD - 6, 0, 0, 0);
+    const weekEnd = new Date(todayY, todayM, todayD, 23, 59, 59);
+
+    // Selected month parsing
+    let selY = todayY;
+    let selM = todayM + 1;
+    if (selectedMonth.value && selectedMonth.value.includes('-')) {
+        const parts = selectedMonth.value.split('-');
+        selY = parseInt(parts[0], 10);
+        selM = parseInt(parts[1], 10);
+    }
+
+    let harian = { kg: 0, trx: 0, pendapatan: 0 };
+    let mingguan = { kg: 0, trx: 0, pendapatan: 0 };
+    let bulanan = { kg: 0, trx: 0, pendapatan: 0 };
+
+    produksi.forEach(item => {
+        if (!item) return;
+        const txDate = parseTxDate(item['Waktu Masuk']);
+        if (!txDate) return;
+
+        const kg = getTransactionKg(item);
+        const rp = parseRupiah(item['Total Harga']);
+
+        // Harian
+        if (txDate.getFullYear() === todayY && txDate.getMonth() === todayM && txDate.getDate() === todayD) {
+            harian.kg += kg;
+            harian.trx += 1;
+            harian.pendapatan += rp;
+        }
+
+        // Mingguan (7 Hari Terakhir)
+        if (txDate >= weekStart && txDate <= weekEnd) {
+            mingguan.kg += kg;
+            mingguan.trx += 1;
+            mingguan.pendapatan += rp;
+        }
+
+        // Bulanan (Filter)
+        if (txDate.getFullYear() === selY && (txDate.getMonth() + 1) === selM) {
+            bulanan.kg += kg;
+            bulanan.trx += 1;
+            bulanan.pendapatan += rp;
+        }
+    });
+
+    const formatShortDate = (d) => `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
+
+    return {
+        harian: {
+            kg: Math.round(harian.kg * 10) / 10,
+            trx: harian.trx,
+            pendapatan: harian.pendapatan
+        },
+        mingguan: {
+            kg: Math.round(mingguan.kg * 10) / 10,
+            trx: mingguan.trx,
+            pendapatan: mingguan.pendapatan,
+            startDateStr: formatShortDate(weekStart),
+            endDateStr: formatShortDate(today)
+        },
+        bulanan: {
+            kg: Math.round(bulanan.kg * 10) / 10,
+            trx: bulanan.trx,
+            pendapatan: bulanan.pendapatan
+        }
+    };
+});
+
 const recentTransactions = computed(() => {
-    return (store.appData.produksi || []).slice(0, 5);
+    return (store.appData.produksi || []).slice(0, 10);
 });
 
 const parseRupiah = (val) => {
@@ -63,16 +206,22 @@ const getCustomerName = (tx) => {
     }
     return 'Tanpa Nama';
 };
+
+const formatWaktu = (val) => {
+    if (!val) return '-';
+    return String(val);
+};
 </script>
 
 <template>
     <div class="fade-in p-4 sm:p-6 w-full h-full flex-1 flex flex-col overflow-y-auto min-h-0">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6 shrink-0">
+        <!-- TOP KPI OVERVIEW CARDS -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 shrink-0">
             <div class="relative overflow-hidden rounded-3xl p-6 shadow-lg shadow-blue-500/20 bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center text-white group hover:-translate-y-1 transition-transform duration-300">
                 <div class="absolute -right-4 -top-4 w-24 h-24 rounded-full bg-white/20 blur-[2px] group-hover:scale-110 transition-transform duration-500"></div>
                 <div class="absolute -bottom-6 -right-2 w-16 h-16 rounded-full bg-white/10 blur-[1px] group-hover:scale-125 transition-transform duration-500"></div>
                 <div class="relative z-10 w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-3xl mr-5 shadow-inner border border-white/10"><i class="ph-fill ph-download-simple text-white"></i></div>
-                <div class="relative z-10"><p class="text-[0.6875rem] font-extrabold text-blue-100 uppercase tracking-wider mb-1">Pesanan Masuk</p><h3 class="text-3xl font-black">{{ dashboardStats.masuk }}</h3></div>
+                <div class="relative z-10"><p class="text-[0.6875rem] font-extrabold text-blue-100 uppercase tracking-wider mb-1">Pesanan Hari Ini</p><h3 class="text-3xl font-black">{{ dashboardStats.masuk }}</h3></div>
             </div>
             <div class="relative overflow-hidden rounded-3xl p-6 shadow-lg shadow-orange-500/20 bg-gradient-to-br from-amber-400 to-orange-500 flex items-center text-white group hover:-translate-y-1 transition-transform duration-300">
                 <div class="absolute -right-4 -top-4 w-24 h-24 rounded-full bg-white/20 blur-[2px] group-hover:scale-110 transition-transform duration-500"></div>
@@ -94,22 +243,208 @@ const getCustomerName = (tx) => {
             </div>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 flex flex-col flex-1 overflow-hidden min-h-[300px] shrink-0">
-            <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-white z-10 shrink-0"><h3 class="text-md font-bold text-slate-800">5 Transaksi Terakhir</h3></div>
+        <!-- NEW SECTION: LAPORAN LAUNDRY MASUK (KG) & ANALISA -->
+        <div class="mb-8 shrink-0">
+            <div class="flex flex-col sm:flex-row justify-between sm:items-end gap-2 mb-4">
+                <div>
+                    <h2 class="text-xl font-black text-slate-800 flex items-center gap-2.5">
+                        <span class="w-2 h-7 bg-gradient-to-b from-teal-500 to-blue-600 rounded-full inline-block shadow-sm"></span>
+                        Laporan Beban Laundry Masuk (KG)
+                    </h2>
+                    <p class="text-xs font-semibold text-slate-500 mt-1 ml-4">Pantau volume berat cucian yang masuk, jumlah transaksi, serta nilai estimasi pendapatan</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- CARD 1: HARIAN -->
+                <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200/80 hover:shadow-md hover:border-emerald-300 transition-all duration-300 relative overflow-hidden group flex flex-col justify-between">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-emerald-500/15 via-teal-500/5 to-transparent rounded-bl-[100px] pointer-events-none group-hover:scale-105 transition-transform duration-500"></div>
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-100 to-teal-100 text-emerald-600 flex items-center justify-center text-2xl shadow-inner border border-emerald-200/60">
+                                    <i class="ph-bold ph-sun"></i>
+                                </div>
+                                <div>
+                                    <span class="inline-block px-2.5 py-0.5 rounded-full text-[0.65rem] font-black tracking-wider uppercase bg-emerald-100 text-emerald-700 mb-0.5">Harian</span>
+                                    <h4 class="text-sm font-extrabold text-slate-700">Hari Ini</h4>
+                                </div>
+                            </div>
+                            <span class="text-xs font-bold text-slate-500 bg-slate-100/80 px-3 py-1 rounded-xl border border-slate-200/60">{{ new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) }}</span>
+                        </div>
+
+                        <div class="my-4 flex items-baseline gap-2">
+                            <span class="text-4xl sm:text-5xl font-black text-slate-800 tracking-tight">{{ laporanKg.harian.kg }}</span>
+                            <span class="text-lg font-black text-emerald-600 uppercase bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-200/60 shadow-2xs">KG</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-4 border-t border-slate-100 grid grid-cols-2 gap-3 text-xs">
+                        <div class="bg-slate-50 rounded-2xl p-3 border border-slate-100 flex flex-col">
+                            <span class="text-slate-400 font-bold mb-1 uppercase tracking-wider text-[0.65rem]">Total Pesanan</span>
+                            <span class="font-black text-slate-700 text-sm flex items-center gap-1.5">
+                                <i class="ph-fill ph-receipt text-emerald-500"></i>
+                                {{ laporanKg.harian.trx }} Transaksi
+                            </span>
+                        </div>
+                        <div class="bg-slate-50 rounded-2xl p-3 border border-slate-100 flex flex-col">
+                            <span class="text-slate-400 font-bold mb-1 uppercase tracking-wider text-[0.65rem]">Nilai Transaksi</span>
+                            <span class="font-black text-emerald-600 text-sm flex items-center gap-1 truncate" :title="formatRupiah(laporanKg.harian.pendapatan)">
+                                {{ formatRupiah(laporanKg.harian.pendapatan) }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD 2: MINGGUAN -->
+                <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200/80 hover:shadow-md hover:border-blue-300 transition-all duration-300 relative overflow-hidden group flex flex-col justify-between">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-blue-500/15 via-cyan-500/5 to-transparent rounded-bl-[100px] pointer-events-none group-hover:scale-105 transition-transform duration-500"></div>
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-100 to-cyan-100 text-blue-600 flex items-center justify-center text-2xl shadow-inner border border-blue-200/60">
+                                    <i class="ph-bold ph-calendar-check"></i>
+                                </div>
+                                <div>
+                                    <span class="inline-block px-2.5 py-0.5 rounded-full text-[0.65rem] font-black tracking-wider uppercase bg-blue-100 text-blue-700 mb-0.5">Mingguan</span>
+                                    <h4 class="text-sm font-extrabold text-slate-700">7 Hari Terakhir</h4>
+                                </div>
+                            </div>
+                            <span class="text-xs font-bold text-blue-700 bg-blue-50/80 px-2.5 py-1 rounded-xl border border-blue-200/60">{{ laporanKg.mingguan.startDateStr }} - {{ laporanKg.mingguan.endDateStr }}</span>
+                        </div>
+
+                        <div class="my-4 flex items-baseline gap-2">
+                            <span class="text-4xl sm:text-5xl font-black text-slate-800 tracking-tight">{{ laporanKg.mingguan.kg }}</span>
+                            <span class="text-lg font-black text-blue-600 uppercase bg-blue-50 px-2 py-0.5 rounded-lg border border-blue-200/60 shadow-2xs">KG</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-4 border-t border-slate-100 grid grid-cols-2 gap-3 text-xs">
+                        <div class="bg-slate-50 rounded-2xl p-3 border border-slate-100 flex flex-col">
+                            <span class="text-slate-400 font-bold mb-1 uppercase tracking-wider text-[0.65rem]">Total Pesanan</span>
+                            <span class="font-black text-slate-700 text-sm flex items-center gap-1.5">
+                                <i class="ph-fill ph-receipt text-blue-500"></i>
+                                {{ laporanKg.mingguan.trx }} Transaksi
+                            </span>
+                        </div>
+                        <div class="bg-slate-50 rounded-2xl p-3 border border-slate-100 flex flex-col">
+                            <span class="text-slate-400 font-bold mb-1 uppercase tracking-wider text-[0.65rem]">Nilai Transaksi</span>
+                            <span class="font-black text-blue-600 text-sm flex items-center gap-1 truncate" :title="formatRupiah(laporanKg.mingguan.pendapatan)">
+                                {{ formatRupiah(laporanKg.mingguan.pendapatan) }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD 3: BULANAN DENGAN FILTER -->
+                <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200/80 hover:shadow-md hover:border-purple-300 transition-all duration-300 relative overflow-hidden group flex flex-col justify-between">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-purple-500/15 via-fuchsia-500/5 to-transparent rounded-bl-[100px] pointer-events-none group-hover:scale-105 transition-transform duration-500"></div>
+                    <div>
+                        <div class="flex items-center justify-between gap-2 mb-4">
+                            <div class="flex items-center gap-3 shrink-0">
+                                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-100 to-fuchsia-100 text-purple-600 flex items-center justify-center text-2xl shadow-inner border border-purple-200/60">
+                                    <i class="ph-bold ph-chart-bar"></i>
+                                </div>
+                                <div>
+                                    <span class="inline-block px-2.5 py-0.5 rounded-full text-[0.65rem] font-black tracking-wider uppercase bg-purple-100 text-purple-700 mb-0.5">Bulanan</span>
+                                    <h4 class="text-sm font-extrabold text-slate-700">Filter Bulan</h4>
+                                </div>
+                            </div>
+                            <div class="relative flex items-center z-10">
+                                <input 
+                                    type="month" 
+                                    v-model="selectedMonth" 
+                                    class="bg-purple-50 hover:bg-purple-100/80 focus:bg-white text-purple-700 text-xs font-black px-2.5 py-1.5 rounded-xl border border-purple-200 focus:border-purple-600 focus:ring-2 focus:ring-purple-200 transition-all outline-none shadow-2xs cursor-pointer"
+                                    title="Pilih Bulan untuk Analisa"
+                                />
+                            </div>
+                        </div>
+
+                        <div class="my-4 flex items-baseline gap-2">
+                            <span class="text-4xl sm:text-5xl font-black text-slate-800 tracking-tight">{{ laporanKg.bulanan.kg }}</span>
+                            <span class="text-lg font-black text-purple-600 uppercase bg-purple-50 px-2 py-0.5 rounded-lg border border-purple-200/60 shadow-2xs">KG</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-4 border-t border-slate-100 grid grid-cols-2 gap-3 text-xs">
+                        <div class="bg-slate-50 rounded-2xl p-3 border border-slate-100 flex flex-col">
+                            <span class="text-slate-400 font-bold mb-1 uppercase tracking-wider text-[0.65rem]">Total Pesanan</span>
+                            <span class="font-black text-slate-700 text-sm flex items-center gap-1.5">
+                                <i class="ph-fill ph-receipt text-purple-500"></i>
+                                {{ laporanKg.bulanan.trx }} Transaksi
+                            </span>
+                        </div>
+                        <div class="bg-slate-50 rounded-2xl p-3 border border-slate-100 flex flex-col">
+                            <span class="text-slate-400 font-bold mb-1 uppercase tracking-wider text-[0.65rem]">Nilai Transaksi</span>
+                            <span class="font-black text-purple-600 text-sm flex items-center gap-1 truncate" :title="formatRupiah(laporanKg.bulanan.pendapatan)">
+                                {{ formatRupiah(laporanKg.bulanan.pendapatan) }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RECENT TRANSACTIONS TABLE WITH KG EXPIRED VALUE -->
+        <div class="bg-white rounded-3xl shadow-sm border border-slate-200/80 flex flex-col flex-1 overflow-hidden min-h-[350px] shrink-0">
+            <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 z-10 shrink-0">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center text-lg font-bold border border-slate-200/80">
+                        <i class="ph-bold ph-list-numbers"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-md font-extrabold text-slate-800">10 Transaksi Terakhir</h3>
+                        <p class="text-[0.7rem] font-medium text-slate-400">Daftar aktivitas cucian terbaru beserta rincian berat dan harga</p>
+                    </div>
+                </div>
+            </div>
             <div class="overflow-auto flex-1 relative bg-white min-h-0">
                 <table class="table-modern min-w-max">
-                    <thead><tr><th>ID</th><th>Pelanggan</th><th>Layanan & Harga</th><th class="text-right">Status</th></tr></thead>
+                    <thead>
+                        <tr>
+                            <th>ID & TANGGAL</th>
+                            <th>PELANGGAN</th>
+                            <th>LAYANAN & BERAT (KG)</th>
+                            <th>TOTAL BIAYA</th>
+                            <th class="text-right">STATUS</th>
+                        </tr>
+                    </thead>
                     <tbody>
-                        <tr v-for="tx in recentTransactions" :key="tx.ID">
-                            <td>{{ tx.ID }}</td>
-                            <td>{{ getCustomerName(tx) }}</td>
-                            <td>{{ tx['Layanan'] }} <br> <span class="text-xs text-slate-400">{{ formatRupiah(tx['Total Harga']) }}</span></td>
+                        <tr v-for="tx in recentTransactions" :key="tx.ID" class="hover:bg-blue-50/40 transition-colors">
+                            <td>
+                                <span class="font-black text-slate-800 block text-sm">{{ tx.ID }}</span>
+                                <span class="text-[0.7rem] text-slate-400 font-medium flex items-center gap-1 mt-0.5"><i class="ph-fill ph-clock text-slate-300"></i>{{ formatWaktu(tx['Waktu Masuk']) }}</span>
+                            </td>
+                            <td>
+                                <span class="font-extrabold text-slate-800 text-sm">{{ getCustomerName(tx) }}</span>
+                            </td>
+                            <td>
+                                <div class="flex items-center gap-2">
+                                    <span class="font-bold text-slate-700 text-xs">{{ tx['Layanan'] }}</span>
+                                    <span v-if="getTransactionKg(tx) > 0" class="px-2 py-0.5 bg-teal-50 border border-teal-200/80 text-teal-700 font-black text-[0.6875rem] rounded-lg shadow-2xs">
+                                        {{ getTransactionKg(tx) }} KG
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="font-extrabold text-slate-800 text-sm">{{ formatRupiah(tx['Total Harga']) }}</span>
+                            </td>
                             <td class="text-right">
-                                <span :class="['px-2 py-1 rounded-full text-xs font-bold', tx.Status === 'Proses' ? 'bg-orange-100 text-orange-600' : tx.Status === 'Selesai' ? 'bg-teal-100 text-teal-600' : 'bg-slate-100 text-slate-600']">{{ tx.Status }}</span>
+                                <span :class="['px-2.5 py-1 rounded-full text-xs font-black uppercase tracking-wider inline-block shadow-2xs border', 
+                                    tx.Status === 'Proses' ? 'bg-orange-50 text-orange-600 border-orange-200/80' : 
+                                    tx.Status === 'Selesai' ? 'bg-teal-50 text-teal-600 border-teal-200/80' : 
+                                    'bg-slate-50 text-slate-600 border-slate-200/80']">
+                                    {{ tx.Status }}
+                                </span>
                             </td>
                         </tr>
                         <tr v-if="recentTransactions.length === 0">
-                            <td colspan="4" class="text-center py-8 text-slate-400">Belum ada transaksi</td>
+                            <td colspan="5" class="text-center py-12 text-slate-400 font-medium">
+                                <div class="flex flex-col items-center justify-center">
+                                    <i class="ph-bold ph-inbox text-4xl text-slate-300 mb-2"></i>
+                                    <span>Belum ada transaksi di dalam sistem</span>
+                                </div>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
