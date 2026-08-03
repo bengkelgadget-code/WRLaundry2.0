@@ -1,6 +1,9 @@
 <script setup>
 import { ref, computed, watch, nextTick } from 'vue';
 import { useAppStore } from '../stores/useAppStore';
+import { Capacitor } from '@capacitor/core';
+import { Share } from '@capacitor/share';
+import { Filesystem, Directory } from '@capacitor/filesystem';
 
 const props = defineProps({
     isOpen: { type: Boolean, default: false },
@@ -177,10 +180,35 @@ const exportHistory = async (type) => {
             
             const waMsg = `Halo *${customerName.value}*,\nBerikut adalah lampiran laporan/rekap transaksi Anda. Mohon konfirmasi laporan yang telah kami bagikan ya. Terima kasih! 🙏`;
             
+            // 1. PRIORITAS UTAMA: JIKA DI DALAM APLIKASI ANDROID / IOS (CAPACITOR NATIVE)
+            if (Capacitor.isNativePlatform()) {
+                try {
+                    const base64Data = imgData.split(',')[1];
+                    const savedFile = await Filesystem.writeFile({
+                        path: fileName,
+                        data: base64Data,
+                        directory: Directory.Cache
+                    });
+                    await Share.share({
+                        title: 'Laporan Transaksi - ' + customerName.value,
+                        text: waMsg,
+                        url: savedFile.uri,
+                        dialogTitle: 'Bagikan Laporan'
+                    });
+                    showToast("Laporan berhasil dibagikan!");
+                    return;
+                } catch (err) {
+                    console.error('Capacitor Share Error:', err);
+                    if (err.message && (err.message.includes('cancel') || err.message.includes('dismiss'))) {
+                        return;
+                    }
+                }
+            }
+
+            // 2. PRIORITAS KEDUA: WEB BROWSER DI HP (WEB SHARE API WITH FILES)
             const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.85));
             const file = new File([blob], fileName, { type: 'image/jpeg' });
 
-            // Langsung panggil navigator.share tanpa terhadang canShare yang kerap bermasalah di WebView Android
             if (navigator.share) {
                 try {
                     await navigator.share({
@@ -191,15 +219,14 @@ const exportHistory = async (type) => {
                     showToast("Laporan berhasil dibagikan!");
                     return;
                 } catch (err) {
-                    console.log('Share canceled/failed:', err);
+                    console.log('Web Share canceled/failed:', err);
                     if (err.name === 'AbortError') {
-                        // User sengaja membatalkan menu share
                         return;
                     }
                 }
             }
 
-            // Fallback untuk desktop PC atau browser yang tidak mendukung Share Menu
+            // 3. FALLBACK: DESKTOP PC OR BROWSERS WITHOUT SHARE MENU
             const a = document.createElement('a');
             a.href = imgData;
             a.download = fileName;
@@ -210,13 +237,39 @@ const exportHistory = async (type) => {
             setTimeout(() => window.open(waUrl, '_blank'), 500);
 
         } else if (type === 'pdf') {
+            const fileName = 'Laporan_' + customerName.value.replace(/ /g, '_') + '.pdf';
             const jsPDF = window.jspdf.jsPDF;
             const pdf = new jsPDF('p', 'mm', 'a4');
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
             
             pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-            pdf.save('Laporan_' + customerName.value.replace(/ /g, '_') + '.pdf');
+
+            if (Capacitor.isNativePlatform()) {
+                try {
+                    const base64Data = pdf.output('datauristring').split(',')[1];
+                    const savedFile = await Filesystem.writeFile({
+                        path: fileName,
+                        data: base64Data,
+                        directory: Directory.Cache
+                    });
+                    await Share.share({
+                        title: 'Laporan Transaksi PDF - ' + customerName.value,
+                        text: `Laporan transaksi ${customerName.value}`,
+                        url: savedFile.uri,
+                        dialogTitle: 'Bagikan Laporan PDF'
+                    });
+                    showToast("PDF berhasil dibagikan!");
+                    return;
+                } catch (err) {
+                    console.error('Capacitor PDF Share Error:', err);
+                    if (err.message && (err.message.includes('cancel') || err.message.includes('dismiss'))) {
+                        return;
+                    }
+                }
+            }
+
+            pdf.save(fileName);
             showToast("PDF berhasil diunduh!");
         }
 
