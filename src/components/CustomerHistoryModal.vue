@@ -127,6 +127,14 @@ const loadScript = (src, checkVar) => {
     });
 };
 
+watch(() => props.isOpen, (val) => {
+    if (val) {
+        // Preload library begitu modal dibuka agar saat tombol WA/PDF ditekan prosesnya instan dan tidak melanggar batas waktu User Activation HP Android
+        loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js', 'html2canvas').catch(() => {});
+        loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js', 'jspdf').catch(() => {});
+    }
+}, { immediate: true });
+
 const showToast = (msg) => {
     alert(msg); // fallback toast
 };
@@ -145,9 +153,8 @@ const exportHistory = async (type) => {
             await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js', 'jspdf');
         }
 
-        // Tunggu komponen dirender sempurna
+        // Tunggu komponen dirender
         await nextTick();
-        await new Promise(r => setTimeout(r, 500)); // beri waktu font/css ter-apply
 
         const container = document.getElementById('report-export-container');
         if (!container) throw new Error("Render container not found");
@@ -170,42 +177,37 @@ const exportHistory = async (type) => {
             
             const waMsg = `Halo *${customerName.value}*,\nBerikut adalah lampiran laporan/rekap transaksi Anda. Mohon konfirmasi laporan yang telah kami bagikan ya. Terima kasih! 🙏`;
             
-            canvas.toBlob((blob) => {
-                const file = new File([blob], fileName, { type: 'image/jpeg' });
-                
-                if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    navigator.share({
-                        title: 'Laporan Transaksi',
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.85));
+            const file = new File([blob], fileName, { type: 'image/jpeg' });
+
+            // Langsung panggil navigator.share tanpa terhadang canShare yang kerap bermasalah di WebView Android
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: 'Laporan Transaksi - ' + customerName.value,
                         text: waMsg,
                         files: [file]
-                    }).then(() => {
-                        showToast("Laporan berhasil dibagikan!");
-                    }).catch(err => {
-                        console.log('Share canceled/failed:', err);
                     });
-                } else {
-                    // Fallback
-                    const a = document.createElement('a');
-                    a.href = imgData;
-                    a.download = fileName;
-                    a.click();
-                    
-                    const waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(waMsg)}`;
-                    try {
-                        canvas.toBlob((blobPng) => {
-                            if (navigator.clipboard && navigator.clipboard.write) {
-                                navigator.clipboard.write([
-                                    new window.ClipboardItem({ 'image/png': blobPng })
-                                ]).then(() => {
-                                    showToast("Gambar disalin! Tekan Paste (Ctrl+V) di WhatsApp.");
-                                }).catch(e => console.log(e));
-                            }
-                        }, 'image/png');
-                    } catch(e) {}
-                    
-                    setTimeout(() => window.open(waUrl, '_blank'), 800);
+                    showToast("Laporan berhasil dibagikan!");
+                    return;
+                } catch (err) {
+                    console.log('Share canceled/failed:', err);
+                    if (err.name === 'AbortError') {
+                        // User sengaja membatalkan menu share
+                        return;
+                    }
                 }
-            }, 'image/jpeg', 0.85);
+            }
+
+            // Fallback untuk desktop PC atau browser yang tidak mendukung Share Menu
+            const a = document.createElement('a');
+            a.href = imgData;
+            a.download = fileName;
+            a.click();
+            
+            const waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(waMsg)}`;
+            showToast("File JPG diunduh ke perangkat. Silakan lampirkan file ke WhatsApp Anda.");
+            setTimeout(() => window.open(waUrl, '_blank'), 500);
 
         } else if (type === 'pdf') {
             const jsPDF = window.jspdf.jsPDF;
