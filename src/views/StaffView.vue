@@ -12,7 +12,7 @@ const store = useAppStore();
 const router = useRouter();
 
 const searchQuery = ref('');
-const filterStatus = ref('');
+const filterStatus = ref('Proses');
 const filterDate = ref('');
 
 const isDetailModalOpen = ref(false);
@@ -84,7 +84,7 @@ const filteredTransactions = computed(() => {
         );
     }
     if (filterStatus.value) {
-        data = data.filter(d => d.Status === filterStatus.value);
+        data = data.filter(d => (d.Status || 'Proses') === filterStatus.value);
     }
     if (filterDate.value) {
         data = data.filter(d => {
@@ -219,7 +219,7 @@ const forceRefresh = async () => {
     // Reset filters
     filterDate.value = '';
     searchQuery.value = '';
-    filterStatus.value = '';
+    filterStatus.value = 'Proses';
     currentPage.value = 1;
 
     try {
@@ -289,12 +289,11 @@ const startScan = async () => {
             </div>
 
             <div class="w-full max-w-3xl px-4 pt-4 pb-20 shrink-0 flex-1">
-                <div class="grid grid-cols-1 gap-3 w-full mb-4">
-                    <div class="slide-up-fade bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl p-5 shadow-lg shadow-slate-900/10 text-white relative overflow-hidden">
-                        <div class="absolute right-0 top-0 opacity-10"><i class="ph-fill ph-washing-machine text-8xl -mt-4 -mr-4"></i></div>
-                        <p class="text-[0.6875rem] font-black uppercase tracking-widest text-slate-300 mb-1 relative z-10">Total Transaksi Hari Ini</p>
-                        <div class="flex items-end gap-1 relative z-10"><h2 class="text-4xl font-black tracking-tighter">{{ totalTransaksiHariIni }}</h2></div>
-                    </div>
+                <!-- Tabs Filter Pengerjaan -->
+                <div class="flex w-full bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-4 p-1.5 gap-1.5 shrink-0">
+                    <button @click="filterStatus = 'Proses'; currentPage = 1" :class="filterStatus === 'Proses' ? 'bg-amber-100 text-amber-700 shadow-sm' : 'text-slate-500 hover:bg-slate-50'" class="flex-1 py-2 rounded-xl text-[0.6875rem] font-black uppercase tracking-wider transition-all">Proses</button>
+                    <button @click="filterStatus = 'Selesai'; currentPage = 1" :class="filterStatus === 'Selesai' ? 'bg-emerald-100 text-emerald-700 shadow-sm' : 'text-slate-500 hover:bg-slate-50'" class="flex-1 py-2 rounded-xl text-[0.6875rem] font-black uppercase tracking-wider transition-all">Selesai</button>
+                    <button @click="filterStatus = 'Diambil'; currentPage = 1" :class="filterStatus === 'Diambil' ? 'bg-blue-100 text-blue-700 shadow-sm' : 'text-slate-500 hover:bg-slate-50'" class="flex-1 py-2 rounded-xl text-[0.6875rem] font-black uppercase tracking-wider transition-all">Diambil</button>
                 </div>
                 
                 <div class="slide-up-fade flex gap-2 w-full items-center mb-4">
@@ -313,13 +312,6 @@ const startScan = async () => {
                             <i class="ph-bold ph-barcode text-lg"></i>
                         </button>
                     </div>
-                    
-                    <select v-model="filterStatus" @change="currentPage = 1" class="w-[105px] h-[46px] shrink-0 px-2 py-2 text-[0.8125rem] font-bold border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-teal-300 bg-white text-slate-700 outline-none transition-all cursor-pointer">
-                        <option value="">Semua</option>
-                        <option value="Proses">Proses</option>
-                        <option value="Selesai">Selesai</option>
-                        <option value="Diambil">Diambil</option>
-                    </select>
                 </div>
                 
                 <div class="w-full">
