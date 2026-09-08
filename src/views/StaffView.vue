@@ -278,25 +278,17 @@ const startScan = async () => {
             </div>
         </div>
 
-        <!-- Body POS -->
-        <div class="flex-1 overflow-y-auto overflow-x-hidden pb-6 w-full flex flex-col items-center bg-slate-50 relative overscroll-y-contain" ref="scrollContainer" @touchstart="handleTouchStart" @touchmove="handleTouchMove" @touchend="handleTouchEnd">
-            
-            <!-- PTR Indicator -->
-            <div class="w-full flex justify-center items-end overflow-hidden z-10 shrink-0" :class="[!isPulling || isRefreshing ? 'transition-all duration-300' : '']" :style="{ height: pullDistance + 'px', opacity: pullDistance / 50 }">
-                <div class="bg-white rounded-full p-2 mb-2 shadow-md flex items-center justify-center" :class="{ 'animate-spin': isRefreshing }">
-                    <i class="ph-bold ph-arrow-clockwise text-teal-600 text-lg" :style="{ transform: `rotate(${pullDistance * 5}deg)` }"></i>
-                </div>
-            </div>
-
-            <div class="w-full max-w-3xl px-4 pt-4 pb-20 shrink-0 flex-1">
+        <!-- Static Filters (Tabs & Search) -->
+        <div class="w-full bg-slate-50 flex flex-col items-center pt-4 px-4 shrink-0 z-10 border-b border-slate-200/50 pb-3">
+            <div class="w-full max-w-3xl">
                 <!-- Tabs Filter Pengerjaan -->
-                <div class="flex w-full bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-4 p-1.5 gap-1.5 shrink-0">
+                <div class="flex w-full bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-3 p-1.5 gap-1.5 shrink-0">
                     <button @click="filterStatus = 'Proses'; currentPage = 1" :class="filterStatus === 'Proses' ? 'bg-amber-100 text-amber-700 shadow-sm' : 'text-slate-500 hover:bg-slate-50'" class="flex-1 py-2 rounded-xl text-[0.6875rem] font-black uppercase tracking-wider transition-all">Proses</button>
                     <button @click="filterStatus = 'Selesai'; currentPage = 1" :class="filterStatus === 'Selesai' ? 'bg-emerald-100 text-emerald-700 shadow-sm' : 'text-slate-500 hover:bg-slate-50'" class="flex-1 py-2 rounded-xl text-[0.6875rem] font-black uppercase tracking-wider transition-all">Selesai</button>
                     <button @click="filterStatus = 'Diambil'; currentPage = 1" :class="filterStatus === 'Diambil' ? 'bg-blue-100 text-blue-700 shadow-sm' : 'text-slate-500 hover:bg-slate-50'" class="flex-1 py-2 rounded-xl text-[0.6875rem] font-black uppercase tracking-wider transition-all">Diambil</button>
                 </div>
                 
-                <div class="slide-up-fade flex gap-2 w-full items-center mb-4">
+                <div class="flex gap-2 w-full items-center">
                     <!-- Simplified Date Filter -->
                     <div class="relative w-[46px] h-[46px] shrink-0 bg-white border border-slate-200 rounded-2xl flex items-center justify-center text-slate-500 hover:bg-slate-50 transition-colors shadow-sm cursor-pointer" :class="{'ring-2 ring-emerald-400 border-emerald-400 bg-emerald-50 text-emerald-600': filterDate}">
                         <input type="date" v-model="filterDate" @change="currentPage = 1" title="Pilih Tanggal" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
@@ -313,6 +305,20 @@ const startScan = async () => {
                         </button>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Body POS (Scrollable Data) -->
+        <div class="flex-1 overflow-y-auto overflow-x-hidden pb-6 w-full flex flex-col items-center bg-slate-50 relative overscroll-y-contain" ref="scrollContainer" @touchstart="handleTouchStart" @touchmove="handleTouchMove" @touchend="handleTouchEnd">
+            
+            <!-- PTR Indicator -->
+            <div class="w-full flex justify-center items-end overflow-hidden z-10 shrink-0" :class="[!isPulling || isRefreshing ? 'transition-all duration-300' : '']" :style="{ height: pullDistance + 'px', opacity: pullDistance / 50 }">
+                <div class="bg-white rounded-full p-2 mb-2 shadow-md flex items-center justify-center" :class="{ 'animate-spin': isRefreshing }">
+                    <i class="ph-bold ph-arrow-clockwise text-teal-600 text-lg" :style="{ transform: `rotate(${pullDistance * 5}deg)` }"></i>
+                </div>
+            </div>
+
+            <div class="w-full max-w-3xl px-4 pt-3 pb-20 shrink-0 flex-1">
                 
                 <div class="w-full">
                     <div v-for="(tx, index) in transactions" :key="tx.ID" @click="openDetailModal(tx)" class="bg-white px-4 py-3 border border-slate-100 rounded-2xl active:bg-slate-50 transition-colors cursor-pointer relative shadow-sm mb-3">
