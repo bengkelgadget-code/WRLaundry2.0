@@ -340,7 +340,6 @@ const startScan = async () => {
                                 <span v-else-if="tx.Pembayaran === 'Potong Kuota'" class="px-2 py-0.5 rounded-md border text-[0.5625rem] font-bold uppercase bg-indigo-50 text-indigo-600 border-indigo-200">KUOTA</span>
                                 <span v-else class="px-2 py-0.5 rounded-md border text-[0.5625rem] font-bold uppercase bg-red-50 text-red-500 border-red-200">BELUM LUNAS</span>
                                 
-                                <span :class="['px-2.5 py-0.5 rounded-full text-[0.5625rem] font-black uppercase tracking-wider', tx.Status === 'Proses' || !tx.Status ? 'bg-purple-100 text-purple-700' : (tx.Status === 'Selesai' ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700')]">{{ tx.Status || 'PROSES' }}</span>
                             </div>
                         </div>
                     </div>
