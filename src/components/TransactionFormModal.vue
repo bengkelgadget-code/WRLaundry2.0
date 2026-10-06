@@ -199,6 +199,7 @@ const handleCustomerInput = (field) => {
     // If user types, we reset selectedCustomer if it doesn't match perfectly
     selectedCustomer.value = null;
     if (field === 'nama') {
+        formData.value['Nama Pelanggan'] = String(formData.value['Nama Pelanggan'] || '').toUpperCase();
         showNamaDropdown.value = true;
         const exactMatch = customers.value.find(c => (c['Nama Pelanggan'] || '').toLowerCase() === (formData.value['Nama Pelanggan'] || '').toLowerCase());
         if (exactMatch) {
@@ -728,7 +729,7 @@ watch(() => props.isOpen, (newVal) => {
                                     <!-- Input No WA -->
                                     <div class="relative">
                                         <label class="block text-[0.6875rem] font-bold text-slate-600 mb-1.5 uppercase">No WhatsApp <span class="text-red-500">*</span></label>
-                                        <input type="text" v-model="formData['No Telpon']" required @focus="showHpDropdown = true; scrollToActive($event)" @input="handleCustomerInput('hp')" @blur="closeHpDropdown" @keydown.tab="handleAutocompleteKeydown($event, 'hp')" @keydown.enter.prevent="handleAutocompleteKeydown($event, 'hp')" placeholder="Ketik no HP..." class="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 focus:border-teal-400 focus:ring-2 focus:ring-teal-50 outline-none transition-all text-sm font-bold text-slate-800 font-mono">
+                                        <input type="tel" inputmode="numeric" v-model="formData['No Telpon']" required @focus="showHpDropdown = true; scrollToActive($event)" @input="handleCustomerInput('hp')" @blur="closeHpDropdown" @keydown.tab="handleAutocompleteKeydown($event, 'hp')" @keydown.enter.prevent="handleAutocompleteKeydown($event, 'hp')" placeholder="Ketik no HP..." class="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 focus:border-teal-400 focus:ring-2 focus:ring-teal-50 outline-none transition-all text-sm font-bold text-slate-800 font-mono">
                                         
                                         <!-- Dropdown HP -->
                                         <div v-if="showHpDropdown" class="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-48 overflow-y-auto overflow-x-hidden">
