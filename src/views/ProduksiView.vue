@@ -314,13 +314,13 @@ const handleModalEdit = (data) => {
                                         <input type="checkbox" v-model="isAllSelected" class="w-4 h-4 text-teal-500 bg-white border-slate-300 rounded focus:ring-teal-500 cursor-pointer accent-teal-500">
                                     </div>
                                 </th>
-                                <th @click="handleSort('Waktu Masuk')" class="w-[28%] md:w-[13%] cursor-pointer hover:bg-slate-50 transition-colors select-none group px-2 py-2 sm:px-4 sm:py-3">
+                                <th @click="handleSort('Waktu Masuk')" class="w-[23%] md:w-[13%] cursor-pointer hover:bg-slate-50 transition-colors select-none group px-2 py-2 sm:px-4 sm:py-3">
                                     <div class="flex items-center justify-between">
-                                        <span class="text-[0.625rem]">WAKTU</span>
+                                        <span class="text-[0.625rem]"><span class="md:hidden">WAKTU</span><span class="hidden md:inline">WAKTU MASUK</span></span>
                                         <i class="ph-bold ph-caret-up-down text-slate-300 group-hover:text-slate-500"></i>
                                     </div>
                                 </th>
-                                <th @click="handleSort('Nama Pelanggan')" class="w-[32%] md:w-[17%] cursor-pointer hover:bg-slate-50 transition-colors select-none group px-2 py-2 sm:px-4 sm:py-3">
+                                <th @click="handleSort('Nama Pelanggan')" class="w-[27%] md:w-[17%] cursor-pointer hover:bg-slate-50 transition-colors select-none group px-2 py-2 sm:px-4 sm:py-3">
                                     <div class="flex items-center justify-between">
                                         <span class="text-[0.625rem]">PELANGGAN</span>
                                         <i class="ph-bold ph-caret-up-down text-slate-300 group-hover:text-slate-500"></i>
@@ -332,13 +332,13 @@ const handleModalEdit = (data) => {
                                         <i class="ph-bold ph-caret-up-down text-slate-300 group-hover:text-slate-500"></i>
                                     </div>
                                 </th>
-                                <th @click="handleSort('Total Harga')" class="w-[22%] md:w-[12%] cursor-pointer hover:bg-slate-50 transition-colors select-none group px-2 py-2 sm:px-4 sm:py-3">
+                                <th @click="handleSort('Total Harga')" class="w-[19%] md:w-[12%] cursor-pointer hover:bg-slate-50 transition-colors select-none group px-2 py-2 sm:px-4 sm:py-3">
                                     <div class="flex items-center justify-between">
-                                        <span class="text-[0.625rem]">TOTAL</span>
+                                        <span class="text-[0.625rem]"><span class="md:hidden">TOTAL</span><span class="hidden md:inline">TOTAL HARGA</span></span>
                                         <i class="ph-bold ph-caret-up-down text-slate-300 group-hover:text-slate-500"></i>
                                     </div>
                                 </th>
-                                <th @click="handleSort('Status')" class="w-[18%] md:w-[10%] cursor-pointer hover:bg-slate-50 transition-colors select-none group px-1 py-2 sm:px-4 sm:py-3">
+                                <th @click="handleSort('Status')" class="w-[16%] md:w-[10%] cursor-pointer hover:bg-slate-50 transition-colors select-none group px-1 py-2 sm:px-4 sm:py-3">
                                     <div class="flex items-center justify-center text-center">
                                         <span class="text-[0.625rem]">STATUS</span>
                                         <i class="ph-bold ph-caret-up-down text-slate-300 group-hover:text-slate-500 ml-1"></i>
@@ -350,7 +350,7 @@ const handleModalEdit = (data) => {
                                         <i class="ph-bold ph-caret-up-down text-slate-300 group-hover:text-slate-500 ml-1"></i>
                                     </div>
                                 </th>
-                                <th class="hidden md:table-cell w-[10%] !text-center px-4 py-3 text-[0.625rem]">AKSI</th>
+                                <th class="w-[15%] md:w-[10%] !text-center px-1 py-2 sm:px-4 sm:py-3 text-[0.625rem]">AKSI</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -370,7 +370,7 @@ const handleModalEdit = (data) => {
                                 </td>
                                 
                                 <td class="px-2 py-1.5 sm:px-3 sm:py-2.5">
-                                    <p class="font-bold text-slate-800 text-[0.6875rem] sm:text-[0.8125rem] uppercase leading-tight truncate max-w-[110px] sm:max-w-none">{{ getCustomerName(tx) }}</p>
+                                    <p class="font-bold text-slate-800 text-[0.6875rem] sm:text-[0.8125rem] uppercase leading-tight truncate max-w-[90px] sm:max-w-none">{{ getCustomerName(tx) }}</p>
                                     <p class="text-[0.5625rem] sm:text-[0.6875rem] font-bold text-indigo-400 uppercase font-mono leading-tight">{{ tx['No Nota'] || '-' }}</p>
                                 </td>
                                 
@@ -418,22 +418,22 @@ const handleModalEdit = (data) => {
                                     </span>
                                 </td>
                                 
-                                <td class="hidden md:table-cell !text-center px-3 py-2.5" @click.stop>
+                                <td class="!text-center px-1 py-1.5 sm:px-3 sm:py-2.5" @click.stop>
                                     <div class="flex justify-center items-center gap-1">
-                                        <button @click.stop="openViewModal(tx)" class="w-7 h-7 rounded-full bg-indigo-50 text-indigo-500 flex items-center justify-center hover:bg-indigo-100 hover:text-indigo-600 transition-colors shrink-0" title="Lihat">
+                                        <button @click.stop="openViewModal(tx)" class="hidden md:flex w-7 h-7 rounded-full bg-indigo-50 text-indigo-500 items-center justify-center hover:bg-indigo-100 hover:text-indigo-600 transition-colors shrink-0" title="Lihat">
                                             <i class="ph-bold ph-eye text-[0.8125rem]"></i>
                                         </button>
-                                        <button @click.stop="openEditModal(tx)" class="w-7 h-7 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center hover:bg-amber-100 hover:text-amber-600 transition-colors shrink-0" title="Edit">
-                                            <i class="ph-bold ph-pencil-simple text-[0.8125rem]"></i>
+                                        <button @click.stop="openEditModal(tx)" class="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center hover:bg-amber-100 hover:text-amber-600 transition-colors shrink-0" title="Edit">
+                                            <i class="ph-bold ph-pencil-simple text-[0.6875rem] sm:text-[0.8125rem]"></i>
                                         </button>
-                                        <button @click.stop="deleteRow(tx.ID)" class="w-7 h-7 rounded-full bg-rose-50 text-rose-500 flex items-center justify-center hover:bg-rose-100 hover:text-rose-600 transition-colors shrink-0" title="Hapus">
-                                            <i class="ph-bold ph-trash text-[0.8125rem]"></i>
+                                        <button @click.stop="deleteRow(tx.ID)" class="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-rose-50 text-rose-500 flex items-center justify-center hover:bg-rose-100 hover:text-rose-600 transition-colors shrink-0" title="Hapus">
+                                            <i class="ph-bold ph-trash text-[0.6875rem] sm:text-[0.8125rem]"></i>
                                         </button>
                                     </div>
                                 </td>
                             </tr>
                             <tr v-if="paginatedData.length === 0">
-                                <td colspan="4" class="md:hidden !text-center py-8 text-slate-400 text-xs">Belum ada transaksi</td>
+                                <td colspan="5" class="md:hidden !text-center py-8 text-slate-400 text-xs">Belum ada transaksi</td>
                                 <td colspan="8" class="hidden md:table-cell !text-center py-12 text-slate-400">Belum ada transaksi</td>
                             </tr>
                         </tbody>
