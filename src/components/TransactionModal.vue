@@ -14,7 +14,7 @@ const props = defineProps({
     }
 });
 
-const emit = defineEmits(['close', 'save']);
+const emit = defineEmits(['close', 'save', 'edit']);
 
 const formData = ref({});
 
@@ -124,13 +124,18 @@ const txImage = computed(() => {
         <!-- Modal Panel -->
         <div class="relative bg-white rounded-[2rem] shadow-2xl w-full flex flex-col overflow-hidden slide-up border border-slate-100" :class="isViewOnly ? 'max-w-2xl max-h-[95vh]' : 'max-w-4xl max-h-full'">
             <!-- Header (View Mode) -->
-            <div v-if="isViewOnly" class="px-6 py-3.5 border-b border-slate-100 flex justify-between items-center bg-white z-20 shrink-0">
-                <h3 class="text-lg font-black text-slate-800 tracking-tight flex items-center">
-                    <i class="ph-bold ph-receipt mr-2 text-teal-600"></i> Detail Lengkap Transaksi
+            <div v-if="isViewOnly" class="px-5 sm:px-6 py-3.5 border-b border-slate-100 flex justify-between items-center bg-white z-20 shrink-0">
+                <h3 class="text-base sm:text-lg font-black text-slate-800 tracking-tight flex items-center">
+                    <i class="ph-bold ph-receipt mr-2 text-teal-600"></i> Detail Transaksi
                 </h3>
-                <button @click="closeModal" class="w-8 h-8 bg-slate-100 text-slate-500 rounded-full flex items-center justify-center hover:bg-red-100 hover:text-red-600 transition-colors">
-                    <i class="ph-bold ph-x"></i>
-                </button>
+                <div class="flex items-center gap-2">
+                    <button @click="$emit('edit', formData)" title="Edit Transaksi" class="w-8 h-8 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center hover:bg-amber-100 transition-colors">
+                        <i class="ph-bold ph-pencil-simple text-sm"></i>
+                    </button>
+                    <button @click="closeModal" class="w-8 h-8 bg-slate-100 text-slate-500 rounded-full flex items-center justify-center hover:bg-red-100 hover:text-red-600 transition-colors">
+                        <i class="ph-bold ph-x"></i>
+                    </button>
+                </div>
             </div>
             
             <!-- Header (Edit Mode) -->

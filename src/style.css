@@ -33,6 +33,10 @@ html, body { margin: 0 !important; padding: 0 !important; width: 100% !important
 .table-modern tbody tr:nth-child(even) { background-color: #fafbfc; }
 .table-modern tbody tr:hover { background-color: #eff6ff; }
 .table-modern tbody tr:hover td { border-bottom-color: #dbeafe; color: #1e40af; }
+@media (max-width: 768px) {
+  .table-modern th { padding: 8px 6px !important; font-size: 10px !important; }
+  .table-modern td { padding: 7px 6px !important; font-size: 11px !important; }
+}
 
 .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
 
