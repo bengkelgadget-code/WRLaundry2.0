@@ -17,8 +17,9 @@ const itemsPerPage = ref(15);
 const filterType = ref('all');
 const filterMonth = ref('');
 const filterDate = ref('');
+const filterPayment = ref('all');
 
-watch([filterType, filterMonth, filterDate], () => {
+watch([filterType, filterMonth, filterDate, filterPayment], () => {
     currentPage.value = 1;
 });
 
@@ -100,6 +101,14 @@ const filteredAndSortedData = computed(() => {
         });
     }
     
+    if (filterPayment.value !== 'all') {
+        data = data.filter(d => {
+            const rawBayar = (d.Pembayaran || '').trim();
+            const statusBayar = rawBayar || 'Belum Lunas';
+            return statusBayar.toLowerCase() === filterPayment.value.toLowerCase();
+        });
+    }
+
     if (searchQuery.value) {
         const q = searchQuery.value.toLowerCase();
         data = data.filter(d => 
@@ -267,6 +276,15 @@ const handleModalEdit = (data) => {
                             </select>
                             <input v-if="filterType === 'month'" type="month" v-model="filterMonth" class="h-[34px] px-2 rounded-lg bg-slate-50 border border-slate-200 text-[0.8125rem] font-bold text-slate-600 outline-none focus:ring-1 focus:ring-teal-400 slide-left">
                             <input v-if="filterType === 'date'" type="date" v-model="filterDate" class="h-[34px] px-2 rounded-lg bg-slate-50 border border-slate-200 text-[0.8125rem] font-bold text-slate-600 outline-none focus:ring-1 focus:ring-teal-400 slide-left">
+
+                            <!-- Payment Filter -->
+                            <select v-model="filterPayment" class="h-[34px] px-2 rounded-lg bg-slate-50 border border-slate-200 text-[0.8125rem] font-bold text-slate-600 outline-none focus:ring-1 focus:ring-teal-400 cursor-pointer" :class="filterPayment !== 'all' ? 'border-teal-400 bg-teal-50/50 text-teal-800' : ''">
+                                <option value="all">Semua Bayar</option>
+                                <option value="Belum Lunas">Belum Lunas</option>
+                                <option value="Lunas">Lunas</option>
+                                <option value="DP">DP</option>
+                                <option value="Potong Kuota">Potong Kuota</option>
+                            </select>
                         </div>
 
                         <!-- Divider if both are present -->

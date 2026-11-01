@@ -16,6 +16,7 @@ const store = useAppStore();
 const filterType = ref('all');
 const filterMonth = ref('');
 const filterDate = ref('');
+const filterPayment = ref('all');
 const isExporting = ref(false);
 
 const customer = computed(() => {
@@ -54,25 +55,36 @@ const txData = computed(() => {
 
 const filteredTransactions = computed(() => {
     return txData.value.filter(tx => {
-        if (filterType.value === 'all') return true;
-        
-        const wktMasuk = tx['Waktu Masuk'] ? String(tx['Waktu Masuk']) : '';
-        
+        // Filter Waktu / Tanggal
         if (filterType.value === 'month' && filterMonth.value) {
+            const wktMasuk = tx['Waktu Masuk'] ? String(tx['Waktu Masuk']) : '';
             const fParts = filterMonth.value.split('-');
             if (fParts.length === 2) {
                 const formatSlash = `/${fParts[1]}/${fParts[0]}`;
                 const formatDash = `-${fParts[1]}-${fParts[0]}`;
-                return wktMasuk.includes(formatSlash) || wktMasuk.includes(formatDash) || wktMasuk.includes(filterMonth.value);
+                const matchMonth = wktMasuk.includes(formatSlash) || wktMasuk.includes(formatDash) || wktMasuk.includes(filterMonth.value);
+                if (!matchMonth) return false;
             }
         } else if (filterType.value === 'date' && filterDate.value) {
+            const wktMasuk = tx['Waktu Masuk'] ? String(tx['Waktu Masuk']) : '';
             const fParts = filterDate.value.split('-');
             if (fParts.length === 3) {
                 const formatSlash = `${fParts[2]}/${fParts[1]}/${fParts[0]}`;
                 const formatDash = `${fParts[2]}-${fParts[1]}-${fParts[0]}`;
-                return wktMasuk.includes(formatSlash) || wktMasuk.includes(formatDash) || wktMasuk.includes(filterDate.value);
+                const matchDate = wktMasuk.includes(formatSlash) || wktMasuk.includes(formatDash) || wktMasuk.includes(filterDate.value);
+                if (!matchDate) return false;
             }
         }
+
+        // Filter Keterangan Bayar
+        if (filterPayment.value !== 'all') {
+            const rawBayar = (tx['Pembayaran'] || '').trim();
+            const statusBayar = rawBayar || 'Belum Lunas';
+            if (statusBayar.toLowerCase() !== filterPayment.value.toLowerCase()) {
+                return false;
+            }
+        }
+
         return true;
     });
 });
@@ -178,7 +190,10 @@ const exportHistory = async (type) => {
             phone = phone.replace(/\D/g, ''); 
             if (phone.startsWith('0')) phone = '62' + phone.substring(1);
             
-            const waMsg = `Halo *${customerName.value}*,\nBerikut adalah lampiran laporan/rekap transaksi Anda. Mohon konfirmasi laporan yang telah kami bagikan ya. Terima kasih! 🙏`;
+            let waMsg = `Halo *${customerName.value}*,\nBerikut adalah lampiran laporan/rekap transaksi Anda. Mohon konfirmasi laporan yang telah kami bagikan ya. Terima kasih! 🙏`;
+            if (filterPayment.value === 'Belum Lunas') {
+                waMsg = `Halo *${customerName.value}*,\nBerikut adalah lampiran rincian tagihan transaksi yang *Belum Lunas* (Total: Rp ${formatRupiah(totals.value.rp)}). Mohon konfirmasinya ya. Terima kasih! 🙏`;
+            }
             
             // 1. PRIORITAS UTAMA: JIKA DI DALAM APLIKASI ANDROID / IOS (CAPACITOR NATIVE)
             if (Capacitor.isNativePlatform()) {
@@ -309,14 +324,22 @@ const resolveLayananName = (nama) => {
 
                 <!-- Toolbar Filters -->
                 <div class="bg-white px-5 py-4 border-b border-slate-100 shrink-0 flex flex-row flex-wrap gap-2 items-center justify-between">
-                    <div class="flex gap-2">
-                        <select v-model="filterType" class="px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-700 outline-none focus:ring-2 focus:ring-teal-300">
+                    <div class="flex flex-wrap gap-2 items-center">
+                        <select v-model="filterType" class="px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-700 outline-none focus:ring-2 focus:ring-teal-300 cursor-pointer">
                             <option value="all">Semua</option>
                             <option value="month">Per Bulan</option>
                             <option value="date">Tanggal</option>
                         </select>
                         <input v-if="filterType === 'month'" type="month" v-model="filterMonth" class="px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-700 outline-none focus:ring-2 focus:ring-teal-300 slide-left">
                         <input v-if="filterType === 'date'" type="date" v-model="filterDate" class="px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-700 outline-none focus:ring-2 focus:ring-teal-300 slide-left">
+                        
+                        <select v-model="filterPayment" class="px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-700 outline-none focus:ring-2 focus:ring-teal-300 cursor-pointer" :class="filterPayment !== 'all' ? 'border-teal-400 bg-teal-50/50 text-teal-800' : ''">
+                            <option value="all">Semua Bayar</option>
+                            <option value="Belum Lunas">Belum Lunas</option>
+                            <option value="Lunas">Lunas</option>
+                            <option value="DP">DP</option>
+                            <option value="Potong Kuota">Potong Kuota</option>
+                        </select>
                     </div>
 
                     <div class="flex gap-2 shrink-0">
@@ -386,9 +409,9 @@ const resolveLayananName = (nama) => {
                         <p class="text-[0.5625rem] font-black text-slate-400 uppercase tracking-widest mb-1 truncate">Satuan</p>
                         <p class="text-sm sm:text-base font-black text-slate-800">{{ totals.pcs }} Pcs</p>
                     </div>
-                    <div class="bg-teal-50 rounded-xl p-2 sm:p-3 border border-teal-100 text-center">
-                        <p class="text-[0.5625rem] font-black text-teal-500 uppercase tracking-widest mb-1 truncate">Total Biaya</p>
-                        <p class="text-sm sm:text-base font-black text-teal-700 truncate">Rp {{ formatRupiah(totals.rp) }}</p>
+                    <div class="rounded-xl p-2 sm:p-3 border text-center transition-colors" :class="filterPayment === 'Belum Lunas' ? 'bg-rose-50 border-rose-100' : 'bg-teal-50 border-teal-100'">
+                        <p class="text-[0.5625rem] font-black uppercase tracking-widest mb-1 truncate" :class="filterPayment === 'Belum Lunas' ? 'text-rose-500' : 'text-teal-500'">{{ filterPayment === 'Belum Lunas' ? 'Total Tagihan' : 'Total Biaya' }}</p>
+                        <p class="text-sm sm:text-base font-black truncate" :class="filterPayment === 'Belum Lunas' ? 'text-rose-600' : 'text-teal-700'">Rp {{ formatRupiah(totals.rp) }}</p>
                     </div>
                 </div>
             </div>
@@ -415,6 +438,10 @@ const resolveLayananName = (nama) => {
                                 {{ new Date(filterDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase() }}
                             </span>
                         </td>
+                    </tr>
+                    <tr v-if="filterPayment !== 'all'">
+                        <td style="padding: 2px 0;">Status Bayar</td>
+                        <td>: {{ filterPayment.toUpperCase() }}</td>
                     </tr>
                 </table>
 
